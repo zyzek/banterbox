@@ -103,3 +103,7 @@ fabric.properties
 
 #venv
 venv
+
+#compiled python files
+*.pyc
+project/__pycache__/
