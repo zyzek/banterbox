@@ -105,5 +105,6 @@ fabric.properties
 venv
 
 #compiled python files
-*.pyc
-project/__pycache__/
+*.py[cod]
+__pycache__/
+
