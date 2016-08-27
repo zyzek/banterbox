@@ -106,5 +106,8 @@ venv
 
 #compiled python files
 *.py[cod]
-__pycache__/
+project/__pycache__/
+
+#sqlite
+*.sqlite3
 
