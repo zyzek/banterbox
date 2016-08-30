@@ -1,1 +1,4 @@
 Django==1.10
+fake-factory==0.6.0
+python-dateutil==2.5.3
+six==1.10.0
