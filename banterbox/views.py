@@ -1,20 +1,20 @@
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.template import loader
+from random import random
 
 import datetime
 
 
 def index(request):
-    template = loader.get_template('index.html')
     context = {
-        'generic_var' : 123125
+        'generic_var': random()
     }
-    return HttpResponse(template.render(context,template))
+
+    return render(request, 'index.html', context)
 
 
 def current_datetime(request):
     now = datetime.datetime.now()
     html = "<html><body>It is now %s.</body></html>" % now
     return HttpResponse(html)
-
-
