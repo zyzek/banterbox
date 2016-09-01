@@ -1,24 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
 from uuid import uuid4
 
-class User(models.Model):
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.Cascade)
     public_id = models.UUIDField(primary_key=True, default=uuid4)
-    name = models.TextField(unique=True)
-    email = models.TextField(unique=True)
     active = models.BooleanField()
-    password = models.TextField()
     join_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
-
-class PasswordReset(models.Model):
-    email = models.TextField()
-    token = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return "{} @ {}".format(self.email, self.created_at)
 
 class Status(models.Model):
     name = models.TextField(unique=True)
