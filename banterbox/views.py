@@ -17,8 +17,10 @@ class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all().order_by('-created_at')
     serializer_class = RoomSerializer
 
+
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all().
+    queryset = Comment.objects.all()
+    serializer_class = ClassSerializer
 
 
 def index(request):
