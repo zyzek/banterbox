@@ -55,6 +55,12 @@ Temporary Items
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
 
+#stuff that roy accidently pushed
+.idea/django.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/
+
 # Sensitive or high-churn files:
 .idea/dataSources.ids
 .idea/dataSources.xml
