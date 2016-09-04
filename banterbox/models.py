@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from uuid import uuid4
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.Cascade)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     public_id = models.UUIDField(primary_key=True, default=uuid4)
     active = models.BooleanField()
     join_date = models.DateTimeField(auto_now_add=True)
@@ -21,7 +21,7 @@ class Room(models.Model):
     public_id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.TextField()
     lecturer = models.OneToOneField(User)
-    room_class = models.OneToOneField('Class', models.SET_NULL, null=True)
+    room_unit = models.OneToOneField('Unit', models.SET_NULL, null=True)
     status = models.OneToOneField(Status, models.SET_NULL, null=True)
     private = models.BooleanField(default=False)
     password_protected = models.BooleanField(default=False)
@@ -56,7 +56,7 @@ class UserRoomRole(models.Model):
     def __str__(self):
         return "{} is {} in {}".format(self.user.name, self.role.name, self.room.name)
 
-class Class(models.Model):
+class Unit(models.Model):
     public_id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.TextField()
     lecturer = models.OneToOneField(User, models.SET_NULL, null=True)
@@ -65,20 +65,20 @@ class Class(models.Model):
     def __str__(self):
         return self.name
 
-class UserClassEnrolment(models.Model):
-    enroled_class = models.OneToOneField(Class, models.CASCADE)
-    enroled_user = models.OneToOneField(User, models.CASCADE)
+class UserUnitEnrolment(models.Model):
+    unit = models.OneToOneField(Unit, models.CASCADE)
+    user = models.OneToOneField(User, models.CASCADE)
 
     def __str__(self):
-        return "{} takes {}".format(self.enroled_class.name, self.enroled_user.name)
+        return "{} takes {}".format(self.unit.name, self.user.name)
 
 class ScheduledRoom(models.Model):
     day = models.PositiveIntegerField()
-    room_class = models.OneToOneField(Class, models.CASCADE)
+    room_unit = models.OneToOneField(Unit, models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField()
 
     def __str__(self):
-        return "{}: {}, [{} - {}]".format(self.room_class.name, self.day, self.start_time, self.end_time)
+        return "{}: {}, [{} - {}]".format(self.room_unit.name, self.day, self.start_time, self.end_time)
 
     
