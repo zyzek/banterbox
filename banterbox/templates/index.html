@@ -28,15 +28,36 @@
     </style>
 
     <script type="vue/template" id="unit-template">
+        // Outer container should be the columns
+        // Inner container should be the content who's max size is the outer container
+
         <div @click="click"
 
-             class="unit-component col-xs-12 col-md-6 col-lg-3" :id="unit.public_id"
-             :style="{'backgroundColor' : clicked ? '#C00' : '#ECECEC','minHeight' : clicked ? '450px' : '250px'}"
-             style="padding:5px;border-radius:3px; margin-top:5px;"
+             class="unit-component col-xs-12 col-md-6 col-lg-3"
+             :id="unit.public_id"
+             style="border-radius:3px; padding:5px;display:flex"
         >
-            <h2>{{ unit.name }}</h2>
-            <p>{{ unit.lecturer.name }}</p>
-            <p style="font-size:0.75rem">{{ unit.public_id }}</p>
+            <div
+                    class="unit-content-container"
+                    :style="{'height' : unit.status === 'open' ? '450px' : false}"
+                    style="margin:7px; display:flex;flex-direction: column;"
+
+            >
+                <div
+                        v-if="unit.status !== 'open'"
+                        style="height:75px;background-color: transparent;display:flex;align-items: center;justify-content: center;">
+
+                    <h4>{{ unit.next_session.day }}</h4>
+                </div>
+                <div
+                        style="flex-grow: 1; padding:10px"
+                        :style="{'backgroundColor' : unit.status === 'open' ? '#C00' : '#ECECEC', margin: unit.status === 'open' ? false : '0 20px'}"
+                >
+                    <h2>{{ unit.name }}</h2>
+                    <p>{{ unit.lecturer.name }}</p>
+                    <p style="font-size:0.75rem">{{ unit.public_id }}</p>
+                </div>
+            </div>
         </div>
     </script>
     {% endverbatim %}
