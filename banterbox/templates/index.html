@@ -1,8 +1,45 @@
 {% extends "base.html" %}
 
 {% block body %}
+    <div class="row">
+        <div>Testing testing 123</div>
+    </div>
 
-    {{ generic_var }}
 
-    <div>Hee heee haaa haw</div>
+
+    {% load static %}
+
+
+
+    {% verbatim %}
+    <div id="app">
+        <div class="row">
+            <unit-panel :unit="units[0]"></unit-panel>
+            <unit-panel :unit="units[1]"></unit-panel>
+            <unit-panel :unit="units[2]"></unit-panel>
+            <unit-panel :unit="units[3]"></unit-panel>
+        </div>
+    </div>
+
+    <style>
+        .unit-component > div {
+            transition: all 0.15s ease-out;
+        }
+    </style>
+
+    <script type="vue/template" id="unit-template">
+        <div @click="click"
+
+             class="unit-component col-xs-12 col-md-6 col-lg-3" :id="unit.public_id"
+             :style="{'backgroundColor' : clicked ? '#C00' : '#ECECEC','minHeight' : clicked ? '450px' : '250px'}"
+             style="padding:5px;border-radius:3px; margin-top:5px;"
+        >
+            <h2>{{ unit.name }}</h2>
+            <p>{{ unit.lecturer.name }}</p>
+            <p style="font-size:0.75rem">{{ unit.public_id }}</p>
+        </div>
+    </script>
+    {% endverbatim %}
+
+    <script src="{% static "js/vue_app/app.js" %}"></script>
 {% endblock %}

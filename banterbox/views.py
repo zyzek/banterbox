@@ -3,12 +3,16 @@ from django.shortcuts import render
 from django.template import loader
 from random import random
 
+import json
+
 import datetime
 
 
 def index(request):
+
+
     context = {
-        'generic_var': random()
+        'g': random()
     }
 
     return render(request, 'index.html', context)
