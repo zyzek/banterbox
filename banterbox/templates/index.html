@@ -25,6 +25,35 @@
         .unit-component > div {
             transition: all 0.15s ease-out;
         }
+
+        .unit-code {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .unit-name {
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .unit-next-day {
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size:1.8rem;
+            font-weight: 200;
+        }
+
+        .flex {
+            display:flex;
+        }
+
+        .flex-children-center {
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 
     <script type="vue/template" id="unit-template">
@@ -43,18 +72,19 @@
                     style="margin:7px; display:flex;flex-direction: column;"
 
             >
-                <div
-                        v-if="unit.status !== 'open'"
-                        style="height:75px;background-color: transparent;display:flex;align-items: center;justify-content: center;">
-
-                    <h4>{{ unit.next_session.day }}</h4>
+                <div class="unit-next-day flex flex-children-center" v-if="unit.status !== 'open'">
+                    <p>{{ unit.next_session.day }}</p>
                 </div>
                 <div
                         style="flex-grow: 1; padding:10px"
                         :style="{'backgroundColor' : unit.status === 'open' ? '#C00' : '#ECECEC', margin: unit.status === 'open' ? false : '0 20px'}"
                 >
-                    <h2>{{ unit.name }}</h2>
-                    <p>{{ unit.lecturer.name }}</p>
+                    <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
+                        <i :class="'fa fa-5x fa-' + unit.icon"
+                           style="border: 9px solid #373a3c;padding:20px;border-radius: 75px;"></i>
+                    </div>
+                    <p class="unit-code">{{ unit.code }}</p>
+                    <p class="unit-name">{{ unit.name }}</p>
                     <p style="font-size:0.75rem">{{ unit.public_id }}</p>
                 </div>
             </div>
