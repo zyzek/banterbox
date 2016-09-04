@@ -26,6 +26,11 @@
             transition: all 0.15s ease-out;
         }
 
+        .unit-content-container {
+            width: 100%;
+            margin: 7px;
+        }
+
         .unit-code {
             text-align: center;
             font-size: 1.8rem;
@@ -38,54 +43,89 @@
         }
 
         .unit-next-day {
-            height: 75px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size:1.8rem;
+            flex-direction: column;
+            font-size: 1.5rem;
             font-weight: 200;
         }
 
+        .unit-button{
+            border:none;
+            background-color: transparent;
+            padding:5px;
+        }
+
+        .unit-button-border {
+            border-top: 2px solid black;
+            border-bottom: 2px solid black;
+        }
+
+        .background-color-red {
+            background-color: rgb(204, 0, 0);
+        }
+
+        .background-color-grey {
+            background-color: rgb(236, 236, 236);
+        }
+
         .flex {
-            display:flex;
+            display: flex;
+        }
+
+        .flex-direction-column {
+            flex-direction: column;
         }
 
         .flex-children-center {
             align-items: center;
             justify-content: center;
         }
+
+        .flex-justify-content-space-between {
+            justify-content: space-between;
+        }
+
+        .full-height {
+            height: 450px;
+        }
     </style>
 
     <script type="vue/template" id="unit-template">
-        // Outer container should be the columns
-        // Inner container should be the content who's max size is the outer container
-
         <div @click="click"
 
              class="unit-component col-xs-12 col-md-6 col-lg-3"
              :id="unit.public_id"
              style="border-radius:3px; padding:5px;display:flex"
         >
-            <div
-                    class="unit-content-container"
-                    :style="{'height' : unit.status === 'open' ? '450px' : false}"
-                    style="margin:7px; display:flex;flex-direction: column;"
-
+            <div class="unit-content-container flex flex-direction-column"
+                 :class="{'full-height' : unit.status === 'open' ? true : false}"
             >
                 <div class="unit-next-day flex flex-children-center" v-if="unit.status !== 'open'">
-                    <p>{{ unit.next_session.day }}</p>
+                    <span style="font-size:1.15rem">NEXT SESSION:</span>
+                    <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
                 </div>
-                <div
-                        style="flex-grow: 1; padding:10px"
-                        :style="{'backgroundColor' : unit.status === 'open' ? '#C00' : '#ECECEC', margin: unit.status === 'open' ? false : '0 20px'}"
+                <div class="flex flex-direction-column flex-justify-content-space-between"
+                     style="flex-grow: 1"
+                     :class="{'background-color-red' : unit.status === 'open', 'background-color-grey' : unit.status !== 'open'}"
                 >
-                    <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
-                        <i :class="'fa fa-5x fa-' + unit.icon"
-                           style="border: 9px solid #373a3c;padding:20px;border-radius: 75px;"></i>
+                    <div>
+                        <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
+                            <i :class="'fa fa-5x fa-' + unit.icon"
+                               style="border: 9px solid #373a3c;padding:20px;border-radius: 75px;"></i>
+                        </div>
+                        <p class="unit-code">{{ unit.code }}</p>
+                        <p class="unit-name">{{ unit.name }}</p>
                     </div>
-                    <p class="unit-code">{{ unit.code }}</p>
-                    <p class="unit-name">{{ unit.name }}</p>
-                    <p style="font-size:0.75rem">{{ unit.public_id }}</p>
+
+                    <div class="flex flex-direction-column flex-children-center">
+                        <div class="unit-button-border">
+                            <button class="unit-button">ENTER ROOM</button>
+                        </div>
+                        <div><i class="fa fa-3x fa-caret-down"></i></div>
+                    </div>
+
                 </div>
             </div>
         </div>
