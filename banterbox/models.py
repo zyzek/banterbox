@@ -11,21 +11,21 @@ class Profile(models.Model):
     def __str__(self):
         return self.name
 
-class Status(models.Model):
-    name = models.TextField(unique=True)
+class RoomStatus(models.Model):
+    name = models.CharField(max_length=32, unique=True)
     
     def __str__(self):
         return self.name
 
 class Room(models.Model):
     public_id = models.UUIDField(primary_key=True, default=uuid4)
-    name = models.TextField()
+    name = models.CharField(max_length=255)
     lecturer = models.OneToOneField(User)
     room_unit = models.OneToOneField('Unit', models.SET_NULL, null=True)
-    status = models.OneToOneField(Status, models.SET_NULL, null=True)
+    status = models.OneToOneField(RoomStatus, models.SET_NULL, null=True)
     private = models.BooleanField(default=False)
     password_protected = models.BooleanField(default=False)
-    password = models.TextField(null=True)
+    password = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -42,15 +42,15 @@ class Comment(models.Model):
     def __str__(self):
         return self.content[:40]
 
-class Role(models.Model):
-    name = models.TextField(unique=True)
+class UserRole(models.Model):
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
 
 class UserRoomRole(models.Model):
     user = models.OneToOneField(User, models.CASCADE)
-    role = models.OneToOneField(Role, models.CASCADE)
+    role = models.OneToOneField(UserRole, models.CASCADE)
     room = models.OneToOneField(Room, models.CASCADE)
     
     def __str__(self):
@@ -58,7 +58,7 @@ class UserRoomRole(models.Model):
 
 class Unit(models.Model):
     public_id = models.UUIDField(primary_key=True, default=uuid4)
-    name = models.TextField()
+    name = models.CharField(max_length=255)
     lecturer = models.OneToOneField(User, models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     

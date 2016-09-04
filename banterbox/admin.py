@@ -4,10 +4,10 @@ from .models import *
 
 # Register your models here.
 admin.site.register(Profile)
-admin.site.register(Status)
+admin.site.register(RoomStatus)
 admin.site.register(Room)
 admin.site.register(Comment)
-admin.site.register(Role)
+admin.site.register(UserRole)
 admin.site.register(UserRoomRole)
 admin.site.register(Unit)
 admin.site.register(UserUnitEnrolment)
