@@ -51,10 +51,10 @@
             font-weight: 200;
         }
 
-        .unit-button{
-            border:none;
+        .unit-button {
+            border: none;
             background-color: transparent;
-            padding:5px;
+            padding: 5px;
         }
 
         .unit-button-border {
@@ -120,10 +120,10 @@
                     </div>
 
                     <div class="flex flex-direction-column flex-children-center">
-                        <div class="unit-button-border">
+                        <span style="font-size:0.75rem;margin-bottom:10px">STATUS : {{ unit.status.toUpperCase() }}</span>
+                        <div class="unit-button-border" style="margin-bottom: 15px;">
                             <button class="unit-button">ENTER ROOM</button>
                         </div>
-                        <div><i class="fa fa-3x fa-caret-down"></i></div>
                     </div>
 
                 </div>
