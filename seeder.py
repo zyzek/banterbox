@@ -99,13 +99,13 @@ def make_units(num):
         role = models.UserUnitRole()
         role.user = lecturer
         role.unit = unit
-        role.role = Entry.objects.get(name="owner")
+        role.role = UserRole.objects.get(name="owner")
         role.save()
 
         # Select a bunch of users to be students of this unit.
         num_users = randint(STUDENTS//(2*UNITS), (2*STUDENTS)//UNITS)
         users = sample(model.User.objects.all(), num_users)
-        student_role = Entry.objects.get(name="participant")
+        student_role = UserRole.objects.get(name="participant")
 
         for user in users:
             enrolment = models.UserUnitEnrolment()
