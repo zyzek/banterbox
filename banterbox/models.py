@@ -5,7 +5,7 @@ from uuid import uuid4
 class Profile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    icon = models.CharField(max_length=255)
+    icon = models.CharField(max_length=255, default="user")
     email_notifications = models.BooleanField(default=False)
 
     def __str__(self):
@@ -48,14 +48,14 @@ class UserRole(models.Model):
     def __str__(self):
         return self.name
 
-class UserRoomRole(models.Model):
+class UserUnitRole(models.Model):
     user = models.ForeignKey(User, models.CASCADE)
-    room = models.ForeignKey(Room, models.CASCADE)
+    unit = models.ForeignKey('Unit', models.CASCADE)
 
     role = models.ForeignKey(UserRole, models.CASCADE)
     
     class Meta:
-        unique_together = ('user', 'room')
+        unique_together = ('user', 'unit')
 
     def __str__(self):
         return "{} is {} in {}".format(self.user.name, self.role.name, self.room.name)
@@ -66,7 +66,7 @@ class Unit(models.Model):
     code = models.CharField(max_length=8)
     lecturer = models.ForeignKey(User, models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    icon = models.CharField(max_length=255)
+    icon = models.CharField(max_length=255, default="pencil")
     
     def __str__(self):
         return self.name

@@ -7,16 +7,20 @@ application = get_wsgi_application()
 
 from banterbox import models
 from faker import Factory
-from random import choice
+from random import choice, randint, sample
 from django.contrib.auth.hashers import make_password
 
-UNITS = 10
+UNITS = 20
 ROOMS_PER_UNIT = 10
-STUDENTS = 30
+STUDENTS = 1000
 
 fake = Factory.create()
+euro_fakers = [Factory.create(locale) for locale in \
+               ["de_DE", "cs_CZ", "dk_DK", "es_ES", "fr_FR",
+                "it_IT", "no_NO", "pl_PL", "ru_RU", "sl_SI"]]
 
-user_password = make_password(fake.password(), salt=fake.bothify("#?#?#?#?#?#"))
+
+user_password = make_password("password", salt=fake.bothify("#?#?#?#?#?#"))
 
 fa_icons = []
 icons_loaded = False
@@ -53,13 +57,17 @@ def make_superuser():
     admin.is_staff = True
     admin.save()
 
+def make_unikey(fname, lname):
+    unikey_stub = fname[:1].lower() + lname[:3].lower() \
+                  + "?"*(4 - (len(fname) + len(lname))) + "####"
+    return fake.bothify(unikey_stub)
+
 def make_users(num):
     for _ in range(num):
         user = models.User()
         user.first_name = fake.first_name()
         user.last_name = fake.last_name()
-        unikey_stub = user.first_name[:1].lower() + user.last_name[:3].lower() + "####"
-        user.username = fake.numerify(unikey_stub)
+        user.username = make_unikey(user.first_name, user.last_name)
         user.password = user_password
         user.save()
 
@@ -68,8 +76,55 @@ def make_users(num):
         profile.icon = get_icon()
         profile.save()
 
-#def make_units(num):
-#   pass 
+def make_units(num):
+    for _ in range(num):
+        # Generate a pretentious european professor
+        eu_fake = choice(euro_fakers)
+        lecturer = models.User()
+        lecturer.first_name = eu_fake.first_name()
+        lecturer.last_name = eu_fake.last_name()
+        lecturer.username = make_unikey(lecturer.first_name, lecturer.last_name)
+        lecturer.password = user_password
+        lecturer.save()
+        
+        # Make the unit itself.
+        unit = models.Unit()
+        unit.name = fake.catch_phrase()
+        unit.code = fake.bothify("????####")
+        unit.lecturer = lecturer
+        unit.icon = get_icon()
+        unit.save()
+        
+        # Attack the lecturer to the unit
+        role = models.UserUnitRole()
+        role.user = lecturer
+        role.unit = unit
+        role.role = models.UserRole.objects.get(name="owner")
+        role.save()
+
+        # Select a bunch of users to be students of this unit.
+        num_users = randint(STUDENTS//(2*UNITS), (2*STUDENTS)//UNITS)
+        users = sample(models.User.objects.all(), num_users)
+        student_role = models.UserRole.objects.get(name="participant")
+
+        for user in users:
+            enrolment = models.UserUnitEnrolment()
+            enrolment.unit = unit
+            enrolment.user = user
+            enrolment.save()
+
+            s_role = models.UserUnitRole()
+            s_role.user = user
+            s_role.unit = unit
+            s_role.role = student_role
+            s_role.save()
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     print("Setting Roles and Statuses...", end=" ")
@@ -94,5 +149,9 @@ if __name__ == "__main__":
 
     print("Adding {} users...".format(STUDENTS), end=" ")
     make_users(STUDENTS)
+    print("OK")
+
+    print("Adding {} units...".format(UNITS), end=" ")
+    make_units(UNITS)
     print("OK")
 
