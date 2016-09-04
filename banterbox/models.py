@@ -3,13 +3,13 @@ from django.contrib.auth.models import User
 from uuid import uuid4
 
 class Profile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    public_id = models.UUIDField(primary_key=True, default=uuid4)
-    active = models.BooleanField()
-    join_date = models.DateTimeField(auto_now_add=True)
+    icon = models.CharField(max_length=255)
+    email_notifications = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.user.username
 
 class RoomStatus(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -18,7 +18,7 @@ class RoomStatus(models.Model):
         return self.name
 
 class Room(models.Model):
-    public_id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
     lecturer = models.ForeignKey(User)
     unit = models.ForeignKey('Unit', models.SET_NULL, null=True)
@@ -32,7 +32,7 @@ class Room(models.Model):
         return self.name
 
 class Comment(models.Model):
-    public_id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4)
     room = models.ForeignKey(Room, models.CASCADE)
     user = models.ForeignKey(User, models.SET_NULL, null=True)
 
@@ -61,10 +61,12 @@ class UserRoomRole(models.Model):
         return "{} is {} in {}".format(self.user.name, self.role.name, self.room.name)
 
 class Unit(models.Model):
-    public_id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
+    code = models.CharField(max_length=8)
     lecturer = models.ForeignKey(User, models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    icon = models.CharField(max_length=255)
     
     def __str__(self):
         return self.name
@@ -85,4 +87,3 @@ class ScheduledRoom(models.Model):
     def __str__(self):
         return "{}: {}, [{} - {}]".format(self.unit.name, self.day, self.start_time, self.end_time)
 
-    
