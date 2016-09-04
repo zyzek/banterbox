@@ -1,0 +1,18 @@
+{
+  "name": "banterbox",
+  "version": "1.0.0",
+  "description": "1. Install virtualenv , set it up, activate it. Remember to get the latest version.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://group06-phab.lukeanderson.com.au/diffusion/DJ/django.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "gulp": "^3.9.1"
+  }
+}
