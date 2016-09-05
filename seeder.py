@@ -1,27 +1,32 @@
+#!/usr/bin/env python3
+
+# Set up the environment so django doesn't throw a hissy fit.
 import os
 import sys
+from django.contrib.auth.hashers import make_password
 from django.core.wsgi import get_wsgi_application
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "project.settings"
 application = get_wsgi_application()
 
-import manage
-
-
-from banterbox import models
+# Actual imports
 from faker import Factory
 from random import choice, randint, sample
-from django.contrib.auth.hashers import make_password
+from datetime import date, datetime, timedelta, time
 
-UNITS = 20
-ROOMS_PER_UNIT = 10
-STUDENTS = 1000
+import manage
+from banterbox import models
+
+
+
+UNITS = 5
+LECTURES_PER_UNIT = 5
+STUDENTS = 100
 
 fake = Factory.create()
 euro_fakers = [Factory.create(locale) for locale in \
                ["de_DE", "cs_CZ", "dk_DK", "es_ES", "fr_FR",
                 "it_IT", "no_NO", "pl_PL", "ru_RU", "sl_SI"]]
-
 
 user_password = make_password("password", salt=fake.bothify("#?#?#?#?#?#"))
 
@@ -123,15 +128,30 @@ def make_units(num):
             s_role.role = student_role
             s_role.save()
 
+def make_schedules(lecs_per_unit):
+    for unit in models.Unit.objects.all():
+        for _ in range(lecs_per_unit):
+            room = models.ScheduledRoom()
+            room.day = randint(0, 6)
+            room.unit = unit
+            room.start_time = time(hour=randint(0, 20), minute=15*randint(0,3))
+            room.end_time = (datetime.combine(date.today(), room.start_time) \
+                             + timedelta(minutes=15*randint(1, 12))).time()
+            room.save()
+
 
 def run_step(func, args, pre_string=None, fail_string=None):
     if pre_string is None:
         print("Running {}...".format(func.__name__), end=" ")
     else:
-        print(pre_string)
+        print(pre_string, end=" ")
     sys.stdout.flush()
     
-    try:
+
+    func(*args)
+    print("OK")
+
+    """try:
         func(*args)
         print("OK")
     except:
@@ -140,6 +160,7 @@ def run_step(func, args, pre_string=None, fail_string=None):
         else:
             print("\n" + fail_string)
     sys.stdout.flush()
+    """
 
 
 
@@ -152,3 +173,6 @@ if __name__ == "__main__":
     run_step(make_superuser, [], "Adding super-user...", "User 'admin' already exists.")
     run_step(make_users, [STUDENTS], "Adding {} users...".format(STUDENTS))
     run_step(make_units, [UNITS], "Adding {} units...".format(UNITS))
+    run_step(make_schedules, [LECTURES_PER_UNIT], \
+             "Adding {} scheduled lectures per unit...".format(LECTURES_PER_UNIT))
+

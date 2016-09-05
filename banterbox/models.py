@@ -35,7 +35,8 @@ class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     room = models.ForeignKey(Room, models.CASCADE)
     user = models.ForeignKey(User, models.SET_NULL, null=True)
-
+    
+    timestamp = models.DateTimeField(auto_now_add=True)
     content = models.TextField()
     private = models.BooleanField(default=False)
     
@@ -85,5 +86,5 @@ class ScheduledRoom(models.Model):
     end_time = models.TimeField()
 
     def __str__(self):
-        return "{}: {}, [{} - {}]".format(self.unit.name, self.day, self.start_time, self.end_time)
+        return "{}: {}, [{} - {}]".format(self.unit.code, self.day, self.start_time, self.end_time)
 
