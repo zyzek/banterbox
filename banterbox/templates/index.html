@@ -1,15 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <div class="row">
-        <div>Testing testing 123</div>
-    </div>
-
-
-
     {% load static %}
-
-
 
     {% verbatim %}
     <div id="app">
@@ -21,12 +13,21 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-xs-12" style="font-size: 0.85rem;">
+            <div>Here's your classes. This line of text is to make the page look like it knows what
+            it's doing. Ahoy mihoy.</div>
+            <div>Make lectures great again 2016</div>
+        </div>
+    </div>
+
 
 
     <script type="vue/template" id="unit-template">
         <div @click="click"
 
              class="unit-component col-xs-12 col-md-6 col-lg-3"
+             :class="{'status-open' : unit.status === 'open'}"
              :id="unit.public_id"
              style="border-radius:3px; padding:5px;display:flex"
         >
@@ -37,7 +38,7 @@
                     <span style="font-size:1.15rem">NEXT SESSION:</span>
                     <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
                 </div>
-                <div class="unit-content" :class="{spin: this.clicked}">
+                <div class="unit-content">
                     <div>
                         <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
                             <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>

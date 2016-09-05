@@ -1,18 +1,21 @@
 $swamp-green: #468966;
 $sand: #FFF0A5;
-$subway-cheese: #FFB03B;
+$subway-cheese: #ffc36b;
 $chili-sauce: #B64926;
+$usyd-orange : rgb(231,79,49);
 $tomato-sauce: #8E2800;
 $sleepy-blue: #7a9cb2;
 $faded-black: #373a3c;
+$pastel-gray: #dbdbdb;
 
-$background: $swamp-green;
+$background: $pastel-gray;
 $highlight: $sand;
 $primary: $chili-sauce;
 $secondary: $tomato-sauce;
 
 body {
   background-color: $background;
+
   display: flex;
   min-height: 100vh;
   flex-direction: column;
@@ -32,11 +35,20 @@ body {
     transition: all 0.25s ease-out;
   }
 
+  &.status-open {
+    .unit-content {
+      background-color: $usyd-orange;
+    }
+
+    .unit-icon {
+      background-color: white;
+    }
+  }
+
   .unit-icon {
     border: 9px solid $faded-black;
     padding: 20px;
     border-radius: 75px;
-    background-color: $sleepy-blue;
   }
 
   .unit-content-container {
@@ -44,15 +56,6 @@ body {
     margin: 7px;
 
     .unit-content {
-
-      &.spin:hover {
-        transform: rotateY(180deg) scale(1.15);
-      }
-
-      &.spin {
-        transform: rotateY(180deg);
-        background-color: $sand;
-      }
 
       &:hover {
         transform: rotate(2deg) scale(1.15);
