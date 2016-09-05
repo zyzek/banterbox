@@ -17,11 +17,10 @@ from datetime import date, datetime, timedelta, time
 import manage
 from banterbox import models
 
-
-
-UNITS = 5
+UNITS = 10
 LECTURES_PER_UNIT = 5
 STUDENTS = 100
+COMMENTS_PER_ROOM = 10
 
 fake = Factory.create()
 euro_fakers = [Factory.create(locale) for locale in \
@@ -86,6 +85,9 @@ def make_users(num):
 
 def make_units(num):
     all_users = list(models.User.objects.all())
+    student_role = models.UserRole.objects.get(name="participant")
+    tutor_role = models.UserRole.objects.get(name="moderator")
+
     for _ in range(num):
         # Generate a pretentious european professor
         eu_fake = choice(euro_fakers)
@@ -114,9 +116,8 @@ def make_units(num):
         # Select a bunch of users to be students of this unit.
         num_users = randint(STUDENTS//(2*UNITS), (2*STUDENTS)//UNITS)
         users = sample(all_users, num_users)
-        student_role = models.UserRole.objects.get(name="participant")
 
-        for user in users:
+        for i, user in enumerate(users):
             enrolment = models.UserUnitEnrolment()
             enrolment.unit = unit
             enrolment.user = user
@@ -125,7 +126,7 @@ def make_units(num):
             s_role = models.UserUnitRole()
             s_role.user = user
             s_role.unit = unit
-            s_role.role = student_role
+            s_role.role = tutor_role if i < 5 else student_role
             s_role.save()
 
 def make_schedules(lecs_per_unit):
@@ -139,6 +140,32 @@ def make_schedules(lecs_per_unit):
                              + timedelta(minutes=15*randint(1, 12))).time()
             room.save()
 
+def make_rooms(comments_per_room):
+    statuses = list(models.RoomStatus.objects.all())
+
+    for cur_unit in models.Unit.objects.all():
+        room = models.Room()
+        room.name = cur_unit.code + " Lecture"
+        room.lecturer = cur_unit.lecturer
+        room.unit = cur_unit
+        room.status = choice(statuses)
+        room.private = choice([True, False])
+        room.password_protected = choice([True, False])
+        if room.password_protected:
+            room.password = "password"
+        room.save()
+
+        unit_user_enrolments = models.UserUnitEnrolment.objects.all().filter(unit=cur_unit)
+        unit_users = [enrolment.user for enrolment in unit_user_enrolments]
+        unit_user_sample = sample(unit_users, comments_per_room)
+
+        for i in range(comments_per_room):
+            comment = models.Comment()
+            comment.room = room
+            comment.user = unit_user_sample[i]
+            comment.content = fake.text()
+            comment.private = choice([True, False])
+            comment.save()
 
 def run_step(func, args, pre_string=None, fail_string=None):
     if pre_string is None:
@@ -146,12 +173,8 @@ def run_step(func, args, pre_string=None, fail_string=None):
     else:
         print(pre_string, end=" ")
     sys.stdout.flush()
-    
-
-    func(*args)
-    print("OK")
-
-    """try:
+   
+    try:
         func(*args)
         print("OK")
     except:
@@ -160,13 +183,8 @@ def run_step(func, args, pre_string=None, fail_string=None):
         else:
             print("\n" + fail_string)
     sys.stdout.flush()
-    """
-
-
-
 
 if __name__ == "__main__":
-
     run_step(manage.passthrough, [['manage.py', 'flush']], "Purging database...\n")
     run_step(add_roles, [], "Setting Roles...", "Roles already exist.")
     run_step(add_statuses, [], "Setting Statuses...", "Statuses already exist.")
@@ -175,4 +193,6 @@ if __name__ == "__main__":
     run_step(make_units, [UNITS], "Adding {} units...".format(UNITS))
     run_step(make_schedules, [LECTURES_PER_UNIT], \
              "Adding {} scheduled lectures per unit...".format(LECTURES_PER_UNIT))
-
+    run_step(make_rooms, [COMMENTS_PER_ROOM], \
+             "Adding a room per unit with {} comments each...".format(COMMENTS_PER_ROOM))
+    print("All Done.")

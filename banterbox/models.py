@@ -27,6 +27,9 @@ class Room(models.Model):
     password_protected = models.BooleanField(default=False)
     password = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    commenced_at = models.DateTimeField(auto_now_add=True)
+    concluded_at = models.DateTimeField(null=True)
+    closed_at = models.DateTimeField(null=True)
     
     def __str__(self):
         return self.name
@@ -41,7 +44,9 @@ class Comment(models.Model):
     private = models.BooleanField(default=False)
     
     def __str__(self):
-        return self.content[:40]
+        return "{} at {}:{} in {}: {}".format(self.user.username, self.timestamp.hour, \
+                                              self.timestamp.minute, self.room.name, \
+                                              self.content[:20])
 
 class UserRole(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -52,14 +57,13 @@ class UserRole(models.Model):
 class UserUnitRole(models.Model):
     user = models.ForeignKey(User, models.CASCADE)
     unit = models.ForeignKey('Unit', models.CASCADE)
-
     role = models.ForeignKey(UserRole, models.CASCADE)
     
     class Meta:
         unique_together = ('user', 'unit')
 
     def __str__(self):
-        return "{} is {} in {}".format(self.user.name, self.role.name, self.room.name)
+        return "{} is {} in {}".format(self.user.username, self.role.name, self.unit.code)
 
 class Unit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
@@ -70,14 +74,14 @@ class Unit(models.Model):
     icon = models.CharField(max_length=255, default="pencil")
     
     def __str__(self):
-        return self.name
+        return "{}: {}".format(self.code, self.name)
 
 class UserUnitEnrolment(models.Model):
     unit = models.ForeignKey(Unit, models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
 
     def __str__(self):
-        return "{} takes {}".format(self.unit.name, self.user.name)
+        return "{} takes {}".format(self.user.username, self.unit.code)
 
 class ScheduledRoom(models.Model):
     day = models.PositiveIntegerField()
