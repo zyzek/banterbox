@@ -1,8 +1,11 @@
 import os
+import sys
 from django.core.wsgi import get_wsgi_application
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "project.settings"
 application = get_wsgi_application()
+
+import manage
 
 
 from banterbox import models
@@ -77,6 +80,7 @@ def make_users(num):
         profile.save()
 
 def make_units(num):
+    all_users = list(models.User.objects.all())
     for _ in range(num):
         # Generate a pretentious european professor
         eu_fake = choice(euro_fakers)
@@ -90,7 +94,7 @@ def make_units(num):
         # Make the unit itself.
         unit = models.Unit()
         unit.name = fake.catch_phrase()
-        unit.code = fake.bothify("????####")
+        unit.code = fake.bothify("????####").upper()
         unit.lecturer = lecturer
         unit.icon = get_icon()
         unit.save()
@@ -104,7 +108,7 @@ def make_units(num):
 
         # Select a bunch of users to be students of this unit.
         num_users = randint(STUDENTS//(2*UNITS), (2*STUDENTS)//UNITS)
-        users = sample(models.User.objects.all(), num_users)
+        users = sample(all_users, num_users)
         student_role = models.UserRole.objects.get(name="participant")
 
         for user in users:
@@ -120,38 +124,31 @@ def make_units(num):
             s_role.save()
 
 
-
-
+def run_step(func, args, pre_string=None, fail_string=None):
+    if pre_string is None:
+        print("Running {}...".format(func.__name__), end=" ")
+    else:
+        print(pre_string)
+    sys.stdout.flush()
+    
+    try:
+        func(*args)
+        print("OK")
+    except:
+        if fail_string is None:
+            print("Failed")
+        else:
+            print("\n" + fail_string)
+    sys.stdout.flush()
 
 
 
 
 if __name__ == "__main__":
-    print("Setting Roles and Statuses...", end=" ")
-    try:
-        add_roles()
-    except:
-        print("\nRoles already exist.")
 
-    try:
-        add_statuses()
-    except:
-        print("\nStatuses already exist.")
-
-    print("OK")
-
-    print("Adding super-user...", end=" ")
-    try:
-        make_superuser()
-    except:
-        print("\nUser 'admin' already exists.")
-    print("OK")
-
-    print("Adding {} users...".format(STUDENTS), end=" ")
-    make_users(STUDENTS)
-    print("OK")
-
-    print("Adding {} units...".format(UNITS), end=" ")
-    make_units(UNITS)
-    print("OK")
-
+    run_step(manage.passthrough, [['manage.py', 'flush']], "Purging database...\n")
+    run_step(add_roles, [], "Setting Roles...", "Roles already exist.")
+    run_step(add_statuses, [], "Setting Statuses...", "Statuses already exist.")
+    run_step(make_superuser, [], "Adding super-user...", "User 'admin' already exists.")
+    run_step(make_users, [STUDENTS], "Adding {} users...".format(STUDENTS))
+    run_step(make_units, [UNITS], "Adding {} units...".format(UNITS))
