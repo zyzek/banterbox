@@ -115,6 +115,7 @@ Vue.component('unit-panel', {
     },
     methods: {
         click: function () {
+            console.log(this.clicked)
             this.clicked = !this.clicked
         }
     },

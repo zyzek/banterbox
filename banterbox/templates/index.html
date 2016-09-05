@@ -21,76 +21,7 @@
         </div>
     </div>
 
-    <style>
-        .unit-component > div {
-            transition: all 0.15s ease-out;
-        }
 
-        .unit-content-container {
-            width: 100%;
-            margin: 7px;
-        }
-
-        .unit-code {
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-
-        .unit-name {
-            text-align: center;
-            padding: 0 10px;
-        }
-
-        .unit-next-day {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            font-size: 1.5rem;
-            font-weight: 200;
-        }
-
-        .unit-button {
-            border: none;
-            background-color: transparent;
-            padding: 5px;
-        }
-
-        .unit-button-border {
-            border-top: 2px solid black;
-            border-bottom: 2px solid black;
-        }
-
-        .background-color-red {
-            background-color: rgb(204, 0, 0);
-        }
-
-        .background-color-grey {
-            background-color: rgb(236, 236, 236);
-        }
-
-        .flex {
-            display: flex;
-        }
-
-        .flex-direction-column {
-            flex-direction: column;
-        }
-
-        .flex-children-center {
-            align-items: center;
-            justify-content: center;
-        }
-
-        .flex-justify-content-space-between {
-            justify-content: space-between;
-        }
-
-        .full-height {
-            height: 450px;
-        }
-    </style>
 
     <script type="vue/template" id="unit-template">
         <div @click="click"
@@ -106,14 +37,10 @@
                     <span style="font-size:1.15rem">NEXT SESSION:</span>
                     <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
                 </div>
-                <div class="flex flex-direction-column flex-justify-content-space-between"
-                     style="flex-grow: 1"
-                     :class="{'background-color-red' : unit.status === 'open', 'background-color-grey' : unit.status !== 'open'}"
-                >
+                <div class="unit-content" :class="{spin: this.clicked}">
                     <div>
                         <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
-                            <i :class="'fa fa-5x fa-' + unit.icon"
-                               style="border: 9px solid #373a3c;padding:20px;border-radius: 75px;"></i>
+                            <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
                         </div>
                         <p class="unit-code">{{ unit.code }}</p>
                         <p class="unit-name">{{ unit.name }}</p>
