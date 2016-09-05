@@ -1,24 +1,31 @@
+#!/usr/bin/env python3
+
+# Set up the environment so django doesn't throw a hissy fit.
 import os
+import sys
+from django.contrib.auth.hashers import make_password
 from django.core.wsgi import get_wsgi_application
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "project.settings"
 application = get_wsgi_application()
 
-
-from banterbox import models
+# Actual imports
 from faker import Factory
 from random import choice, randint, sample
-from django.contrib.auth.hashers import make_password
+from datetime import date, datetime, timedelta, time
 
-UNITS = 20
-ROOMS_PER_UNIT = 10
-STUDENTS = 1000
+import manage
+from banterbox import models
+
+UNITS = 10
+LECTURES_PER_UNIT = 5
+STUDENTS = 100
+COMMENTS_PER_ROOM = 10
 
 fake = Factory.create()
 euro_fakers = [Factory.create(locale) for locale in \
                ["de_DE", "cs_CZ", "dk_DK", "es_ES", "fr_FR",
                 "it_IT", "no_NO", "pl_PL", "ru_RU", "sl_SI"]]
-
 
 user_password = make_password("password", salt=fake.bothify("#?#?#?#?#?#"))
 
@@ -77,6 +84,10 @@ def make_users(num):
         profile.save()
 
 def make_units(num):
+    all_users = list(models.User.objects.all())
+    student_role = models.UserRole.objects.get(name="participant")
+    tutor_role = models.UserRole.objects.get(name="moderator")
+
     for _ in range(num):
         # Generate a pretentious european professor
         eu_fake = choice(euro_fakers)
@@ -90,7 +101,7 @@ def make_units(num):
         # Make the unit itself.
         unit = models.Unit()
         unit.name = fake.catch_phrase()
-        unit.code = fake.bothify("????####")
+        unit.code = fake.bothify("????####").upper()
         unit.lecturer = lecturer
         unit.icon = get_icon()
         unit.save()
@@ -104,10 +115,9 @@ def make_units(num):
 
         # Select a bunch of users to be students of this unit.
         num_users = randint(STUDENTS//(2*UNITS), (2*STUDENTS)//UNITS)
-        users = sample(models.User.objects.all(), num_users)
-        student_role = models.UserRole.objects.get(name="participant")
+        users = sample(all_users, num_users)
 
-        for user in users:
+        for i, user in enumerate(users):
             enrolment = models.UserUnitEnrolment()
             enrolment.unit = unit
             enrolment.user = user
@@ -116,42 +126,73 @@ def make_units(num):
             s_role = models.UserUnitRole()
             s_role.user = user
             s_role.unit = unit
-            s_role.role = student_role
+            s_role.role = tutor_role if i < 5 else student_role
             s_role.save()
 
+def make_schedules(lecs_per_unit):
+    for unit in models.Unit.objects.all():
+        for _ in range(lecs_per_unit):
+            room = models.ScheduledRoom()
+            room.day = randint(0, 6)
+            room.unit = unit
+            room.start_time = time(hour=randint(0, 20), minute=15*randint(0,3))
+            room.end_time = (datetime.combine(date.today(), room.start_time) \
+                             + timedelta(minutes=15*randint(1, 12))).time()
+            room.save()
 
+def make_rooms(comments_per_room):
+    statuses = list(models.RoomStatus.objects.all())
 
+    for cur_unit in models.Unit.objects.all():
+        room = models.Room()
+        room.name = cur_unit.code + " Lecture"
+        room.lecturer = cur_unit.lecturer
+        room.unit = cur_unit
+        room.status = choice(statuses)
+        room.private = choice([True, False])
+        room.password_protected = choice([True, False])
+        if room.password_protected:
+            room.password = "password"
+        room.save()
 
+        unit_user_enrolments = models.UserUnitEnrolment.objects.all().filter(unit=cur_unit)
+        unit_users = [enrolment.user for enrolment in unit_user_enrolments]
+        unit_user_sample = sample(unit_users, comments_per_room)
 
+        for i in range(comments_per_room):
+            comment = models.Comment()
+            comment.room = room
+            comment.user = unit_user_sample[i]
+            comment.content = fake.text()
+            comment.private = choice([True, False])
+            comment.save()
 
-
+def run_step(func, args, pre_string=None, fail_string=None):
+    if pre_string is None:
+        print("Running {}...".format(func.__name__), end=" ")
+    else:
+        print(pre_string, end=" ")
+    sys.stdout.flush()
+   
+    try:
+        func(*args)
+        print("OK")
+    except:
+        if fail_string is None:
+            print("Failed")
+        else:
+            print("\n" + fail_string)
+    sys.stdout.flush()
 
 if __name__ == "__main__":
-    print("Setting Roles and Statuses...", end=" ")
-    try:
-        add_roles()
-    except:
-        print("\nRoles already exist.")
-
-    try:
-        add_statuses()
-    except:
-        print("\nStatuses already exist.")
-
-    print("OK")
-
-    print("Adding super-user...", end=" ")
-    try:
-        make_superuser()
-    except:
-        print("\nUser 'admin' already exists.")
-    print("OK")
-
-    print("Adding {} users...".format(STUDENTS), end=" ")
-    make_users(STUDENTS)
-    print("OK")
-
-    print("Adding {} units...".format(UNITS), end=" ")
-    make_units(UNITS)
-    print("OK")
-
+    run_step(manage.passthrough, [['manage.py', 'flush']], "Purging database...\n")
+    run_step(add_roles, [], "Setting Roles...", "Roles already exist.")
+    run_step(add_statuses, [], "Setting Statuses...", "Statuses already exist.")
+    run_step(make_superuser, [], "Adding super-user...", "User 'admin' already exists.")
+    run_step(make_users, [STUDENTS], "Adding {} users...".format(STUDENTS))
+    run_step(make_units, [UNITS], "Adding {} units...".format(UNITS))
+    run_step(make_schedules, [LECTURES_PER_UNIT], \
+             "Adding {} scheduled lectures per unit...".format(LECTURES_PER_UNIT))
+    run_step(make_rooms, [COMMENTS_PER_ROOM], \
+             "Adding a room per unit with {} comments each...".format(COMMENTS_PER_ROOM))
+    print("All Done.")
