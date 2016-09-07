@@ -2,10 +2,28 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
 from random import random
+from rest_framework import viewsets
+from banterbox.serializers import *
 
-import json
 
-import datetime
+class ClassViewSet(viewsets.ModelViewSet):
+    queryset = Class.objects.all().order_by('-created_at')
+    serializer_class = ClassSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('-join_date')
+    serializer_class = UserSerializer
+
+
+class RoomViewSet(viewsets.ModelViewSet):
+    queryset = Room.objects.all().order_by('-created_at')
+    serializer_class = RoomSerializer
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = ClassSerializer
 
 
 def index(request):
