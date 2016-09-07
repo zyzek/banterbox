@@ -18,7 +18,7 @@ var units = [
         "name": "Diverse needs-based parallelism",
         "icon": "firefox",
         "code": "DNBS2110",
-        "status": "commencing",
+        "status": "open",
         "next_session": {"day": "MONDAY", "time": "14:00"}
     },
     {
