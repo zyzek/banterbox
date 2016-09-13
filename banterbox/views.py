@@ -1,3 +1,4 @@
+import datetime
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
@@ -7,7 +8,7 @@ from banterbox.serializers import *
 
 
 class ClassViewSet(viewsets.ModelViewSet):
-    queryset = Class.objects.all().order_by('-created_at')
+    queryset = Unit.objects.all().order_by('-created_at')
     serializer_class = ClassSerializer
 
 
@@ -35,6 +36,8 @@ def index(request):
 
     return render(request, 'index.html', context)
 
+def room(request):
+    return render(request, 'room.html')
 
 def current_datetime(request):
     now = datetime.datetime.now()
