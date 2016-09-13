@@ -1,6 +1,11 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.store = undefined;
+
 var _vue = require("vue");
 
 var _vue2 = _interopRequireDefault(_vue);
@@ -12,109 +17,145 @@ var _unitPanel2 = _interopRequireDefault(_unitPanel);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var units = [{
-    "public_id": "f595ffc2-a946-4aa3-ae51-61ad83cbef28",
-    "lecturer": { "email": "jeffery79@hebert.com", "name": "Alexandria Marshall" },
-    "created_at": 1472731865.293062,
-    "room_name": "Freeman Cape",
-    "name": "Automated executive Local Area Network",
-    "code": "AUTO3300",
-    "icon": "anchor",
-    "status": "open",
-    "next_session": { "day": "MONDAY", "time": "14:00" }
+    public_id: "f595ffc2-a946-4aa3-ae51-61ad83cbef28",
+    lecturer: { email: "jeffery79@hebert.com", name: "Alexandria Marshall" },
+    created_at: 1472731865.293062,
+    room_name: "Freeman Cape",
+    name: "Automated executive Local Area Network",
+    code: "AUTO3300",
+    icon: "anchor",
+    status: "open",
+    next_session: { day: "MONDAY", time: "14:00" }
 }, {
-    "public_id": "d47b4587-de0d-430c-ae2a-30df50f45d12",
-    "lecturer": { "email": "mullinstammy@yahoo.com", "name": "Edwin Lewis" },
-    "created_at": 1472731865.294826,
-    "room_name": "Newton Shore",
-    "name": "Diverse needs-based parallelism",
-    "icon": "firefox",
-    "code": "DNBS2110",
-    "status": "open",
-    "next_session": { "day": "MONDAY", "time": "14:00" }
+    public_id: "d47b4587-de0d-430c-ae2a-30df50f45d12",
+    lecturer: { email: "mullinstammy@yahoo.com", name: "Edwin Lewis" },
+    created_at: 1472731865.294826,
+    room_name: "Newton Shore",
+    name: "Diverse needs-based parallelism",
+    icon: "firefox",
+    code: "DNBS2110",
+    status: "open",
+    next_session: { day: "MONDAY", time: "14:00" }
 }, {
-    "public_id": "c87c7781-365a-477c-8985-93bbb2f8b6e7",
-    "lecturer": { "email": "williamsjason@gmail.com", "name": "Jill Krueger" },
-    "created_at": 1472731865.296625,
-    "room_name": "Ramsey View",
-    "name": "Focused next generation frame",
-    "code": "FNGF3105",
-    "icon": "heartbeat",
-    "status": "closed",
-    "next_session": { "day": "WEDNESDAY", "time": "10:00" }
+    public_id: "c87c7781-365a-477c-8985-93bbb2f8b6e7",
+    lecturer: { email: "williamsjason@gmail.com", name: "Jill Krueger" },
+    created_at: 1472731865.296625,
+    room_name: "Ramsey View",
+    name: "Focused next generation frame",
+    code: "FNGF3105",
+    icon: "heartbeat",
+    status: "closed",
+    next_session: { day: "WEDNESDAY", time: "10:00" }
 }, {
-    "public_id": "0e8d3a9d-438e-409f-9bf6-c2e104b0156f",
-    "lecturer": { "email": "tommccarthy@yahoo.com", "name": "Abigail Garcia" },
-    "created_at": 1472731865.298275,
-    "room_name": "Tyler Springs",
-    "name": "Advanced even-keeled flexibility",
-    "code": "AEKF3324",
-    "icon": "resistance",
-    "status": "closed",
-    "next_session": { "day": "FRIDAY", "time": "11:00" }
+    public_id: "0e8d3a9d-438e-409f-9bf6-c2e104b0156f",
+    lecturer: { email: "tommccarthy@yahoo.com", name: "Abigail Garcia" },
+    created_at: 1472731865.298275,
+    room_name: "Tyler Springs",
+    name: "Advanced even-keeled flexibility",
+    code: "AEKF3324",
+    icon: "resistance",
+    status: "closed",
+    next_session: { day: "FRIDAY", time: "11:00" }
 }, {
-    "public_id": "30d28006-9656-4f5b-a20b-1d8f002b9c2a",
-    "lecturer": { "email": "monicayang@gmail.com", "name": "Joel Garner" },
-    "created_at": 1472731865.299898,
-    "room_name": "Jimmy Land",
-    "name": "Devolved fault-tolerant flexibility",
-    "icon": null,
-    "status": "closed",
-    "next_session": { "day": "TUESDAY", "time": "12:00" }
+    public_id: "30d28006-9656-4f5b-a20b-1d8f002b9c2a",
+    lecturer: { email: "monicayang@gmail.com", name: "Joel Garner" },
+    created_at: 1472731865.299898,
+    room_name: "Jimmy Land",
+    name: "Devolved fault-tolerant flexibility",
+    icon: "users",
+    status: "closed",
+    code: "FLEX2244",
+    next_session: { day: "TUESDAY", time: "12:00" }
 }, {
-    "public_id": "e09b91f7-daf4-4494-9e50-eca3256bb389",
-    "lecturer": { "email": "gporter@hotmail.com", "name": "Christopher Nguyen" },
-    "created_at": 1472731865.301427,
-    "room_name": "Medina Vista",
-    "name": "Ergonomic tertiary leverage",
-    "icon": null,
-    "status": "closed",
-    "next_session": { "day": "THURSDAY", "time": "16:00" }
+    public_id: "e09b91f7-daf4-4494-9e50-eca3256bb389",
+    lecturer: { email: "gporter@hotmail.com", name: "Christopher Nguyen" },
+    created_at: 1472731865.301427,
+    room_name: "Medina Vista",
+    name: "Ergonomic tertiary leverage",
+    icon: "yen",
+    code: "EGTL5456",
+    status: "closed",
+    next_session: { day: "THURSDAY", time: "16:00" }
 }, {
-    "public_id": "61186a2b-52b7-4b5d-8c34-a80c4530e30e",
-    "lecturer": { "email": "sandra92@gmail.com", "name": "Robert Smith" },
-    "created_at": 1472731865.302769,
-    "room_name": "White Walks",
-    "name": "Integrated 24/7 functionalities",
-    "icon": null,
-    "status": "closed",
-    "next_session": { "day": "WEDNESDAY", "time": "17:00" }
+    public_id: "61186a2b-52b7-4b5d-8c34-a80c4530e30e",
+    lecturer: { email: "sandra92@gmail.com", name: "Robert Smith" },
+    created_at: 1472731865.302769,
+    room_name: "White Walks",
+    name: "Integrated 24/7 functionalities",
+    icon: "cloud",
+    code: "SPYG3444",
+    status: "closed",
+    next_session: { day: "WEDNESDAY", time: "17:00" }
 }, {
-    "public_id": "f3eeed02-faf6-4155-905a-d803c97e9b61",
-    "lecturer": { "email": "warnertracy@kelly-foley.com", "name": "Amanda Frank" },
-    "created_at": 1472731865.305309,
-    "room_name": "Brooke Field",
-    "name": "Future-proofed content-based framework",
-    "icon": null,
-    "status": "closed",
-    "next_session": { "day": "FRIDAY", "time": "12:00" }
+    public_id: "f3eeed02-faf6-4155-905a-d803c97e9b61",
+    lecturer: { email: "warnertracy@kelly-foley.com", name: "Amanda Frank" },
+    created_at: 1472731865.305309,
+    room_name: "Brooke Field",
+    name: "Future-proofed content-based framework",
+    icon: "globe",
+    code: "FPCF9054",
+    status: "closed",
+    next_session: { day: "FRIDAY", time: "12:00" }
 }, {
-    "public_id": "f385db35-3b11-4136-b4b0-86aef9bcbe79",
-    "lecturer": { "email": "andersonjulie@hotmail.com", "name": "Dana Hamilton" },
-    "created_at": 1472731865.307151,
-    "room_name": "Gibson Ridges",
-    "name": "Innovative web-enabled instruction set",
-    "icon": null,
-    "status": "closed",
-    "next_session": { "day": "TUESDAY", "time": "9:00" }
+    public_id: "f385db35-3b11-4136-b4b0-86aef9bcbe79",
+    lecturer: { email: "andersonjulie@hotmail.com", name: "Dana Hamilton" },
+    created_at: 1472731865.307151,
+    room_name: "Gibson Ridges",
+    name: "Innovative web-enabled instruction set",
+    icon: "chrome",
+    code: "WEBD4440",
+    status: "closed",
+    next_session: { day: "TUESDAY", time: "9:00" }
 }, {
-    "public_id": "651fa1eb-7407-4765-ba86-73b5a840d0f0",
-    "lecturer": { "email": "shawscott@williams.com", "name": "Tony Hernandez" },
-    "created_at": 1472731865.309331,
-    "room_name": "Timothy Isle",
-    "name": "Integrated foreground infrastructure",
-    "icon": null,
-    "status": "closed",
-    "next_session": { "day": "MONDAY", "time": "12:00" }
+    public_id: "651fa1eb-7407-4765-ba86-73b5a840d0f0",
+    lecturer: { email: "shawscott@williams.com", name: "Tony Hernandez" },
+    created_at: 1472731865.309331,
+    room_name: "Timothy Isle",
+    name: "Integrated foreground infrastructure",
+    icon: "pencil",
+    status: "closed",
+    code: "IFIS2219",
+    next_session: { day: "MONDAY", time: "12:00" }
 }];
+var store = exports.store = {
+    state: {
+        units: []
+    },
+    methodA: function methodA() {
+        return 1;
+    }
+};
 
+_vue2.default.transition('flip', {
+    enterClass: 'flipInY',
+    leaveClass: 'flipOutY'
+});
+_vue2.default.transition('zoom', {
+    enterClass: 'zoomIn',
+    leaveClass: 'zoomOut'
+});
+_vue2.default.transition('fade', {
+    enterClass: 'fadeIn',
+    leaveClass: 'fadeOut'
+});
 
 var app = new _vue2.default({
     el: '#app',
     data: {
-        units: units
+        store: store
     },
     components: {
         'unit-panel': _unitPanel2.default
+    },
+    ready: function ready() {
+        var u1 = units[0];
+        var u2 = units[1];
+        var u3 = units[2];
+        var u4 = units[3];
+
+        setTimeout(function () {
+            return store.state.units.push(u1, u2, u3, u4);
+        }, 1000);
     }
 
 });
@@ -125,11 +166,15 @@ var app = new _vue2.default({
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _app = require('./app');
+
 exports.default = {
     props: ['unit'],
     data: function data() {
         return {
-            clicked: false
+            clicked: false,
+            store: _app.store
         };
     },
     methods: {
@@ -137,11 +182,14 @@ exports.default = {
             console.log(this.clicked);
             this.clicked = !this.clicked;
             window.location.href = '/room';
+        },
+        changeStatus: function changeStatus(x, y, z) {
+            console.log({ x: x, y: y, z: z });
         }
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div @click=\"click\" class=\"unit-component col-xs-12 col-md-6 col-lg-3\" :class=\"{'status-open' : unit.status === 'open'}\" :id=\"unit.public_id\" style=\"border-radius:3px; padding:5px;display:flex\">\n    <div class=\"unit-content-container flex flex-direction-column\" :class=\"{'full-height' : unit.status === 'open' ? true : false}\">\n        <div class=\"unit-next-day flex flex-children-center\" v-if=\"unit.status !== 'open'\">\n            <span style=\"font-size:1.15rem\">NEXT SESSION:</span>\n            <span style=\"text-align: center\">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>\n        </div>\n        <div class=\"unit-content\">\n            <div>\n                <div class=\"unit-icon-container\" style=\"text-align: center; margin:15px 0;\">\n                    <i :class=\"'fa fa-5x fa-' + unit.icon\" class=\"unit-icon\"></i>\n                </div>\n                <p class=\"unit-code\">{{ unit.code }}</p>\n                <p class=\"unit-name\">{{ unit.name }}</p>\n            </div>\n\n            <div class=\"flex flex-direction-column flex-children-center\">\n                <span style=\"font-size:0.75rem;margin-bottom:10px\">STATUS : {{ unit.status.toUpperCase() }}</span>\n                <div class=\"unit-button-border\" style=\"margin-bottom: 15px;\">\n                    <button class=\"unit-button\">ENTER ROOM</button>\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div @click=\"changeStatus\" class=\"unit-component col-xs-12 col-md-6 col-lg-3 animated\" :class=\"{'status-open' : unit.status === 'open'}\" :id=\"unit.public_id\" style=\"border-radius:3px; padding:5px;display:flex\">\n    <div class=\"unit-content-container flex flex-direction-column\" :class=\"{'full-height' : unit.status === 'open' ? true : false}\">\n        <div class=\"unit-next-day flex flex-children-center\" v-if=\"unit.status !== 'open'\">\n            <span style=\"font-size:1.15rem\">NEXT SESSION:</span>\n            <span style=\"text-align: center\">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>\n        </div>\n        <div class=\"unit-content\">\n            <div>\n                <div class=\"unit-icon-container\" style=\"text-align: center; margin:15px 0;\">\n                    <i :class=\"'fa fa-5x fa-' + unit.icon\" class=\"unit-icon\"></i>\n                </div>\n                <p class=\"unit-code\">{{ unit.code }}</p>\n                <p class=\"unit-name\">{{ unit.name }}</p>\n            </div>\n\n            <div class=\"flex flex-direction-column flex-children-center\">\n                <span style=\"font-size:0.75rem;margin-bottom:10px\">STATUS : {{ unit.status.toUpperCase() }}</span>\n                <div class=\"unit-button-border\" style=\"margin-bottom: 15px;\">\n                    <button class=\"unit-button\">ENTER ROOM</button>\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -152,7 +200,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-1b60c5ce", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":5,"vue-hot-reload-api":4}],3:[function(require,module,exports){
+},{"./app":1,"vue":5,"vue-hot-reload-api":4}],3:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 

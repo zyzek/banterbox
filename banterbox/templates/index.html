@@ -6,10 +6,10 @@
     {% verbatim %}
     <div id="app">
         <div class="row">
-            <unit-panel :unit="units[0]"></unit-panel>
-            <unit-panel :unit="units[1]"></unit-panel>
-            <unit-panel :unit="units[2]"></unit-panel>
-            <unit-panel :unit="units[3]"></unit-panel>
+            <h3 v-if="store.state.units.length === 0">
+               <i class="fa fa-pulse fa-5x fa-spinner"></i> Loading units...
+            </h3>
+            <unit-panel  v-for="unit in store.state.units" :unit="unit" transition="zoom" stagger="125"></unit-panel>
         </div>
     </div>
 

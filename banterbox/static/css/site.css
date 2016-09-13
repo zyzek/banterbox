@@ -1,6 +1,10 @@
 #app {
   z-index: 1; }
 
+.animated {
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s; }
+
 body {
   background-color: #dbdbdb;
   display: -webkit-box;
@@ -17,7 +21,8 @@ body {
   -webkit-box-flex: 1;
   flex: 1;
   -webkit-box-pack: center;
-  justify-content: center; }
+  justify-content: center;
+  width: 100%; }
 
 .unit-component {
   cursor: pointer; }

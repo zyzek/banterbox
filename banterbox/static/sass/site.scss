@@ -18,6 +18,11 @@ $secondary: $tomato-sauce;
   z-index: 1;
 }
 
+// Overwrite the animate.css's base animation duration
+.animated{
+  animation-duration : 0.5s
+}
+
 body {
   background-color: $background;
 
@@ -31,6 +36,7 @@ body {
   flex-flow: column;
   flex: 1;
   justify-content: center;
+  width:100%;
 }
 
 .unit-component {

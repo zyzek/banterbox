@@ -1,6 +1,6 @@
 <template>
-    <div @click="click"
-         class="unit-component col-xs-12 col-md-6 col-lg-3"
+    <div @click="changeStatus"
+         class="unit-component col-xs-12 col-md-6 col-lg-3 animated"
          :class="{'status-open' : unit.status === 'open'}"
          :id="unit.public_id"
          style="border-radius:3px; padding:5px;display:flex"
@@ -34,11 +34,13 @@
 </template>
 
 <script>
+    import {store} from './app'
     export default {
         props: ['unit'],
         data: function () {
             return {
-                clicked: false
+                clicked: false,
+                store
             }
         },
         methods: {
@@ -46,6 +48,9 @@
                 console.log(this.clicked)
                 this.clicked = !this.clicked
                 window.location.href = '/room'
+            },
+            changeStatus: (x,y,z) => {
+                console.log({x,y,z})
             }
         },
     }
