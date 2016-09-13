@@ -6,7 +6,7 @@ from banterbox.models import *
 
 class ClassSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Class
+        model = Unit
         fields = ('public_id', 'name', 'lecturer', 'created_at')
 
 
