@@ -5,7 +5,7 @@ var units = [
         "created_at": 1472731865.293062,
         "room_name": "Freeman Cape",
         "name": "Automated executive Local Area Network",
-        "code" : "AUTO3300",
+        "code": "AUTO3300",
         "icon": "anchor",
         "status": "open",
         "next_session": {"day": "MONDAY", "time": "14:00"},
@@ -38,7 +38,7 @@ var units = [
         "created_at": 1472731865.298275,
         "room_name": "Tyler Springs",
         "name": "Advanced even-keeled flexibility",
-        "code" : "AEKF3324",
+        "code": "AEKF3324",
         "icon": "resistance",
         "status": "closed",
         "next_session": {"day": "FRIDAY", "time": "11:00"}
@@ -103,30 +103,16 @@ var units = [
         "status": "closed",
         "next_session": {"day": "MONDAY", "time": "12:00"}
     }]
-
-
-Vue.component('unit-panel', {
-    template: document.getElementById('unit-template').innerHTML,
-    props: ['unit'],
-    data: function () {
-        return {
-            clicked: false
-        }
-    },
-    methods: {
-        click: function () {
-            console.log(this.clicked)
-            this.clicked = !this.clicked
-            window.location.href= '/room'
-        }
-    },
-})
-
+import Vue from 'vue'
+import UnitPanel from './unit-panel.vue'
 
 var app = new Vue({
     el: '#app',
     data: {
-        units: units
+        units: units,
+    },
+    components: {
+        'unit-panel': UnitPanel
     }
 
 

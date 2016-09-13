@@ -1,0 +1,52 @@
+<template>
+    <div @click="click"
+         class="unit-component col-xs-12 col-md-6 col-lg-3"
+         :class="{'status-open' : unit.status === 'open'}"
+         :id="unit.public_id"
+         style="border-radius:3px; padding:5px;display:flex"
+    >
+        <div class="unit-content-container flex flex-direction-column"
+             :class="{'full-height' : unit.status === 'open' ? true : false}"
+        >
+            <div class="unit-next-day flex flex-children-center" v-if="unit.status !== 'open'">
+                <span style="font-size:1.15rem">NEXT SESSION:</span>
+                <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
+            </div>
+            <div class="unit-content">
+                <div>
+                    <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
+                        <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
+                    </div>
+                    <p class="unit-code">{{ unit.code }}</p>
+                    <p class="unit-name">{{ unit.name }}</p>
+                </div>
+
+                <div class="flex flex-direction-column flex-children-center">
+                    <span style="font-size:0.75rem;margin-bottom:10px">STATUS : {{ unit.status.toUpperCase() }}</span>
+                    <div class="unit-button-border" style="margin-bottom: 15px;">
+                        <button class="unit-button">ENTER ROOM</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        props: ['unit'],
+        data: function () {
+            return {
+                clicked: false
+            }
+        },
+        methods: {
+            click: function () {
+                console.log(this.clicked)
+                this.clicked = !this.clicked
+                window.location.href = '/room'
+            }
+        },
+    }
+</script>
