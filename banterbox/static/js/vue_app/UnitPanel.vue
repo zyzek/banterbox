@@ -4,6 +4,7 @@
          :class="{'status-open' : unit.status === 'open'}"
          :id="unit.public_id"
          style="border-radius:3px; padding:5px;display:flex"
+
     >
         <div class="unit-content-container flex flex-direction-column"
              :class="{'full-height' : unit.status === 'open' ? true : false}"
@@ -12,7 +13,10 @@
                 <span style="font-size:1.15rem">NEXT SESSION:</span>
                 <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
             </div>
-            <div class="unit-content">
+            <div class="unit-content"
+                 @mouseenter="onMouseEnter"
+                 @mouseleave="onMouseLeave"
+            >
                 <div>
                     <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
                         <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
@@ -33,6 +37,21 @@
     </div>
 </template>
 
+<style lang="scss" rel="stylesheet/scss">
+    .unit-component {
+        z-index: 1;
+
+        &:hover {
+            .unit-button {
+                background-color: rgba(255, 255, 255, 0.5);
+                &:hover {
+                    background-color: white;
+                }
+            }
+        }
+    }
+</style>
+
 <script>
     import {store} from './app'
     export default {
@@ -49,8 +68,14 @@
                 this.clicked = !this.clicked
                 window.location.href = '/room'
             },
-            changeStatus: (x,y,z) => {
-                console.log({x,y,z})
+            changeStatus: (x, y, z) => {
+                console.log({x, y, z})
+            },
+            onMouseEnter: function () {
+                store.rooms.hovered = this.unit.public_id
+            },
+            onMouseLeave: function () {
+                store.rooms.hovered = null
             }
         },
     }
