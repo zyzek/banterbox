@@ -1,22 +1,296 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("/* line 5, stdin */\n#header {\n  z-index: 100;\n  width: 100%;\n  margin-bottom: 15px;\n  background-color: #323e4c;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: baseline;\n      -ms-flex-align: baseline;\n          align-items: baseline; }\n\n/* line 14, stdin */\n#content-wrapper {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1; }\n\n/* line 20, stdin */\n#main {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1; }\n  /* line 25, stdin */\n  #main > div {\n    width: 100%; }\n  /* line 29, stdin */\n  #main.centered {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n                -ms-grid-row-align: center;\n            align-items: center; }\n\n/* line 35, stdin */\n#header-links {\n  margin: 0;\n  list-style: none;\n  color: #757f8c; }\n  /* line 41, stdin */\n  #header-links a {\n    color: inherit;\n    text-decoration: inherit; }\n  /* line 46, stdin */\n  #header-links li {\n    padding: 0px 15px;\n    display: inline-block; }\n\n/* line 52, stdin */\n.v-link-active {\n  color: white; }\n\n/* line 58, stdin */\n.expand-transition {\n  -webkit-transition: all .3s ease;\n  transition: all .3s ease; }\n\n/* line 62, stdin */\n.expand-enter {\n  opacity: 0; }\n\n/* line 67, stdin */\n.expand-leave {\n  opacity: 0; }\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _app = require('./app');
+
+exports.default = {
+    data: function data() {
+        return {
+            store: _app.store,
+            year: new Date().getFullYear()
+        };
+    },
+    computed: {
+        centered: function centered() {
+            console.log(this.$route.path);
+            return this.$route.path === '/rooms';
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div id=\"content-wrapper\">\n    <div id=\"header\">\n        <div style=\"color: #eaeae5; padding:5px; font-size:1.6rem\">BanterBox</div>\n        <ul id=\"header-links\">\n            <li v-link-active=\"\"><a v-link=\"{ path : '/home'}\">Home</a></li>\n            <li v-link-active=\"\"><a v-link=\"{ path : '/rooms' }\">Rooms</a></li>\n            <li v-link-active=\"\"><a v-link=\"{ path : '/404' }\">404</a></li>\n        </ul>\n    </div>\n\n    <div class=\"container\" id=\"main\" :class=\"{centered : store.state.main_centered}\">\n        <!--<router-view transition=\"expand\" transition-mode=\"out-in\"></router-view>-->\n        <router-view></router-view>\n    </div>\n\n\n    <div id=\"footer\">\n        <div style=\"padding:5px;\">\n            <div style=\"font-size: 0.5rem\">BanterBoys ™ ® {{ year }}</div>\n            <div style=\"font-size: 0.5rem\">By using this site, you agree to give HDs to the creators if you are in a\n                position of marking them.\n            </div>\n        </div>\n    </div>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["/* line 5, stdin */\n#header {\n  z-index: 100;\n  width: 100%;\n  margin-bottom: 15px;\n  background-color: #323e4c;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: baseline;\n      -ms-flex-align: baseline;\n          align-items: baseline; }\n\n/* line 14, stdin */\n#content-wrapper {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1; }\n\n/* line 20, stdin */\n#main {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1; }\n  /* line 25, stdin */\n  #main > div {\n    width: 100%; }\n  /* line 29, stdin */\n  #main.centered {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n                -ms-grid-row-align: center;\n            align-items: center; }\n\n/* line 35, stdin */\n#header-links {\n  margin: 0;\n  list-style: none;\n  color: #757f8c; }\n  /* line 41, stdin */\n  #header-links a {\n    color: inherit;\n    text-decoration: inherit; }\n  /* line 46, stdin */\n  #header-links li {\n    padding: 0px 15px;\n    display: inline-block; }\n\n/* line 52, stdin */\n.v-link-active {\n  color: white; }\n\n/* line 58, stdin */\n.expand-transition {\n  -webkit-transition: all .3s ease;\n  transition: all .3s ease; }\n\n/* line 62, stdin */\n.expand-enter {\n  opacity: 0; }\n\n/* line 67, stdin */\n.expand-leave {\n  opacity: 0; }\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-da297784", module.exports)
+  } else {
+    hotAPI.update("_v-da297784", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"./app":6,"vue":68,"vue-hot-reload-api":66,"vueify/lib/insert-css":69}],2:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    route: {
+        activate: function activate() {
+            console.log('WELCOME TO THE GRID.');
+        },
+        deactivate: function deactivate() {
+            console.log('NOW LEAVING THE GRID.');
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div>\n    <h1>Yolo swaggins</h1>\n\n    <p>\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab amet asperiores, consequatur debitis earum\n        eligendi\n        et expedita inventore magni minus mollitia necessitatibus nihil nisi odio placeat recusandae totam unde ut.\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad autem ducimus molestiae placeat veniam! Aliquam\n        architecto, dicta dignissimos eius et facilis illum ipsa nobis provident quo recusandae reiciendis ullam\n        vitae.\n    </p>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-6a871092", module.exports)
+  } else {
+    hotAPI.update("_v-6a871092", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":68,"vue-hot-reload-api":66}],3:[function(require,module,exports){
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<h1 style=\"color:red\">OH NO 404</h1>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-807052bc", module.exports)
+  } else {
+    hotAPI.update("_v-807052bc", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":68,"vue-hot-reload-api":66}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
+var _app = require('./app');
+
+var _UnitPanel = require('./UnitPanel.vue');
+
+var _UnitPanel2 = _interopRequireDefault(_UnitPanel);
+
+var _units2 = require('./units');
+
+var _units3 = _interopRequireDefault(_units2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    components: {
+        'unit-panel': _UnitPanel2.default
+    },
+    data: function data() {
+        return {
+            store: _app.store
+        };
+    },
+    ready: function ready() {
+        if (_app.store.state.units.length === 0) {
+            (function () {
+                var _units = (0, _slicedToArray3.default)(_units3.default, 4);
+
+                var u1 = _units[0];
+                var u2 = _units[1];
+                var u3 = _units[2];
+                var u4 = _units[3];
+                // We are emulating an ajax call here until the API is ready.
+
+                setTimeout(function () {
+                    return _app.store.state.units.push(u1, u2, u3, u4);
+                }, 1000);
+            })();
+        }
+    },
+    route: {
+        activate: function activate() {
+            this.store.state.main_centered = true;
+            console.log('ACTIVATING ROOMS');
+        },
+        deactivate: function deactivate() {
+            this.store.state.main_centered = false;
+            console.log('LATER, ROOMS');
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div>\n    <div>\n        <div class=\"row\">\n            <h3 v-if=\"store.state.units.length === 0\">\n                <i class=\"fa fa-pulse fa-5x fa-spinner\"></i> Loading units...\n            </h3>\n            <unit-panel :class=\"{blur: [null,unit.public_id].indexOf(store.rooms.hovered) < 0}\" v-for=\"unit in store.state.units\" :unit=\"unit\" transition=\"zoom\" stagger=\"125\"></unit-panel>\n        </div>\n    </div>\n\n    <div class=\"row\" :class=\"{blur: !!store.rooms.hovered}\">\n        <div class=\"col-xs-12\" style=\"font-size: 0.85rem;\">\n            <div>Here's your classes. This line of text is to make the page look like it knows what\n                it's doing. Ahoy mihoy.\n            </div>\n            <div>Make lectures great again 2016</div>\n        </div>\n    </div>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-2c263455", module.exports)
+  } else {
+    hotAPI.update("_v-2c263455", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"./UnitPanel.vue":5,"./app":6,"./units":7,"babel-runtime/helpers/slicedToArray":10,"vue":68,"vue-hot-reload-api":66}],5:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n.unit-component {\n  z-index: 1; }\n  /* line 6, stdin */\n  .unit-component:hover .unit-button {\n    background-color: rgba(255, 255, 255, 0.5); }\n    /* line 8, stdin */\n    .unit-component:hover .unit-button:hover {\n      background-color: white; }\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _app = require('./app');
+
+exports.default = {
+    props: ['unit'],
+    data: function data() {
+        return {
+            clicked: false,
+            store: _app.store
+        };
+    },
+    methods: {
+        click: function click() {
+            console.log(this.clicked);
+            this.clicked = !this.clicked;
+            window.location.href = '/room';
+        },
+        changeStatus: function changeStatus(x, y, z) {
+            console.log({ x: x, y: y, z: z });
+        },
+        onMouseEnter: function onMouseEnter() {
+            _app.store.rooms.hovered = this.unit.public_id;
+        },
+        onMouseLeave: function onMouseLeave() {
+            _app.store.rooms.hovered = null;
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div @click=\"changeStatus\" class=\"unit-component col-xs-12 col-md-6 col-lg-3 animated\" :class=\"{'status-open' : unit.status === 'open'}\" :id=\"unit.public_id\" style=\"border-radius:3px; padding:5px;display:flex\">\n    <div class=\"unit-content-container flex flex-direction-column\" :class=\"{'full-height' : unit.status === 'open' ? true : false}\">\n        <div class=\"unit-next-day flex flex-children-center\" v-if=\"unit.status !== 'open'\">\n            <span style=\"font-size:1.15rem\">NEXT SESSION:</span>\n            <span style=\"text-align: center\">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>\n        </div>\n        <div class=\"unit-content\" @mouseenter=\"onMouseEnter\" @mouseleave=\"onMouseLeave\">\n            <div>\n                <div class=\"unit-icon-container\" style=\"text-align: center; margin:15px 0;\">\n                    <i :class=\"'fa fa-5x fa-' + unit.icon\" class=\"unit-icon\"></i>\n                </div>\n                <p class=\"unit-code\">{{ unit.code }}</p>\n                <p class=\"unit-name\">{{ unit.name }}</p>\n            </div>\n\n            <div class=\"flex flex-direction-column flex-children-center\">\n                <span style=\"font-size:0.75rem;margin-bottom:10px\">STATUS : {{ unit.status.toUpperCase() }}</span>\n                <div class=\"unit-button-border\" style=\"margin-bottom: 15px;\">\n                    <button class=\"unit-button\">ENTER ROOM</button>\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["/* line 2, stdin */\n.unit-component {\n  z-index: 1; }\n  /* line 6, stdin */\n  .unit-component:hover .unit-button {\n    background-color: rgba(255, 255, 255, 0.5); }\n    /* line 8, stdin */\n    .unit-component:hover .unit-button:hover {\n      background-color: white; }\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-29920dbd", module.exports)
+  } else {
+    hotAPI.update("_v-29920dbd", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"./app":6,"vue":68,"vue-hot-reload-api":66,"vueify/lib/insert-css":69}],6:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.router = exports.store = undefined;
+
+var _vue = require('vue');
+
+var _vue2 = _interopRequireDefault(_vue);
+
+var _vueRouter = require('vue-router');
+
+var _vueRouter2 = _interopRequireDefault(_vueRouter);
+
+var _NotFound = require('./NotFound.vue');
+
+var _NotFound2 = _interopRequireDefault(_NotFound);
+
+var _Home = require('./Home.vue');
+
+var _Home2 = _interopRequireDefault(_Home);
+
+var _Rooms = require('./Rooms.vue');
+
+var _Rooms2 = _interopRequireDefault(_Rooms);
+
+var _App = require('./App.vue');
+
+var _App2 = _interopRequireDefault(_App);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_vue2.default.use(_vueRouter2.default);
+
+var store = exports.store = {
+    rooms: {
+        hovered: null
+    },
+    state: {
+        main_centered: false,
+        units: []
+    },
+    methodA: function methodA() {
+        return 1;
+    }
+};
+var router = exports.router = new _vueRouter2.default();
+
+router.map({
+    '/home': {
+        component: _Home2.default
+    },
+    '/rooms': {
+        component: _Rooms2.default
+    },
+    '/404': {
+        component: _NotFound2.default
+    }
+});
+
+router.redirect({
+    '*': '/404'
+});
+
+router.start(_App2.default, '#app');
+
+_vue2.default.transition('flip', {
+    enterClass: 'flipInY',
+    leaveClass: 'flipOutY'
+});
+_vue2.default.transition('zoom', {
+    enterClass: 'zoomIn',
+    leaveClass: 'zoomOut'
+});
+_vue2.default.transition('fade', {
+    enterClass: 'fadeIn',
+    leaveClass: 'fadeOut'
+});
+
+},{"./App.vue":1,"./Home.vue":2,"./NotFound.vue":3,"./Rooms.vue":4,"vue":68,"vue-router":67}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.store = undefined;
-
-var _vue = require("vue");
-
-var _vue2 = _interopRequireDefault(_vue);
-
-var _unitPanel = require("./unit-panel.vue");
-
-var _unitPanel2 = _interopRequireDefault(_unitPanel);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var units = [{
+exports.default = [{
     public_id: "f595ffc2-a946-4aa3-ae51-61ad83cbef28",
     lecturer: { email: "jeffery79@hebert.com", name: "Alexandria Marshall" },
     created_at: 1472731865.293062,
@@ -117,90 +391,707 @@ var units = [{
     code: "IFIS2219",
     next_session: { day: "MONDAY", time: "12:00" }
 }];
-var store = exports.store = {
-    state: {
-        units: []
-    },
-    methodA: function methodA() {
-        return 1;
+
+},{}],8:[function(require,module,exports){
+module.exports = { "default": require("core-js/library/fn/get-iterator"), __esModule: true };
+},{"core-js/library/fn/get-iterator":11}],9:[function(require,module,exports){
+module.exports = { "default": require("core-js/library/fn/is-iterable"), __esModule: true };
+},{"core-js/library/fn/is-iterable":12}],10:[function(require,module,exports){
+"use strict";
+
+exports.__esModule = true;
+
+var _isIterable2 = require("../core-js/is-iterable");
+
+var _isIterable3 = _interopRequireDefault(_isIterable2);
+
+var _getIterator2 = require("../core-js/get-iterator");
+
+var _getIterator3 = _interopRequireDefault(_getIterator2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function () {
+  function sliceIterator(arr, i) {
+    var _arr = [];
+    var _n = true;
+    var _d = false;
+    var _e = undefined;
+
+    try {
+      for (var _i = (0, _getIterator3.default)(arr), _s; !(_n = (_s = _i.next()).done); _n = true) {
+        _arr.push(_s.value);
+
+        if (i && _arr.length === i) break;
+      }
+    } catch (err) {
+      _d = true;
+      _e = err;
+    } finally {
+      try {
+        if (!_n && _i["return"]) _i["return"]();
+      } finally {
+        if (_d) throw _e;
+      }
     }
-};
 
-_vue2.default.transition('flip', {
-    enterClass: 'flipInY',
-    leaveClass: 'flipOutY'
-});
-_vue2.default.transition('zoom', {
-    enterClass: 'zoomIn',
-    leaveClass: 'zoomOut'
-});
-_vue2.default.transition('fade', {
-    enterClass: 'fadeIn',
-    leaveClass: 'fadeOut'
-});
-
-var app = new _vue2.default({
-    el: '#app',
-    data: {
-        store: store
-    },
-    components: {
-        'unit-panel': _unitPanel2.default
-    },
-    ready: function ready() {
-        var u1 = units[0];
-        var u2 = units[1];
-        var u3 = units[2];
-        var u4 = units[3];
-
-        setTimeout(function () {
-            return store.state.units.push(u1, u2, u3, u4);
-        }, 1000);
-    }
-
-});
-
-},{"./unit-panel.vue":2,"vue":5}],2:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _app = require('./app');
-
-exports.default = {
-    props: ['unit'],
-    data: function data() {
-        return {
-            clicked: false,
-            store: _app.store
-        };
-    },
-    methods: {
-        click: function click() {
-            console.log(this.clicked);
-            this.clicked = !this.clicked;
-            window.location.href = '/room';
-        },
-        changeStatus: function changeStatus(x, y, z) {
-            console.log({ x: x, y: y, z: z });
-        }
-    }
-};
-if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div @click=\"changeStatus\" class=\"unit-component col-xs-12 col-md-6 col-lg-3 animated\" :class=\"{'status-open' : unit.status === 'open'}\" :id=\"unit.public_id\" style=\"border-radius:3px; padding:5px;display:flex\">\n    <div class=\"unit-content-container flex flex-direction-column\" :class=\"{'full-height' : unit.status === 'open' ? true : false}\">\n        <div class=\"unit-next-day flex flex-children-center\" v-if=\"unit.status !== 'open'\">\n            <span style=\"font-size:1.15rem\">NEXT SESSION:</span>\n            <span style=\"text-align: center\">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>\n        </div>\n        <div class=\"unit-content\">\n            <div>\n                <div class=\"unit-icon-container\" style=\"text-align: center; margin:15px 0;\">\n                    <i :class=\"'fa fa-5x fa-' + unit.icon\" class=\"unit-icon\"></i>\n                </div>\n                <p class=\"unit-code\">{{ unit.code }}</p>\n                <p class=\"unit-name\">{{ unit.name }}</p>\n            </div>\n\n            <div class=\"flex flex-direction-column flex-children-center\">\n                <span style=\"font-size:0.75rem;margin-bottom:10px\">STATUS : {{ unit.status.toUpperCase() }}</span>\n                <div class=\"unit-button-border\" style=\"margin-bottom: 15px;\">\n                    <button class=\"unit-button\">ENTER ROOM</button>\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>\n"
-if (module.hot) {(function () {  module.hot.accept()
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  if (!module.hot.data) {
-    hotAPI.createRecord("_v-1b60c5ce", module.exports)
-  } else {
-    hotAPI.update("_v-1b60c5ce", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+    return _arr;
   }
-})()}
-},{"./app":1,"vue":5,"vue-hot-reload-api":4}],3:[function(require,module,exports){
+
+  return function (arr, i) {
+    if (Array.isArray(arr)) {
+      return arr;
+    } else if ((0, _isIterable3.default)(Object(arr))) {
+      return sliceIterator(arr, i);
+    } else {
+      throw new TypeError("Invalid attempt to destructure non-iterable instance");
+    }
+  };
+}();
+},{"../core-js/get-iterator":8,"../core-js/is-iterable":9}],11:[function(require,module,exports){
+require('../modules/web.dom.iterable');
+require('../modules/es6.string.iterator');
+module.exports = require('../modules/core.get-iterator');
+},{"../modules/core.get-iterator":60,"../modules/es6.string.iterator":63,"../modules/web.dom.iterable":64}],12:[function(require,module,exports){
+require('../modules/web.dom.iterable');
+require('../modules/es6.string.iterator');
+module.exports = require('../modules/core.is-iterable');
+},{"../modules/core.is-iterable":61,"../modules/es6.string.iterator":63,"../modules/web.dom.iterable":64}],13:[function(require,module,exports){
+module.exports = function(it){
+  if(typeof it != 'function')throw TypeError(it + ' is not a function!');
+  return it;
+};
+},{}],14:[function(require,module,exports){
+module.exports = function(){ /* empty */ };
+},{}],15:[function(require,module,exports){
+var isObject = require('./_is-object');
+module.exports = function(it){
+  if(!isObject(it))throw TypeError(it + ' is not an object!');
+  return it;
+};
+},{"./_is-object":33}],16:[function(require,module,exports){
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = require('./_to-iobject')
+  , toLength  = require('./_to-length')
+  , toIndex   = require('./_to-index');
+module.exports = function(IS_INCLUDES){
+  return function($this, el, fromIndex){
+    var O      = toIObject($this)
+      , length = toLength(O.length)
+      , index  = toIndex(fromIndex, length)
+      , value;
+    // Array#includes uses SameValueZero equality algorithm
+    if(IS_INCLUDES && el != el)while(length > index){
+      value = O[index++];
+      if(value != value)return true;
+    // Array#toIndex ignores holes, Array#includes - not
+    } else for(;length > index; index++)if(IS_INCLUDES || index in O){
+      if(O[index] === el)return IS_INCLUDES || index || 0;
+    } return !IS_INCLUDES && -1;
+  };
+};
+},{"./_to-index":51,"./_to-iobject":53,"./_to-length":54}],17:[function(require,module,exports){
+// getting tag from 19.1.3.6 Object.prototype.toString()
+var cof = require('./_cof')
+  , TAG = require('./_wks')('toStringTag')
+  // ES3 wrong here
+  , ARG = cof(function(){ return arguments; }()) == 'Arguments';
+
+// fallback for IE11 Script Access Denied error
+var tryGet = function(it, key){
+  try {
+    return it[key];
+  } catch(e){ /* empty */ }
+};
+
+module.exports = function(it){
+  var O, T, B;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T
+    // builtinTag case
+    : ARG ? cof(O)
+    // ES3 arguments fallback
+    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
+};
+},{"./_cof":18,"./_wks":58}],18:[function(require,module,exports){
+var toString = {}.toString;
+
+module.exports = function(it){
+  return toString.call(it).slice(8, -1);
+};
+},{}],19:[function(require,module,exports){
+var core = module.exports = {version: '2.4.0'};
+if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+},{}],20:[function(require,module,exports){
+// optional / simple context binding
+var aFunction = require('./_a-function');
+module.exports = function(fn, that, length){
+  aFunction(fn);
+  if(that === undefined)return fn;
+  switch(length){
+    case 1: return function(a){
+      return fn.call(that, a);
+    };
+    case 2: return function(a, b){
+      return fn.call(that, a, b);
+    };
+    case 3: return function(a, b, c){
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function(/* ...args */){
+    return fn.apply(that, arguments);
+  };
+};
+},{"./_a-function":13}],21:[function(require,module,exports){
+// 7.2.1 RequireObjectCoercible(argument)
+module.exports = function(it){
+  if(it == undefined)throw TypeError("Can't call method on  " + it);
+  return it;
+};
+},{}],22:[function(require,module,exports){
+// Thank's IE8 for his funny defineProperty
+module.exports = !require('./_fails')(function(){
+  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
+});
+},{"./_fails":26}],23:[function(require,module,exports){
+var isObject = require('./_is-object')
+  , document = require('./_global').document
+  // in old IE typeof document.createElement is 'object'
+  , is = isObject(document) && isObject(document.createElement);
+module.exports = function(it){
+  return is ? document.createElement(it) : {};
+};
+},{"./_global":27,"./_is-object":33}],24:[function(require,module,exports){
+// IE 8- don't enum bug keys
+module.exports = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
+},{}],25:[function(require,module,exports){
+var global    = require('./_global')
+  , core      = require('./_core')
+  , ctx       = require('./_ctx')
+  , hide      = require('./_hide')
+  , PROTOTYPE = 'prototype';
+
+var $export = function(type, name, source){
+  var IS_FORCED = type & $export.F
+    , IS_GLOBAL = type & $export.G
+    , IS_STATIC = type & $export.S
+    , IS_PROTO  = type & $export.P
+    , IS_BIND   = type & $export.B
+    , IS_WRAP   = type & $export.W
+    , exports   = IS_GLOBAL ? core : core[name] || (core[name] = {})
+    , expProto  = exports[PROTOTYPE]
+    , target    = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE]
+    , key, own, out;
+  if(IS_GLOBAL)source = name;
+  for(key in source){
+    // contains in native
+    own = !IS_FORCED && target && target[key] !== undefined;
+    if(own && key in exports)continue;
+    // export native or passed
+    out = own ? target[key] : source[key];
+    // prevent global pollution for namespaces
+    exports[key] = IS_GLOBAL && typeof target[key] != 'function' ? source[key]
+    // bind timers to global for call from export context
+    : IS_BIND && own ? ctx(out, global)
+    // wrap global constructors for prevent change them in library
+    : IS_WRAP && target[key] == out ? (function(C){
+      var F = function(a, b, c){
+        if(this instanceof C){
+          switch(arguments.length){
+            case 0: return new C;
+            case 1: return new C(a);
+            case 2: return new C(a, b);
+          } return new C(a, b, c);
+        } return C.apply(this, arguments);
+      };
+      F[PROTOTYPE] = C[PROTOTYPE];
+      return F;
+    // make static versions for prototype methods
+    })(out) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
+    // export proto methods to core.%CONSTRUCTOR%.methods.%NAME%
+    if(IS_PROTO){
+      (exports.virtual || (exports.virtual = {}))[key] = out;
+      // export proto methods to core.%CONSTRUCTOR%.prototype.%NAME%
+      if(type & $export.R && expProto && !expProto[key])hide(expProto, key, out);
+    }
+  }
+};
+// type bitmap
+$export.F = 1;   // forced
+$export.G = 2;   // global
+$export.S = 4;   // static
+$export.P = 8;   // proto
+$export.B = 16;  // bind
+$export.W = 32;  // wrap
+$export.U = 64;  // safe
+$export.R = 128; // real proto method for `library` 
+module.exports = $export;
+},{"./_core":19,"./_ctx":20,"./_global":27,"./_hide":29}],26:[function(require,module,exports){
+module.exports = function(exec){
+  try {
+    return !!exec();
+  } catch(e){
+    return true;
+  }
+};
+},{}],27:[function(require,module,exports){
+// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
+},{}],28:[function(require,module,exports){
+var hasOwnProperty = {}.hasOwnProperty;
+module.exports = function(it, key){
+  return hasOwnProperty.call(it, key);
+};
+},{}],29:[function(require,module,exports){
+var dP         = require('./_object-dp')
+  , createDesc = require('./_property-desc');
+module.exports = require('./_descriptors') ? function(object, key, value){
+  return dP.f(object, key, createDesc(1, value));
+} : function(object, key, value){
+  object[key] = value;
+  return object;
+};
+},{"./_descriptors":22,"./_object-dp":40,"./_property-desc":45}],30:[function(require,module,exports){
+module.exports = require('./_global').document && document.documentElement;
+},{"./_global":27}],31:[function(require,module,exports){
+module.exports = !require('./_descriptors') && !require('./_fails')(function(){
+  return Object.defineProperty(require('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
+});
+},{"./_descriptors":22,"./_dom-create":23,"./_fails":26}],32:[function(require,module,exports){
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = require('./_cof');
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+},{"./_cof":18}],33:[function(require,module,exports){
+module.exports = function(it){
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+},{}],34:[function(require,module,exports){
+'use strict';
+var create         = require('./_object-create')
+  , descriptor     = require('./_property-desc')
+  , setToStringTag = require('./_set-to-string-tag')
+  , IteratorPrototype = {};
+
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+require('./_hide')(IteratorPrototype, require('./_wks')('iterator'), function(){ return this; });
+
+module.exports = function(Constructor, NAME, next){
+  Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
+  setToStringTag(Constructor, NAME + ' Iterator');
+};
+},{"./_hide":29,"./_object-create":39,"./_property-desc":45,"./_set-to-string-tag":47,"./_wks":58}],35:[function(require,module,exports){
+'use strict';
+var LIBRARY        = require('./_library')
+  , $export        = require('./_export')
+  , redefine       = require('./_redefine')
+  , hide           = require('./_hide')
+  , has            = require('./_has')
+  , Iterators      = require('./_iterators')
+  , $iterCreate    = require('./_iter-create')
+  , setToStringTag = require('./_set-to-string-tag')
+  , getPrototypeOf = require('./_object-gpo')
+  , ITERATOR       = require('./_wks')('iterator')
+  , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
+  , FF_ITERATOR    = '@@iterator'
+  , KEYS           = 'keys'
+  , VALUES         = 'values';
+
+var returnThis = function(){ return this; };
+
+module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED){
+  $iterCreate(Constructor, NAME, next);
+  var getMethod = function(kind){
+    if(!BUGGY && kind in proto)return proto[kind];
+    switch(kind){
+      case KEYS: return function keys(){ return new Constructor(this, kind); };
+      case VALUES: return function values(){ return new Constructor(this, kind); };
+    } return function entries(){ return new Constructor(this, kind); };
+  };
+  var TAG        = NAME + ' Iterator'
+    , DEF_VALUES = DEFAULT == VALUES
+    , VALUES_BUG = false
+    , proto      = Base.prototype
+    , $native    = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT]
+    , $default   = $native || getMethod(DEFAULT)
+    , $entries   = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined
+    , $anyNative = NAME == 'Array' ? proto.entries || $native : $native
+    , methods, key, IteratorPrototype;
+  // Fix native
+  if($anyNative){
+    IteratorPrototype = getPrototypeOf($anyNative.call(new Base));
+    if(IteratorPrototype !== Object.prototype){
+      // Set @@toStringTag to native iterators
+      setToStringTag(IteratorPrototype, TAG, true);
+      // fix for some old engines
+      if(!LIBRARY && !has(IteratorPrototype, ITERATOR))hide(IteratorPrototype, ITERATOR, returnThis);
+    }
+  }
+  // fix Array#{values, @@iterator}.name in V8 / FF
+  if(DEF_VALUES && $native && $native.name !== VALUES){
+    VALUES_BUG = true;
+    $default = function values(){ return $native.call(this); };
+  }
+  // Define iterator
+  if((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])){
+    hide(proto, ITERATOR, $default);
+  }
+  // Plug for library
+  Iterators[NAME] = $default;
+  Iterators[TAG]  = returnThis;
+  if(DEFAULT){
+    methods = {
+      values:  DEF_VALUES ? $default : getMethod(VALUES),
+      keys:    IS_SET     ? $default : getMethod(KEYS),
+      entries: $entries
+    };
+    if(FORCED)for(key in methods){
+      if(!(key in proto))redefine(proto, key, methods[key]);
+    } else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
+  }
+  return methods;
+};
+},{"./_export":25,"./_has":28,"./_hide":29,"./_iter-create":34,"./_iterators":37,"./_library":38,"./_object-gpo":42,"./_redefine":46,"./_set-to-string-tag":47,"./_wks":58}],36:[function(require,module,exports){
+module.exports = function(done, value){
+  return {value: value, done: !!done};
+};
+},{}],37:[function(require,module,exports){
+module.exports = {};
+},{}],38:[function(require,module,exports){
+module.exports = true;
+},{}],39:[function(require,module,exports){
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+var anObject    = require('./_an-object')
+  , dPs         = require('./_object-dps')
+  , enumBugKeys = require('./_enum-bug-keys')
+  , IE_PROTO    = require('./_shared-key')('IE_PROTO')
+  , Empty       = function(){ /* empty */ }
+  , PROTOTYPE   = 'prototype';
+
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function(){
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = require('./_dom-create')('iframe')
+    , i      = enumBugKeys.length
+    , lt     = '<'
+    , gt     = '>'
+    , iframeDocument;
+  iframe.style.display = 'none';
+  require('./_html').appendChild(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
+  return createDict();
+};
+
+module.exports = Object.create || function create(O, Properties){
+  var result;
+  if(O !== null){
+    Empty[PROTOTYPE] = anObject(O);
+    result = new Empty;
+    Empty[PROTOTYPE] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : dPs(result, Properties);
+};
+
+},{"./_an-object":15,"./_dom-create":23,"./_enum-bug-keys":24,"./_html":30,"./_object-dps":41,"./_shared-key":48}],40:[function(require,module,exports){
+var anObject       = require('./_an-object')
+  , IE8_DOM_DEFINE = require('./_ie8-dom-define')
+  , toPrimitive    = require('./_to-primitive')
+  , dP             = Object.defineProperty;
+
+exports.f = require('./_descriptors') ? Object.defineProperty : function defineProperty(O, P, Attributes){
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if(IE8_DOM_DEFINE)try {
+    return dP(O, P, Attributes);
+  } catch(e){ /* empty */ }
+  if('get' in Attributes || 'set' in Attributes)throw TypeError('Accessors not supported!');
+  if('value' in Attributes)O[P] = Attributes.value;
+  return O;
+};
+},{"./_an-object":15,"./_descriptors":22,"./_ie8-dom-define":31,"./_to-primitive":56}],41:[function(require,module,exports){
+var dP       = require('./_object-dp')
+  , anObject = require('./_an-object')
+  , getKeys  = require('./_object-keys');
+
+module.exports = require('./_descriptors') ? Object.defineProperties : function defineProperties(O, Properties){
+  anObject(O);
+  var keys   = getKeys(Properties)
+    , length = keys.length
+    , i = 0
+    , P;
+  while(length > i)dP.f(O, P = keys[i++], Properties[P]);
+  return O;
+};
+},{"./_an-object":15,"./_descriptors":22,"./_object-dp":40,"./_object-keys":44}],42:[function(require,module,exports){
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+var has         = require('./_has')
+  , toObject    = require('./_to-object')
+  , IE_PROTO    = require('./_shared-key')('IE_PROTO')
+  , ObjectProto = Object.prototype;
+
+module.exports = Object.getPrototypeOf || function(O){
+  O = toObject(O);
+  if(has(O, IE_PROTO))return O[IE_PROTO];
+  if(typeof O.constructor == 'function' && O instanceof O.constructor){
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectProto : null;
+};
+},{"./_has":28,"./_shared-key":48,"./_to-object":55}],43:[function(require,module,exports){
+var has          = require('./_has')
+  , toIObject    = require('./_to-iobject')
+  , arrayIndexOf = require('./_array-includes')(false)
+  , IE_PROTO     = require('./_shared-key')('IE_PROTO');
+
+module.exports = function(object, names){
+  var O      = toIObject(object)
+    , i      = 0
+    , result = []
+    , key;
+  for(key in O)if(key != IE_PROTO)has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while(names.length > i)if(has(O, key = names[i++])){
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
+};
+},{"./_array-includes":16,"./_has":28,"./_shared-key":48,"./_to-iobject":53}],44:[function(require,module,exports){
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys       = require('./_object-keys-internal')
+  , enumBugKeys = require('./_enum-bug-keys');
+
+module.exports = Object.keys || function keys(O){
+  return $keys(O, enumBugKeys);
+};
+},{"./_enum-bug-keys":24,"./_object-keys-internal":43}],45:[function(require,module,exports){
+module.exports = function(bitmap, value){
+  return {
+    enumerable  : !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable    : !(bitmap & 4),
+    value       : value
+  };
+};
+},{}],46:[function(require,module,exports){
+module.exports = require('./_hide');
+},{"./_hide":29}],47:[function(require,module,exports){
+var def = require('./_object-dp').f
+  , has = require('./_has')
+  , TAG = require('./_wks')('toStringTag');
+
+module.exports = function(it, tag, stat){
+  if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
+};
+},{"./_has":28,"./_object-dp":40,"./_wks":58}],48:[function(require,module,exports){
+var shared = require('./_shared')('keys')
+  , uid    = require('./_uid');
+module.exports = function(key){
+  return shared[key] || (shared[key] = uid(key));
+};
+},{"./_shared":49,"./_uid":57}],49:[function(require,module,exports){
+var global = require('./_global')
+  , SHARED = '__core-js_shared__'
+  , store  = global[SHARED] || (global[SHARED] = {});
+module.exports = function(key){
+  return store[key] || (store[key] = {});
+};
+},{"./_global":27}],50:[function(require,module,exports){
+var toInteger = require('./_to-integer')
+  , defined   = require('./_defined');
+// true  -> String#at
+// false -> String#codePointAt
+module.exports = function(TO_STRING){
+  return function(that, pos){
+    var s = String(defined(that))
+      , i = toInteger(pos)
+      , l = s.length
+      , a, b;
+    if(i < 0 || i >= l)return TO_STRING ? '' : undefined;
+    a = s.charCodeAt(i);
+    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
+      ? TO_STRING ? s.charAt(i) : a
+      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
+  };
+};
+},{"./_defined":21,"./_to-integer":52}],51:[function(require,module,exports){
+var toInteger = require('./_to-integer')
+  , max       = Math.max
+  , min       = Math.min;
+module.exports = function(index, length){
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+},{"./_to-integer":52}],52:[function(require,module,exports){
+// 7.1.4 ToInteger
+var ceil  = Math.ceil
+  , floor = Math.floor;
+module.exports = function(it){
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+};
+},{}],53:[function(require,module,exports){
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = require('./_iobject')
+  , defined = require('./_defined');
+module.exports = function(it){
+  return IObject(defined(it));
+};
+},{"./_defined":21,"./_iobject":32}],54:[function(require,module,exports){
+// 7.1.15 ToLength
+var toInteger = require('./_to-integer')
+  , min       = Math.min;
+module.exports = function(it){
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+},{"./_to-integer":52}],55:[function(require,module,exports){
+// 7.1.13 ToObject(argument)
+var defined = require('./_defined');
+module.exports = function(it){
+  return Object(defined(it));
+};
+},{"./_defined":21}],56:[function(require,module,exports){
+// 7.1.1 ToPrimitive(input [, PreferredType])
+var isObject = require('./_is-object');
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+module.exports = function(it, S){
+  if(!isObject(it))return it;
+  var fn, val;
+  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
+  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+},{"./_is-object":33}],57:[function(require,module,exports){
+var id = 0
+  , px = Math.random();
+module.exports = function(key){
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+},{}],58:[function(require,module,exports){
+var store      = require('./_shared')('wks')
+  , uid        = require('./_uid')
+  , Symbol     = require('./_global').Symbol
+  , USE_SYMBOL = typeof Symbol == 'function';
+
+var $exports = module.exports = function(name){
+  return store[name] || (store[name] =
+    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
+};
+
+$exports.store = store;
+},{"./_global":27,"./_shared":49,"./_uid":57}],59:[function(require,module,exports){
+var classof   = require('./_classof')
+  , ITERATOR  = require('./_wks')('iterator')
+  , Iterators = require('./_iterators');
+module.exports = require('./_core').getIteratorMethod = function(it){
+  if(it != undefined)return it[ITERATOR]
+    || it['@@iterator']
+    || Iterators[classof(it)];
+};
+},{"./_classof":17,"./_core":19,"./_iterators":37,"./_wks":58}],60:[function(require,module,exports){
+var anObject = require('./_an-object')
+  , get      = require('./core.get-iterator-method');
+module.exports = require('./_core').getIterator = function(it){
+  var iterFn = get(it);
+  if(typeof iterFn != 'function')throw TypeError(it + ' is not iterable!');
+  return anObject(iterFn.call(it));
+};
+},{"./_an-object":15,"./_core":19,"./core.get-iterator-method":59}],61:[function(require,module,exports){
+var classof   = require('./_classof')
+  , ITERATOR  = require('./_wks')('iterator')
+  , Iterators = require('./_iterators');
+module.exports = require('./_core').isIterable = function(it){
+  var O = Object(it);
+  return O[ITERATOR] !== undefined
+    || '@@iterator' in O
+    || Iterators.hasOwnProperty(classof(O));
+};
+},{"./_classof":17,"./_core":19,"./_iterators":37,"./_wks":58}],62:[function(require,module,exports){
+'use strict';
+var addToUnscopables = require('./_add-to-unscopables')
+  , step             = require('./_iter-step')
+  , Iterators        = require('./_iterators')
+  , toIObject        = require('./_to-iobject');
+
+// 22.1.3.4 Array.prototype.entries()
+// 22.1.3.13 Array.prototype.keys()
+// 22.1.3.29 Array.prototype.values()
+// 22.1.3.30 Array.prototype[@@iterator]()
+module.exports = require('./_iter-define')(Array, 'Array', function(iterated, kind){
+  this._t = toIObject(iterated); // target
+  this._i = 0;                   // next index
+  this._k = kind;                // kind
+// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
+}, function(){
+  var O     = this._t
+    , kind  = this._k
+    , index = this._i++;
+  if(!O || index >= O.length){
+    this._t = undefined;
+    return step(1);
+  }
+  if(kind == 'keys'  )return step(0, index);
+  if(kind == 'values')return step(0, O[index]);
+  return step(0, [index, O[index]]);
+}, 'values');
+
+// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
+Iterators.Arguments = Iterators.Array;
+
+addToUnscopables('keys');
+addToUnscopables('values');
+addToUnscopables('entries');
+},{"./_add-to-unscopables":14,"./_iter-define":35,"./_iter-step":36,"./_iterators":37,"./_to-iobject":53}],63:[function(require,module,exports){
+'use strict';
+var $at  = require('./_string-at')(true);
+
+// 21.1.3.27 String.prototype[@@iterator]()
+require('./_iter-define')(String, 'String', function(iterated){
+  this._t = String(iterated); // target
+  this._i = 0;                // next index
+// 21.1.5.2.1 %StringIteratorPrototype%.next()
+}, function(){
+  var O     = this._t
+    , index = this._i
+    , point;
+  if(index >= O.length)return {value: undefined, done: true};
+  point = $at(O, index);
+  this._i += point.length;
+  return {value: point, done: false};
+});
+},{"./_iter-define":35,"./_string-at":50}],64:[function(require,module,exports){
+require('./es6.array.iterator');
+var global        = require('./_global')
+  , hide          = require('./_hide')
+  , Iterators     = require('./_iterators')
+  , TO_STRING_TAG = require('./_wks')('toStringTag');
+
+for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
+  var NAME       = collections[i]
+    , Collection = global[NAME]
+    , proto      = Collection && Collection.prototype;
+  if(proto && !proto[TO_STRING_TAG])hide(proto, TO_STRING_TAG, NAME);
+  Iterators[NAME] = Iterators.Array;
+}
+},{"./_global":27,"./_hide":29,"./_iterators":37,"./_wks":58,"./es6.array.iterator":62}],65:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -382,7 +1273,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],4:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 var Vue // late bind
 var map = Object.create(null)
 var shimmed = false
@@ -683,7 +1574,2717 @@ function format (id) {
   return match ? match[0] : id
 }
 
-},{}],5:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
+/*!
+ * vue-router v0.7.13
+ * (c) 2016 Evan You
+ * Released under the MIT License.
+ */
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  global.VueRouter = factory();
+}(this, function () { 'use strict';
+
+  var babelHelpers = {};
+
+  babelHelpers.classCallCheck = function (instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  };
+  function Target(path, matcher, delegate) {
+    this.path = path;
+    this.matcher = matcher;
+    this.delegate = delegate;
+  }
+
+  Target.prototype = {
+    to: function to(target, callback) {
+      var delegate = this.delegate;
+
+      if (delegate && delegate.willAddRoute) {
+        target = delegate.willAddRoute(this.matcher.target, target);
+      }
+
+      this.matcher.add(this.path, target);
+
+      if (callback) {
+        if (callback.length === 0) {
+          throw new Error("You must have an argument in the function passed to `to`");
+        }
+        this.matcher.addChild(this.path, target, callback, this.delegate);
+      }
+      return this;
+    }
+  };
+
+  function Matcher(target) {
+    this.routes = {};
+    this.children = {};
+    this.target = target;
+  }
+
+  Matcher.prototype = {
+    add: function add(path, handler) {
+      this.routes[path] = handler;
+    },
+
+    addChild: function addChild(path, target, callback, delegate) {
+      var matcher = new Matcher(target);
+      this.children[path] = matcher;
+
+      var match = generateMatch(path, matcher, delegate);
+
+      if (delegate && delegate.contextEntered) {
+        delegate.contextEntered(target, match);
+      }
+
+      callback(match);
+    }
+  };
+
+  function generateMatch(startingPath, matcher, delegate) {
+    return function (path, nestedCallback) {
+      var fullPath = startingPath + path;
+
+      if (nestedCallback) {
+        nestedCallback(generateMatch(fullPath, matcher, delegate));
+      } else {
+        return new Target(startingPath + path, matcher, delegate);
+      }
+    };
+  }
+
+  function addRoute(routeArray, path, handler) {
+    var len = 0;
+    for (var i = 0, l = routeArray.length; i < l; i++) {
+      len += routeArray[i].path.length;
+    }
+
+    path = path.substr(len);
+    var route = { path: path, handler: handler };
+    routeArray.push(route);
+  }
+
+  function eachRoute(baseRoute, matcher, callback, binding) {
+    var routes = matcher.routes;
+
+    for (var path in routes) {
+      if (routes.hasOwnProperty(path)) {
+        var routeArray = baseRoute.slice();
+        addRoute(routeArray, path, routes[path]);
+
+        if (matcher.children[path]) {
+          eachRoute(routeArray, matcher.children[path], callback, binding);
+        } else {
+          callback.call(binding, routeArray);
+        }
+      }
+    }
+  }
+
+  function map (callback, addRouteCallback) {
+    var matcher = new Matcher();
+
+    callback(generateMatch("", matcher, this.delegate));
+
+    eachRoute([], matcher, function (route) {
+      if (addRouteCallback) {
+        addRouteCallback(this, route);
+      } else {
+        this.add(route);
+      }
+    }, this);
+  }
+
+  var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
+
+  var escapeRegex = new RegExp('(\\' + specials.join('|\\') + ')', 'g');
+
+  var noWarning = false;
+  function warn(msg) {
+    if (!noWarning && typeof console !== 'undefined') {
+      console.error('[vue-router] ' + msg);
+    }
+  }
+
+  function tryDecode(uri, asComponent) {
+    try {
+      return asComponent ? decodeURIComponent(uri) : decodeURI(uri);
+    } catch (e) {
+      warn('malformed URI' + (asComponent ? ' component: ' : ': ') + uri);
+    }
+  }
+
+  function isArray(test) {
+    return Object.prototype.toString.call(test) === "[object Array]";
+  }
+
+  // A Segment represents a segment in the original route description.
+  // Each Segment type provides an `eachChar` and `regex` method.
+  //
+  // The `eachChar` method invokes the callback with one or more character
+  // specifications. A character specification consumes one or more input
+  // characters.
+  //
+  // The `regex` method returns a regex fragment for the segment. If the
+  // segment is a dynamic of star segment, the regex fragment also includes
+  // a capture.
+  //
+  // A character specification contains:
+  //
+  // * `validChars`: a String with a list of all valid characters, or
+  // * `invalidChars`: a String with a list of all invalid characters
+  // * `repeat`: true if the character specification can repeat
+
+  function StaticSegment(string) {
+    this.string = string;
+  }
+  StaticSegment.prototype = {
+    eachChar: function eachChar(callback) {
+      var string = this.string,
+          ch;
+
+      for (var i = 0, l = string.length; i < l; i++) {
+        ch = string.charAt(i);
+        callback({ validChars: ch });
+      }
+    },
+
+    regex: function regex() {
+      return this.string.replace(escapeRegex, '\\$1');
+    },
+
+    generate: function generate() {
+      return this.string;
+    }
+  };
+
+  function DynamicSegment(name) {
+    this.name = name;
+  }
+  DynamicSegment.prototype = {
+    eachChar: function eachChar(callback) {
+      callback({ invalidChars: "/", repeat: true });
+    },
+
+    regex: function regex() {
+      return "([^/]+)";
+    },
+
+    generate: function generate(params) {
+      var val = params[this.name];
+      return val == null ? ":" + this.name : val;
+    }
+  };
+
+  function StarSegment(name) {
+    this.name = name;
+  }
+  StarSegment.prototype = {
+    eachChar: function eachChar(callback) {
+      callback({ invalidChars: "", repeat: true });
+    },
+
+    regex: function regex() {
+      return "(.+)";
+    },
+
+    generate: function generate(params) {
+      var val = params[this.name];
+      return val == null ? ":" + this.name : val;
+    }
+  };
+
+  function EpsilonSegment() {}
+  EpsilonSegment.prototype = {
+    eachChar: function eachChar() {},
+    regex: function regex() {
+      return "";
+    },
+    generate: function generate() {
+      return "";
+    }
+  };
+
+  function parse(route, names, specificity) {
+    // normalize route as not starting with a "/". Recognition will
+    // also normalize.
+    if (route.charAt(0) === "/") {
+      route = route.substr(1);
+    }
+
+    var segments = route.split("/"),
+        results = [];
+
+    // A routes has specificity determined by the order that its different segments
+    // appear in. This system mirrors how the magnitude of numbers written as strings
+    // works.
+    // Consider a number written as: "abc". An example would be "200". Any other number written
+    // "xyz" will be smaller than "abc" so long as `a > z`. For instance, "199" is smaller
+    // then "200", even though "y" and "z" (which are both 9) are larger than "0" (the value
+    // of (`b` and `c`). This is because the leading symbol, "2", is larger than the other
+    // leading symbol, "1".
+    // The rule is that symbols to the left carry more weight than symbols to the right
+    // when a number is written out as a string. In the above strings, the leading digit
+    // represents how many 100's are in the number, and it carries more weight than the middle
+    // number which represents how many 10's are in the number.
+    // This system of number magnitude works well for route specificity, too. A route written as
+    // `a/b/c` will be more specific than `x/y/z` as long as `a` is more specific than
+    // `x`, irrespective of the other parts.
+    // Because of this similarity, we assign each type of segment a number value written as a
+    // string. We can find the specificity of compound routes by concatenating these strings
+    // together, from left to right. After we have looped through all of the segments,
+    // we convert the string to a number.
+    specificity.val = '';
+
+    for (var i = 0, l = segments.length; i < l; i++) {
+      var segment = segments[i],
+          match;
+
+      if (match = segment.match(/^:([^\/]+)$/)) {
+        results.push(new DynamicSegment(match[1]));
+        names.push(match[1]);
+        specificity.val += '3';
+      } else if (match = segment.match(/^\*([^\/]+)$/)) {
+        results.push(new StarSegment(match[1]));
+        specificity.val += '2';
+        names.push(match[1]);
+      } else if (segment === "") {
+        results.push(new EpsilonSegment());
+        specificity.val += '1';
+      } else {
+        results.push(new StaticSegment(segment));
+        specificity.val += '4';
+      }
+    }
+
+    specificity.val = +specificity.val;
+
+    return results;
+  }
+
+  // A State has a character specification and (`charSpec`) and a list of possible
+  // subsequent states (`nextStates`).
+  //
+  // If a State is an accepting state, it will also have several additional
+  // properties:
+  //
+  // * `regex`: A regular expression that is used to extract parameters from paths
+  //   that reached this accepting state.
+  // * `handlers`: Information on how to convert the list of captures into calls
+  //   to registered handlers with the specified parameters
+  // * `types`: How many static, dynamic or star segments in this route. Used to
+  //   decide which route to use if multiple registered routes match a path.
+  //
+  // Currently, State is implemented naively by looping over `nextStates` and
+  // comparing a character specification against a character. A more efficient
+  // implementation would use a hash of keys pointing at one or more next states.
+
+  function State(charSpec) {
+    this.charSpec = charSpec;
+    this.nextStates = [];
+  }
+
+  State.prototype = {
+    get: function get(charSpec) {
+      var nextStates = this.nextStates;
+
+      for (var i = 0, l = nextStates.length; i < l; i++) {
+        var child = nextStates[i];
+
+        var isEqual = child.charSpec.validChars === charSpec.validChars;
+        isEqual = isEqual && child.charSpec.invalidChars === charSpec.invalidChars;
+
+        if (isEqual) {
+          return child;
+        }
+      }
+    },
+
+    put: function put(charSpec) {
+      var state;
+
+      // If the character specification already exists in a child of the current
+      // state, just return that state.
+      if (state = this.get(charSpec)) {
+        return state;
+      }
+
+      // Make a new state for the character spec
+      state = new State(charSpec);
+
+      // Insert the new state as a child of the current state
+      this.nextStates.push(state);
+
+      // If this character specification repeats, insert the new state as a child
+      // of itself. Note that this will not trigger an infinite loop because each
+      // transition during recognition consumes a character.
+      if (charSpec.repeat) {
+        state.nextStates.push(state);
+      }
+
+      // Return the new state
+      return state;
+    },
+
+    // Find a list of child states matching the next character
+    match: function match(ch) {
+      // DEBUG "Processing `" + ch + "`:"
+      var nextStates = this.nextStates,
+          child,
+          charSpec,
+          chars;
+
+      // DEBUG "  " + debugState(this)
+      var returned = [];
+
+      for (var i = 0, l = nextStates.length; i < l; i++) {
+        child = nextStates[i];
+
+        charSpec = child.charSpec;
+
+        if (typeof (chars = charSpec.validChars) !== 'undefined') {
+          if (chars.indexOf(ch) !== -1) {
+            returned.push(child);
+          }
+        } else if (typeof (chars = charSpec.invalidChars) !== 'undefined') {
+          if (chars.indexOf(ch) === -1) {
+            returned.push(child);
+          }
+        }
+      }
+
+      return returned;
+    }
+
+    /** IF DEBUG
+    , debug: function() {
+      var charSpec = this.charSpec,
+          debug = "[",
+          chars = charSpec.validChars || charSpec.invalidChars;
+       if (charSpec.invalidChars) { debug += "^"; }
+      debug += chars;
+      debug += "]";
+       if (charSpec.repeat) { debug += "+"; }
+       return debug;
+    }
+    END IF **/
+  };
+
+  /** IF DEBUG
+  function debug(log) {
+    console.log(log);
+  }
+
+  function debugState(state) {
+    return state.nextStates.map(function(n) {
+      if (n.nextStates.length === 0) { return "( " + n.debug() + " [accepting] )"; }
+      return "( " + n.debug() + " <then> " + n.nextStates.map(function(s) { return s.debug() }).join(" or ") + " )";
+    }).join(", ")
+  }
+  END IF **/
+
+  // Sort the routes by specificity
+  function sortSolutions(states) {
+    return states.sort(function (a, b) {
+      return b.specificity.val - a.specificity.val;
+    });
+  }
+
+  function recognizeChar(states, ch) {
+    var nextStates = [];
+
+    for (var i = 0, l = states.length; i < l; i++) {
+      var state = states[i];
+
+      nextStates = nextStates.concat(state.match(ch));
+    }
+
+    return nextStates;
+  }
+
+  var oCreate = Object.create || function (proto) {
+    function F() {}
+    F.prototype = proto;
+    return new F();
+  };
+
+  function RecognizeResults(queryParams) {
+    this.queryParams = queryParams || {};
+  }
+  RecognizeResults.prototype = oCreate({
+    splice: Array.prototype.splice,
+    slice: Array.prototype.slice,
+    push: Array.prototype.push,
+    length: 0,
+    queryParams: null
+  });
+
+  function findHandler(state, path, queryParams) {
+    var handlers = state.handlers,
+        regex = state.regex;
+    var captures = path.match(regex),
+        currentCapture = 1;
+    var result = new RecognizeResults(queryParams);
+
+    for (var i = 0, l = handlers.length; i < l; i++) {
+      var handler = handlers[i],
+          names = handler.names,
+          params = {};
+
+      for (var j = 0, m = names.length; j < m; j++) {
+        params[names[j]] = captures[currentCapture++];
+      }
+
+      result.push({ handler: handler.handler, params: params, isDynamic: !!names.length });
+    }
+
+    return result;
+  }
+
+  function addSegment(currentState, segment) {
+    segment.eachChar(function (ch) {
+      var state;
+
+      currentState = currentState.put(ch);
+    });
+
+    return currentState;
+  }
+
+  function decodeQueryParamPart(part) {
+    // http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1
+    part = part.replace(/\+/gm, '%20');
+    return tryDecode(part, true);
+  }
+
+  // The main interface
+
+  var RouteRecognizer = function RouteRecognizer() {
+    this.rootState = new State();
+    this.names = {};
+  };
+
+  RouteRecognizer.prototype = {
+    add: function add(routes, options) {
+      var currentState = this.rootState,
+          regex = "^",
+          specificity = {},
+          handlers = [],
+          allSegments = [],
+          name;
+
+      var isEmpty = true;
+
+      for (var i = 0, l = routes.length; i < l; i++) {
+        var route = routes[i],
+            names = [];
+
+        var segments = parse(route.path, names, specificity);
+
+        allSegments = allSegments.concat(segments);
+
+        for (var j = 0, m = segments.length; j < m; j++) {
+          var segment = segments[j];
+
+          if (segment instanceof EpsilonSegment) {
+            continue;
+          }
+
+          isEmpty = false;
+
+          // Add a "/" for the new segment
+          currentState = currentState.put({ validChars: "/" });
+          regex += "/";
+
+          // Add a representation of the segment to the NFA and regex
+          currentState = addSegment(currentState, segment);
+          regex += segment.regex();
+        }
+
+        var handler = { handler: route.handler, names: names };
+        handlers.push(handler);
+      }
+
+      if (isEmpty) {
+        currentState = currentState.put({ validChars: "/" });
+        regex += "/";
+      }
+
+      currentState.handlers = handlers;
+      currentState.regex = new RegExp(regex + "$");
+      currentState.specificity = specificity;
+
+      if (name = options && options.as) {
+        this.names[name] = {
+          segments: allSegments,
+          handlers: handlers
+        };
+      }
+    },
+
+    handlersFor: function handlersFor(name) {
+      var route = this.names[name],
+          result = [];
+      if (!route) {
+        throw new Error("There is no route named " + name);
+      }
+
+      for (var i = 0, l = route.handlers.length; i < l; i++) {
+        result.push(route.handlers[i]);
+      }
+
+      return result;
+    },
+
+    hasRoute: function hasRoute(name) {
+      return !!this.names[name];
+    },
+
+    generate: function generate(name, params) {
+      var route = this.names[name],
+          output = "";
+      if (!route) {
+        throw new Error("There is no route named " + name);
+      }
+
+      var segments = route.segments;
+
+      for (var i = 0, l = segments.length; i < l; i++) {
+        var segment = segments[i];
+
+        if (segment instanceof EpsilonSegment) {
+          continue;
+        }
+
+        output += "/";
+        output += segment.generate(params);
+      }
+
+      if (output.charAt(0) !== '/') {
+        output = '/' + output;
+      }
+
+      if (params && params.queryParams) {
+        output += this.generateQueryString(params.queryParams);
+      }
+
+      return output;
+    },
+
+    generateQueryString: function generateQueryString(params) {
+      var pairs = [];
+      var keys = [];
+      for (var key in params) {
+        if (params.hasOwnProperty(key)) {
+          keys.push(key);
+        }
+      }
+      keys.sort();
+      for (var i = 0, len = keys.length; i < len; i++) {
+        key = keys[i];
+        var value = params[key];
+        if (value == null) {
+          continue;
+        }
+        var pair = encodeURIComponent(key);
+        if (isArray(value)) {
+          for (var j = 0, l = value.length; j < l; j++) {
+            var arrayPair = key + '[]' + '=' + encodeURIComponent(value[j]);
+            pairs.push(arrayPair);
+          }
+        } else {
+          pair += "=" + encodeURIComponent(value);
+          pairs.push(pair);
+        }
+      }
+
+      if (pairs.length === 0) {
+        return '';
+      }
+
+      return "?" + pairs.join("&");
+    },
+
+    parseQueryString: function parseQueryString(queryString) {
+      var pairs = queryString.split("&"),
+          queryParams = {};
+      for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('='),
+            key = decodeQueryParamPart(pair[0]),
+            keyLength = key.length,
+            isArray = false,
+            value;
+        if (pair.length === 1) {
+          value = 'true';
+        } else {
+          //Handle arrays
+          if (keyLength > 2 && key.slice(keyLength - 2) === '[]') {
+            isArray = true;
+            key = key.slice(0, keyLength - 2);
+            if (!queryParams[key]) {
+              queryParams[key] = [];
+            }
+          }
+          value = pair[1] ? decodeQueryParamPart(pair[1]) : '';
+        }
+        if (isArray) {
+          queryParams[key].push(value);
+        } else {
+          queryParams[key] = value;
+        }
+      }
+      return queryParams;
+    },
+
+    recognize: function recognize(path, silent) {
+      noWarning = silent;
+      var states = [this.rootState],
+          pathLen,
+          i,
+          l,
+          queryStart,
+          queryParams = {},
+          isSlashDropped = false;
+
+      queryStart = path.indexOf('?');
+      if (queryStart !== -1) {
+        var queryString = path.substr(queryStart + 1, path.length);
+        path = path.substr(0, queryStart);
+        if (queryString) {
+          queryParams = this.parseQueryString(queryString);
+        }
+      }
+
+      path = tryDecode(path);
+      if (!path) return;
+
+      // DEBUG GROUP path
+
+      if (path.charAt(0) !== "/") {
+        path = "/" + path;
+      }
+
+      pathLen = path.length;
+      if (pathLen > 1 && path.charAt(pathLen - 1) === "/") {
+        path = path.substr(0, pathLen - 1);
+        isSlashDropped = true;
+      }
+
+      for (i = 0, l = path.length; i < l; i++) {
+        states = recognizeChar(states, path.charAt(i));
+        if (!states.length) {
+          break;
+        }
+      }
+
+      // END DEBUG GROUP
+
+      var solutions = [];
+      for (i = 0, l = states.length; i < l; i++) {
+        if (states[i].handlers) {
+          solutions.push(states[i]);
+        }
+      }
+
+      states = sortSolutions(solutions);
+
+      var state = solutions[0];
+
+      if (state && state.handlers) {
+        // if a trailing slash was dropped and a star segment is the last segment
+        // specified, put the trailing slash back
+        if (isSlashDropped && state.regex.source.slice(-5) === "(.+)$") {
+          path = path + "/";
+        }
+        return findHandler(state, path, queryParams);
+      }
+    }
+  };
+
+  RouteRecognizer.prototype.map = map;
+
+  var genQuery = RouteRecognizer.prototype.generateQueryString;
+
+  // export default for holding the Vue reference
+  var exports$1 = {};
+  /**
+   * Warn stuff.
+   *
+   * @param {String} msg
+   */
+
+  function warn$1(msg) {
+    /* istanbul ignore next */
+    if (typeof console !== 'undefined') {
+      console.error('[vue-router] ' + msg);
+    }
+  }
+
+  /**
+   * Resolve a relative path.
+   *
+   * @param {String} base
+   * @param {String} relative
+   * @param {Boolean} append
+   * @return {String}
+   */
+
+  function resolvePath(base, relative, append) {
+    var query = base.match(/(\?.*)$/);
+    if (query) {
+      query = query[1];
+      base = base.slice(0, -query.length);
+    }
+    // a query!
+    if (relative.charAt(0) === '?') {
+      return base + relative;
+    }
+    var stack = base.split('/');
+    // remove trailing segment if:
+    // - not appending
+    // - appending to trailing slash (last segment is empty)
+    if (!append || !stack[stack.length - 1]) {
+      stack.pop();
+    }
+    // resolve relative path
+    var segments = relative.replace(/^\//, '').split('/');
+    for (var i = 0; i < segments.length; i++) {
+      var segment = segments[i];
+      if (segment === '.') {
+        continue;
+      } else if (segment === '..') {
+        stack.pop();
+      } else {
+        stack.push(segment);
+      }
+    }
+    // ensure leading slash
+    if (stack[0] !== '') {
+      stack.unshift('');
+    }
+    return stack.join('/');
+  }
+
+  /**
+   * Forgiving check for a promise
+   *
+   * @param {Object} p
+   * @return {Boolean}
+   */
+
+  function isPromise(p) {
+    return p && typeof p.then === 'function';
+  }
+
+  /**
+   * Retrive a route config field from a component instance
+   * OR a component contructor.
+   *
+   * @param {Function|Vue} component
+   * @param {String} name
+   * @return {*}
+   */
+
+  function getRouteConfig(component, name) {
+    var options = component && (component.$options || component.options);
+    return options && options.route && options.route[name];
+  }
+
+  /**
+   * Resolve an async component factory. Have to do a dirty
+   * mock here because of Vue core's internal API depends on
+   * an ID check.
+   *
+   * @param {Object} handler
+   * @param {Function} cb
+   */
+
+  var resolver = undefined;
+
+  function resolveAsyncComponent(handler, cb) {
+    if (!resolver) {
+      resolver = {
+        resolve: exports$1.Vue.prototype._resolveComponent,
+        $options: {
+          components: {
+            _: handler.component
+          }
+        }
+      };
+    } else {
+      resolver.$options.components._ = handler.component;
+    }
+    resolver.resolve('_', function (Component) {
+      handler.component = Component;
+      cb(Component);
+    });
+  }
+
+  /**
+   * Map the dynamic segments in a path to params.
+   *
+   * @param {String} path
+   * @param {Object} params
+   * @param {Object} query
+   */
+
+  function mapParams(path, params, query) {
+    if (params === undefined) params = {};
+
+    path = path.replace(/:([^\/]+)/g, function (_, key) {
+      var val = params[key];
+      /* istanbul ignore if */
+      if (!val) {
+        warn$1('param "' + key + '" not found when generating ' + 'path for "' + path + '" with params ' + JSON.stringify(params));
+      }
+      return val || '';
+    });
+    if (query) {
+      path += genQuery(query);
+    }
+    return path;
+  }
+
+  var hashRE = /#.*$/;
+
+  var HTML5History = (function () {
+    function HTML5History(_ref) {
+      var root = _ref.root;
+      var onChange = _ref.onChange;
+      babelHelpers.classCallCheck(this, HTML5History);
+
+      if (root && root !== '/') {
+        // make sure there's the starting slash
+        if (root.charAt(0) !== '/') {
+          root = '/' + root;
+        }
+        // remove trailing slash
+        this.root = root.replace(/\/$/, '');
+        this.rootRE = new RegExp('^\\' + this.root);
+      } else {
+        this.root = null;
+      }
+      this.onChange = onChange;
+      // check base tag
+      var baseEl = document.querySelector('base');
+      this.base = baseEl && baseEl.getAttribute('href');
+    }
+
+    HTML5History.prototype.start = function start() {
+      var _this = this;
+
+      this.listener = function (e) {
+        var url = location.pathname + location.search;
+        if (_this.root) {
+          url = url.replace(_this.rootRE, '');
+        }
+        _this.onChange(url, e && e.state, location.hash);
+      };
+      window.addEventListener('popstate', this.listener);
+      this.listener();
+    };
+
+    HTML5History.prototype.stop = function stop() {
+      window.removeEventListener('popstate', this.listener);
+    };
+
+    HTML5History.prototype.go = function go(path, replace, append) {
+      var url = this.formatPath(path, append);
+      if (replace) {
+        history.replaceState({}, '', url);
+      } else {
+        // record scroll position by replacing current state
+        history.replaceState({
+          pos: {
+            x: window.pageXOffset,
+            y: window.pageYOffset
+          }
+        }, '', location.href);
+        // then push new state
+        history.pushState({}, '', url);
+      }
+      var hashMatch = path.match(hashRE);
+      var hash = hashMatch && hashMatch[0];
+      path = url
+      // strip hash so it doesn't mess up params
+      .replace(hashRE, '')
+      // remove root before matching
+      .replace(this.rootRE, '');
+      this.onChange(path, null, hash);
+    };
+
+    HTML5History.prototype.formatPath = function formatPath(path, append) {
+      return path.charAt(0) === '/'
+      // absolute path
+      ? this.root ? this.root + '/' + path.replace(/^\//, '') : path : resolvePath(this.base || location.pathname, path, append);
+    };
+
+    return HTML5History;
+  })();
+
+  var HashHistory = (function () {
+    function HashHistory(_ref) {
+      var hashbang = _ref.hashbang;
+      var onChange = _ref.onChange;
+      babelHelpers.classCallCheck(this, HashHistory);
+
+      this.hashbang = hashbang;
+      this.onChange = onChange;
+    }
+
+    HashHistory.prototype.start = function start() {
+      var self = this;
+      this.listener = function () {
+        var path = location.hash;
+        var raw = path.replace(/^#!?/, '');
+        // always
+        if (raw.charAt(0) !== '/') {
+          raw = '/' + raw;
+        }
+        var formattedPath = self.formatPath(raw);
+        if (formattedPath !== path) {
+          location.replace(formattedPath);
+          return;
+        }
+        // determine query
+        // note it's possible to have queries in both the actual URL
+        // and the hash fragment itself.
+        var query = location.search && path.indexOf('?') > -1 ? '&' + location.search.slice(1) : location.search;
+        self.onChange(path.replace(/^#!?/, '') + query);
+      };
+      window.addEventListener('hashchange', this.listener);
+      this.listener();
+    };
+
+    HashHistory.prototype.stop = function stop() {
+      window.removeEventListener('hashchange', this.listener);
+    };
+
+    HashHistory.prototype.go = function go(path, replace, append) {
+      path = this.formatPath(path, append);
+      if (replace) {
+        location.replace(path);
+      } else {
+        location.hash = path;
+      }
+    };
+
+    HashHistory.prototype.formatPath = function formatPath(path, append) {
+      var isAbsoloute = path.charAt(0) === '/';
+      var prefix = '#' + (this.hashbang ? '!' : '');
+      return isAbsoloute ? prefix + path : prefix + resolvePath(location.hash.replace(/^#!?/, ''), path, append);
+    };
+
+    return HashHistory;
+  })();
+
+  var AbstractHistory = (function () {
+    function AbstractHistory(_ref) {
+      var onChange = _ref.onChange;
+      babelHelpers.classCallCheck(this, AbstractHistory);
+
+      this.onChange = onChange;
+      this.currentPath = '/';
+    }
+
+    AbstractHistory.prototype.start = function start() {
+      this.onChange('/');
+    };
+
+    AbstractHistory.prototype.stop = function stop() {
+      // noop
+    };
+
+    AbstractHistory.prototype.go = function go(path, replace, append) {
+      path = this.currentPath = this.formatPath(path, append);
+      this.onChange(path);
+    };
+
+    AbstractHistory.prototype.formatPath = function formatPath(path, append) {
+      return path.charAt(0) === '/' ? path : resolvePath(this.currentPath, path, append);
+    };
+
+    return AbstractHistory;
+  })();
+
+  /**
+   * Determine the reusability of an existing router view.
+   *
+   * @param {Directive} view
+   * @param {Object} handler
+   * @param {Transition} transition
+   */
+
+  function canReuse(view, handler, transition) {
+    var component = view.childVM;
+    if (!component || !handler) {
+      return false;
+    }
+    // important: check view.Component here because it may
+    // have been changed in activate hook
+    if (view.Component !== handler.component) {
+      return false;
+    }
+    var canReuseFn = getRouteConfig(component, 'canReuse');
+    return typeof canReuseFn === 'boolean' ? canReuseFn : canReuseFn ? canReuseFn.call(component, {
+      to: transition.to,
+      from: transition.from
+    }) : true; // defaults to true
+  }
+
+  /**
+   * Check if a component can deactivate.
+   *
+   * @param {Directive} view
+   * @param {Transition} transition
+   * @param {Function} next
+   */
+
+  function canDeactivate(view, transition, next) {
+    var fromComponent = view.childVM;
+    var hook = getRouteConfig(fromComponent, 'canDeactivate');
+    if (!hook) {
+      next();
+    } else {
+      transition.callHook(hook, fromComponent, next, {
+        expectBoolean: true
+      });
+    }
+  }
+
+  /**
+   * Check if a component can activate.
+   *
+   * @param {Object} handler
+   * @param {Transition} transition
+   * @param {Function} next
+   */
+
+  function canActivate(handler, transition, next) {
+    resolveAsyncComponent(handler, function (Component) {
+      // have to check due to async-ness
+      if (transition.aborted) {
+        return;
+      }
+      // determine if this component can be activated
+      var hook = getRouteConfig(Component, 'canActivate');
+      if (!hook) {
+        next();
+      } else {
+        transition.callHook(hook, null, next, {
+          expectBoolean: true
+        });
+      }
+    });
+  }
+
+  /**
+   * Call deactivate hooks for existing router-views.
+   *
+   * @param {Directive} view
+   * @param {Transition} transition
+   * @param {Function} next
+   */
+
+  function deactivate(view, transition, next) {
+    var component = view.childVM;
+    var hook = getRouteConfig(component, 'deactivate');
+    if (!hook) {
+      next();
+    } else {
+      transition.callHooks(hook, component, next);
+    }
+  }
+
+  /**
+   * Activate / switch component for a router-view.
+   *
+   * @param {Directive} view
+   * @param {Transition} transition
+   * @param {Number} depth
+   * @param {Function} [cb]
+   */
+
+  function activate(view, transition, depth, cb, reuse) {
+    var handler = transition.activateQueue[depth];
+    if (!handler) {
+      saveChildView(view);
+      if (view._bound) {
+        view.setComponent(null);
+      }
+      cb && cb();
+      return;
+    }
+
+    var Component = view.Component = handler.component;
+    var activateHook = getRouteConfig(Component, 'activate');
+    var dataHook = getRouteConfig(Component, 'data');
+    var waitForData = getRouteConfig(Component, 'waitForData');
+
+    view.depth = depth;
+    view.activated = false;
+
+    var component = undefined;
+    var loading = !!(dataHook && !waitForData);
+
+    // "reuse" is a flag passed down when the parent view is
+    // either reused via keep-alive or as a child of a kept-alive view.
+    // of course we can only reuse if the current kept-alive instance
+    // is of the correct type.
+    reuse = reuse && view.childVM && view.childVM.constructor === Component;
+
+    if (reuse) {
+      // just reuse
+      component = view.childVM;
+      component.$loadingRouteData = loading;
+    } else {
+      saveChildView(view);
+
+      // unbuild current component. this step also destroys
+      // and removes all nested child views.
+      view.unbuild(true);
+
+      // build the new component. this will also create the
+      // direct child view of the current one. it will register
+      // itself as view.childView.
+      component = view.build({
+        _meta: {
+          $loadingRouteData: loading
+        },
+        created: function created() {
+          this._routerView = view;
+        }
+      });
+
+      // handle keep-alive.
+      // when a kept-alive child vm is restored, we need to
+      // add its cached child views into the router's view list,
+      // and also properly update current view's child view.
+      if (view.keepAlive) {
+        component.$loadingRouteData = loading;
+        var cachedChildView = component._keepAliveRouterView;
+        if (cachedChildView) {
+          view.childView = cachedChildView;
+          component._keepAliveRouterView = null;
+        }
+      }
+    }
+
+    // cleanup the component in case the transition is aborted
+    // before the component is ever inserted.
+    var cleanup = function cleanup() {
+      component.$destroy();
+    };
+
+    // actually insert the component and trigger transition
+    var insert = function insert() {
+      if (reuse) {
+        cb && cb();
+        return;
+      }
+      var router = transition.router;
+      if (router._rendered || router._transitionOnLoad) {
+        view.transition(component);
+      } else {
+        // no transition on first render, manual transition
+        /* istanbul ignore if */
+        if (view.setCurrent) {
+          // 0.12 compat
+          view.setCurrent(component);
+        } else {
+          // 1.0
+          view.childVM = component;
+        }
+        component.$before(view.anchor, null, false);
+      }
+      cb && cb();
+    };
+
+    var afterData = function afterData() {
+      // activate the child view
+      if (view.childView) {
+        activate(view.childView, transition, depth + 1, null, reuse || view.keepAlive);
+      }
+      insert();
+    };
+
+    // called after activation hook is resolved
+    var afterActivate = function afterActivate() {
+      view.activated = true;
+      if (dataHook && waitForData) {
+        // wait until data loaded to insert
+        loadData(component, transition, dataHook, afterData, cleanup);
+      } else {
+        // load data and insert at the same time
+        if (dataHook) {
+          loadData(component, transition, dataHook);
+        }
+        afterData();
+      }
+    };
+
+    if (activateHook) {
+      transition.callHooks(activateHook, component, afterActivate, {
+        cleanup: cleanup,
+        postActivate: true
+      });
+    } else {
+      afterActivate();
+    }
+  }
+
+  /**
+   * Reuse a view, just reload data if necessary.
+   *
+   * @param {Directive} view
+   * @param {Transition} transition
+   */
+
+  function reuse(view, transition) {
+    var component = view.childVM;
+    var dataHook = getRouteConfig(component, 'data');
+    if (dataHook) {
+      loadData(component, transition, dataHook);
+    }
+  }
+
+  /**
+   * Asynchronously load and apply data to component.
+   *
+   * @param {Vue} component
+   * @param {Transition} transition
+   * @param {Function} hook
+   * @param {Function} cb
+   * @param {Function} cleanup
+   */
+
+  function loadData(component, transition, hook, cb, cleanup) {
+    component.$loadingRouteData = true;
+    transition.callHooks(hook, component, function () {
+      component.$loadingRouteData = false;
+      component.$emit('route-data-loaded', component);
+      cb && cb();
+    }, {
+      cleanup: cleanup,
+      postActivate: true,
+      processData: function processData(data) {
+        // handle promise sugar syntax
+        var promises = [];
+        if (isPlainObject(data)) {
+          Object.keys(data).forEach(function (key) {
+            var val = data[key];
+            if (isPromise(val)) {
+              promises.push(val.then(function (resolvedVal) {
+                component.$set(key, resolvedVal);
+              }));
+            } else {
+              component.$set(key, val);
+            }
+          });
+        }
+        if (promises.length) {
+          return promises[0].constructor.all(promises);
+        }
+      }
+    });
+  }
+
+  /**
+   * Save the child view for a kept-alive view so that
+   * we can restore it when it is switched back to.
+   *
+   * @param {Directive} view
+   */
+
+  function saveChildView(view) {
+    if (view.keepAlive && view.childVM && view.childView) {
+      view.childVM._keepAliveRouterView = view.childView;
+    }
+    view.childView = null;
+  }
+
+  /**
+   * Check plain object.
+   *
+   * @param {*} val
+   */
+
+  function isPlainObject(val) {
+    return Object.prototype.toString.call(val) === '[object Object]';
+  }
+
+  /**
+   * A RouteTransition object manages the pipeline of a
+   * router-view switching process. This is also the object
+   * passed into user route hooks.
+   *
+   * @param {Router} router
+   * @param {Route} to
+   * @param {Route} from
+   */
+
+  var RouteTransition = (function () {
+    function RouteTransition(router, to, from) {
+      babelHelpers.classCallCheck(this, RouteTransition);
+
+      this.router = router;
+      this.to = to;
+      this.from = from;
+      this.next = null;
+      this.aborted = false;
+      this.done = false;
+    }
+
+    /**
+     * Abort current transition and return to previous location.
+     */
+
+    RouteTransition.prototype.abort = function abort() {
+      if (!this.aborted) {
+        this.aborted = true;
+        // if the root path throws an error during validation
+        // on initial load, it gets caught in an infinite loop.
+        var abortingOnLoad = !this.from.path && this.to.path === '/';
+        if (!abortingOnLoad) {
+          this.router.replace(this.from.path || '/');
+        }
+      }
+    };
+
+    /**
+     * Abort current transition and redirect to a new location.
+     *
+     * @param {String} path
+     */
+
+    RouteTransition.prototype.redirect = function redirect(path) {
+      if (!this.aborted) {
+        this.aborted = true;
+        if (typeof path === 'string') {
+          path = mapParams(path, this.to.params, this.to.query);
+        } else {
+          path.params = path.params || this.to.params;
+          path.query = path.query || this.to.query;
+        }
+        this.router.replace(path);
+      }
+    };
+
+    /**
+     * A router view transition's pipeline can be described as
+     * follows, assuming we are transitioning from an existing
+     * <router-view> chain [Component A, Component B] to a new
+     * chain [Component A, Component C]:
+     *
+     *  A    A
+     *  | => |
+     *  B    C
+     *
+     * 1. Reusablity phase:
+     *   -> canReuse(A, A)
+     *   -> canReuse(B, C)
+     *   -> determine new queues:
+     *      - deactivation: [B]
+     *      - activation: [C]
+     *
+     * 2. Validation phase:
+     *   -> canDeactivate(B)
+     *   -> canActivate(C)
+     *
+     * 3. Activation phase:
+     *   -> deactivate(B)
+     *   -> activate(C)
+     *
+     * Each of these steps can be asynchronous, and any
+     * step can potentially abort the transition.
+     *
+     * @param {Function} cb
+     */
+
+    RouteTransition.prototype.start = function start(cb) {
+      var transition = this;
+
+      // determine the queue of views to deactivate
+      var deactivateQueue = [];
+      var view = this.router._rootView;
+      while (view) {
+        deactivateQueue.unshift(view);
+        view = view.childView;
+      }
+      var reverseDeactivateQueue = deactivateQueue.slice().reverse();
+
+      // determine the queue of route handlers to activate
+      var activateQueue = this.activateQueue = toArray(this.to.matched).map(function (match) {
+        return match.handler;
+      });
+
+      // 1. Reusability phase
+      var i = undefined,
+          reuseQueue = undefined;
+      for (i = 0; i < reverseDeactivateQueue.length; i++) {
+        if (!canReuse(reverseDeactivateQueue[i], activateQueue[i], transition)) {
+          break;
+        }
+      }
+      if (i > 0) {
+        reuseQueue = reverseDeactivateQueue.slice(0, i);
+        deactivateQueue = reverseDeactivateQueue.slice(i).reverse();
+        activateQueue = activateQueue.slice(i);
+      }
+
+      // 2. Validation phase
+      transition.runQueue(deactivateQueue, canDeactivate, function () {
+        transition.runQueue(activateQueue, canActivate, function () {
+          transition.runQueue(deactivateQueue, deactivate, function () {
+            // 3. Activation phase
+
+            // Update router current route
+            transition.router._onTransitionValidated(transition);
+
+            // trigger reuse for all reused views
+            reuseQueue && reuseQueue.forEach(function (view) {
+              return reuse(view, transition);
+            });
+
+            // the root of the chain that needs to be replaced
+            // is the top-most non-reusable view.
+            if (deactivateQueue.length) {
+              var _view = deactivateQueue[deactivateQueue.length - 1];
+              var depth = reuseQueue ? reuseQueue.length : 0;
+              activate(_view, transition, depth, cb);
+            } else {
+              cb();
+            }
+          });
+        });
+      });
+    };
+
+    /**
+     * Asynchronously and sequentially apply a function to a
+     * queue.
+     *
+     * @param {Array} queue
+     * @param {Function} fn
+     * @param {Function} cb
+     */
+
+    RouteTransition.prototype.runQueue = function runQueue(queue, fn, cb) {
+      var transition = this;
+      step(0);
+      function step(index) {
+        if (index >= queue.length) {
+          cb();
+        } else {
+          fn(queue[index], transition, function () {
+            step(index + 1);
+          });
+        }
+      }
+    };
+
+    /**
+     * Call a user provided route transition hook and handle
+     * the response (e.g. if the user returns a promise).
+     *
+     * If the user neither expects an argument nor returns a
+     * promise, the hook is assumed to be synchronous.
+     *
+     * @param {Function} hook
+     * @param {*} [context]
+     * @param {Function} [cb]
+     * @param {Object} [options]
+     *                 - {Boolean} expectBoolean
+     *                 - {Boolean} postActive
+     *                 - {Function} processData
+     *                 - {Function} cleanup
+     */
+
+    RouteTransition.prototype.callHook = function callHook(hook, context, cb) {
+      var _ref = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+      var _ref$expectBoolean = _ref.expectBoolean;
+      var expectBoolean = _ref$expectBoolean === undefined ? false : _ref$expectBoolean;
+      var _ref$postActivate = _ref.postActivate;
+      var postActivate = _ref$postActivate === undefined ? false : _ref$postActivate;
+      var processData = _ref.processData;
+      var cleanup = _ref.cleanup;
+
+      var transition = this;
+      var nextCalled = false;
+
+      // abort the transition
+      var abort = function abort() {
+        cleanup && cleanup();
+        transition.abort();
+      };
+
+      // handle errors
+      var onError = function onError(err) {
+        postActivate ? next() : abort();
+        if (err && !transition.router._suppress) {
+          warn$1('Uncaught error during transition: ');
+          throw err instanceof Error ? err : new Error(err);
+        }
+      };
+
+      // since promise swallows errors, we have to
+      // throw it in the next tick...
+      var onPromiseError = function onPromiseError(err) {
+        try {
+          onError(err);
+        } catch (e) {
+          setTimeout(function () {
+            throw e;
+          }, 0);
+        }
+      };
+
+      // advance the transition to the next step
+      var next = function next() {
+        if (nextCalled) {
+          warn$1('transition.next() should be called only once.');
+          return;
+        }
+        nextCalled = true;
+        if (transition.aborted) {
+          cleanup && cleanup();
+          return;
+        }
+        cb && cb();
+      };
+
+      var nextWithBoolean = function nextWithBoolean(res) {
+        if (typeof res === 'boolean') {
+          res ? next() : abort();
+        } else if (isPromise(res)) {
+          res.then(function (ok) {
+            ok ? next() : abort();
+          }, onPromiseError);
+        } else if (!hook.length) {
+          next();
+        }
+      };
+
+      var nextWithData = function nextWithData(data) {
+        var res = undefined;
+        try {
+          res = processData(data);
+        } catch (err) {
+          return onError(err);
+        }
+        if (isPromise(res)) {
+          res.then(next, onPromiseError);
+        } else {
+          next();
+        }
+      };
+
+      // expose a clone of the transition object, so that each
+      // hook gets a clean copy and prevent the user from
+      // messing with the internals.
+      var exposed = {
+        to: transition.to,
+        from: transition.from,
+        abort: abort,
+        next: processData ? nextWithData : next,
+        redirect: function redirect() {
+          transition.redirect.apply(transition, arguments);
+        }
+      };
+
+      // actually call the hook
+      var res = undefined;
+      try {
+        res = hook.call(context, exposed);
+      } catch (err) {
+        return onError(err);
+      }
+
+      if (expectBoolean) {
+        // boolean hooks
+        nextWithBoolean(res);
+      } else if (isPromise(res)) {
+        // promise
+        if (processData) {
+          res.then(nextWithData, onPromiseError);
+        } else {
+          res.then(next, onPromiseError);
+        }
+      } else if (processData && isPlainOjbect(res)) {
+        // data promise sugar
+        nextWithData(res);
+      } else if (!hook.length) {
+        next();
+      }
+    };
+
+    /**
+     * Call a single hook or an array of async hooks in series.
+     *
+     * @param {Array} hooks
+     * @param {*} context
+     * @param {Function} cb
+     * @param {Object} [options]
+     */
+
+    RouteTransition.prototype.callHooks = function callHooks(hooks, context, cb, options) {
+      var _this = this;
+
+      if (Array.isArray(hooks)) {
+        this.runQueue(hooks, function (hook, _, next) {
+          if (!_this.aborted) {
+            _this.callHook(hook, context, next, options);
+          }
+        }, cb);
+      } else {
+        this.callHook(hooks, context, cb, options);
+      }
+    };
+
+    return RouteTransition;
+  })();
+
+  function isPlainOjbect(val) {
+    return Object.prototype.toString.call(val) === '[object Object]';
+  }
+
+  function toArray(val) {
+    return val ? Array.prototype.slice.call(val) : [];
+  }
+
+  var internalKeysRE = /^(component|subRoutes|fullPath)$/;
+
+  /**
+   * Route Context Object
+   *
+   * @param {String} path
+   * @param {Router} router
+   */
+
+  var Route = function Route(path, router) {
+    var _this = this;
+
+    babelHelpers.classCallCheck(this, Route);
+
+    var matched = router._recognizer.recognize(path);
+    if (matched) {
+      // copy all custom fields from route configs
+      [].forEach.call(matched, function (match) {
+        for (var key in match.handler) {
+          if (!internalKeysRE.test(key)) {
+            _this[key] = match.handler[key];
+          }
+        }
+      });
+      // set query and params
+      this.query = matched.queryParams;
+      this.params = [].reduce.call(matched, function (prev, cur) {
+        if (cur.params) {
+          for (var key in cur.params) {
+            prev[key] = cur.params[key];
+          }
+        }
+        return prev;
+      }, {});
+    }
+    // expose path and router
+    this.path = path;
+    // for internal use
+    this.matched = matched || router._notFoundHandler;
+    // internal reference to router
+    Object.defineProperty(this, 'router', {
+      enumerable: false,
+      value: router
+    });
+    // Important: freeze self to prevent observation
+    Object.freeze(this);
+  };
+
+  function applyOverride (Vue) {
+    var _Vue$util = Vue.util;
+    var extend = _Vue$util.extend;
+    var isArray = _Vue$util.isArray;
+    var defineReactive = _Vue$util.defineReactive;
+
+    // override Vue's init and destroy process to keep track of router instances
+    var init = Vue.prototype._init;
+    Vue.prototype._init = function (options) {
+      options = options || {};
+      var root = options._parent || options.parent || this;
+      var router = root.$router;
+      var route = root.$route;
+      if (router) {
+        // expose router
+        this.$router = router;
+        router._children.push(this);
+        /* istanbul ignore if */
+        if (this._defineMeta) {
+          // 0.12
+          this._defineMeta('$route', route);
+        } else {
+          // 1.0
+          defineReactive(this, '$route', route);
+        }
+      }
+      init.call(this, options);
+    };
+
+    var destroy = Vue.prototype._destroy;
+    Vue.prototype._destroy = function () {
+      if (!this._isBeingDestroyed && this.$router) {
+        this.$router._children.$remove(this);
+      }
+      destroy.apply(this, arguments);
+    };
+
+    // 1.0 only: enable route mixins
+    var strats = Vue.config.optionMergeStrategies;
+    var hooksToMergeRE = /^(data|activate|deactivate)$/;
+
+    if (strats) {
+      strats.route = function (parentVal, childVal) {
+        if (!childVal) return parentVal;
+        if (!parentVal) return childVal;
+        var ret = {};
+        extend(ret, parentVal);
+        for (var key in childVal) {
+          var a = ret[key];
+          var b = childVal[key];
+          // for data, activate and deactivate, we need to merge them into
+          // arrays similar to lifecycle hooks.
+          if (a && hooksToMergeRE.test(key)) {
+            ret[key] = (isArray(a) ? a : [a]).concat(b);
+          } else {
+            ret[key] = b;
+          }
+        }
+        return ret;
+      };
+    }
+  }
+
+  function View (Vue) {
+
+    var _ = Vue.util;
+    var componentDef =
+    // 0.12
+    Vue.directive('_component') ||
+    // 1.0
+    Vue.internalDirectives.component;
+    // <router-view> extends the internal component directive
+    var viewDef = _.extend({}, componentDef);
+
+    // with some overrides
+    _.extend(viewDef, {
+
+      _isRouterView: true,
+
+      bind: function bind() {
+        var route = this.vm.$route;
+        /* istanbul ignore if */
+        if (!route) {
+          warn$1('<router-view> can only be used inside a ' + 'router-enabled app.');
+          return;
+        }
+        // force dynamic directive so v-component doesn't
+        // attempt to build right now
+        this._isDynamicLiteral = true;
+        // finally, init by delegating to v-component
+        componentDef.bind.call(this);
+
+        // locate the parent view
+        var parentView = undefined;
+        var parent = this.vm;
+        while (parent) {
+          if (parent._routerView) {
+            parentView = parent._routerView;
+            break;
+          }
+          parent = parent.$parent;
+        }
+        if (parentView) {
+          // register self as a child of the parent view,
+          // instead of activating now. This is so that the
+          // child's activate hook is called after the
+          // parent's has resolved.
+          this.parentView = parentView;
+          parentView.childView = this;
+        } else {
+          // this is the root view!
+          var router = route.router;
+          router._rootView = this;
+        }
+
+        // handle late-rendered view
+        // two possibilities:
+        // 1. root view rendered after transition has been
+        //    validated;
+        // 2. child view rendered after parent view has been
+        //    activated.
+        var transition = route.router._currentTransition;
+        if (!parentView && transition.done || parentView && parentView.activated) {
+          var depth = parentView ? parentView.depth + 1 : 0;
+          activate(this, transition, depth);
+        }
+      },
+
+      unbind: function unbind() {
+        if (this.parentView) {
+          this.parentView.childView = null;
+        }
+        componentDef.unbind.call(this);
+      }
+    });
+
+    Vue.elementDirective('router-view', viewDef);
+  }
+
+  var trailingSlashRE = /\/$/;
+  var regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g;
+  var queryStringRE = /\?.*$/;
+
+  // install v-link, which provides navigation support for
+  // HTML5 history mode
+  function Link (Vue) {
+    var _Vue$util = Vue.util;
+    var _bind = _Vue$util.bind;
+    var isObject = _Vue$util.isObject;
+    var addClass = _Vue$util.addClass;
+    var removeClass = _Vue$util.removeClass;
+
+    var onPriority = Vue.directive('on').priority;
+    var LINK_UPDATE = '__vue-router-link-update__';
+
+    var activeId = 0;
+
+    Vue.directive('link-active', {
+      priority: 9999,
+      bind: function bind() {
+        var _this = this;
+
+        var id = String(activeId++);
+        // collect v-links contained within this element.
+        // we need do this here before the parent-child relationship
+        // gets messed up by terminal directives (if, for, components)
+        var childLinks = this.el.querySelectorAll('[v-link]');
+        for (var i = 0, l = childLinks.length; i < l; i++) {
+          var link = childLinks[i];
+          var existingId = link.getAttribute(LINK_UPDATE);
+          var value = existingId ? existingId + ',' + id : id;
+          // leave a mark on the link element which can be persisted
+          // through fragment clones.
+          link.setAttribute(LINK_UPDATE, value);
+        }
+        this.vm.$on(LINK_UPDATE, this.cb = function (link, path) {
+          if (link.activeIds.indexOf(id) > -1) {
+            link.updateClasses(path, _this.el);
+          }
+        });
+      },
+      unbind: function unbind() {
+        this.vm.$off(LINK_UPDATE, this.cb);
+      }
+    });
+
+    Vue.directive('link', {
+      priority: onPriority - 2,
+
+      bind: function bind() {
+        var vm = this.vm;
+        /* istanbul ignore if */
+        if (!vm.$route) {
+          warn$1('v-link can only be used inside a router-enabled app.');
+          return;
+        }
+        this.router = vm.$route.router;
+        // update things when the route changes
+        this.unwatch = vm.$watch('$route', _bind(this.onRouteUpdate, this));
+        // check v-link-active ids
+        var activeIds = this.el.getAttribute(LINK_UPDATE);
+        if (activeIds) {
+          this.el.removeAttribute(LINK_UPDATE);
+          this.activeIds = activeIds.split(',');
+        }
+        // no need to handle click if link expects to be opened
+        // in a new window/tab.
+        /* istanbul ignore if */
+        if (this.el.tagName === 'A' && this.el.getAttribute('target') === '_blank') {
+          return;
+        }
+        // handle click
+        this.handler = _bind(this.onClick, this);
+        this.el.addEventListener('click', this.handler);
+      },
+
+      update: function update(target) {
+        this.target = target;
+        if (isObject(target)) {
+          this.append = target.append;
+          this.exact = target.exact;
+          this.prevActiveClass = this.activeClass;
+          this.activeClass = target.activeClass;
+        }
+        this.onRouteUpdate(this.vm.$route);
+      },
+
+      onClick: function onClick(e) {
+        // don't redirect with control keys
+        /* istanbul ignore if */
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        // don't redirect when preventDefault called
+        /* istanbul ignore if */
+        if (e.defaultPrevented) return;
+        // don't redirect on right click
+        /* istanbul ignore if */
+        if (e.button !== 0) return;
+
+        var target = this.target;
+        if (target) {
+          // v-link with expression, just go
+          e.preventDefault();
+          this.router.go(target);
+        } else {
+          // no expression, delegate for an <a> inside
+          var el = e.target;
+          while (el.tagName !== 'A' && el !== this.el) {
+            el = el.parentNode;
+          }
+          if (el.tagName === 'A' && sameOrigin(el)) {
+            e.preventDefault();
+            var path = el.pathname;
+            if (this.router.history.root) {
+              path = path.replace(this.router.history.rootRE, '');
+            }
+            this.router.go({
+              path: path,
+              replace: target && target.replace,
+              append: target && target.append
+            });
+          }
+        }
+      },
+
+      onRouteUpdate: function onRouteUpdate(route) {
+        // router.stringifyPath is dependent on current route
+        // and needs to be called again whenver route changes.
+        var newPath = this.router.stringifyPath(this.target);
+        if (this.path !== newPath) {
+          this.path = newPath;
+          this.updateActiveMatch();
+          this.updateHref();
+        }
+        if (this.activeIds) {
+          this.vm.$emit(LINK_UPDATE, this, route.path);
+        } else {
+          this.updateClasses(route.path, this.el);
+        }
+      },
+
+      updateActiveMatch: function updateActiveMatch() {
+        this.activeRE = this.path && !this.exact ? new RegExp('^' + this.path.replace(/\/$/, '').replace(queryStringRE, '').replace(regexEscapeRE, '\\$&') + '(\\/|$)') : null;
+      },
+
+      updateHref: function updateHref() {
+        if (this.el.tagName !== 'A') {
+          return;
+        }
+        var path = this.path;
+        var router = this.router;
+        var isAbsolute = path.charAt(0) === '/';
+        // do not format non-hash relative paths
+        var href = path && (router.mode === 'hash' || isAbsolute) ? router.history.formatPath(path, this.append) : path;
+        if (href) {
+          this.el.href = href;
+        } else {
+          this.el.removeAttribute('href');
+        }
+      },
+
+      updateClasses: function updateClasses(path, el) {
+        var activeClass = this.activeClass || this.router._linkActiveClass;
+        // clear old class
+        if (this.prevActiveClass && this.prevActiveClass !== activeClass) {
+          toggleClasses(el, this.prevActiveClass, removeClass);
+        }
+        // remove query string before matching
+        var dest = this.path.replace(queryStringRE, '');
+        path = path.replace(queryStringRE, '');
+        // add new class
+        if (this.exact) {
+          if (dest === path ||
+          // also allow additional trailing slash
+          dest.charAt(dest.length - 1) !== '/' && dest === path.replace(trailingSlashRE, '')) {
+            toggleClasses(el, activeClass, addClass);
+          } else {
+            toggleClasses(el, activeClass, removeClass);
+          }
+        } else {
+          if (this.activeRE && this.activeRE.test(path)) {
+            toggleClasses(el, activeClass, addClass);
+          } else {
+            toggleClasses(el, activeClass, removeClass);
+          }
+        }
+      },
+
+      unbind: function unbind() {
+        this.el.removeEventListener('click', this.handler);
+        this.unwatch && this.unwatch();
+      }
+    });
+
+    function sameOrigin(link) {
+      return link.protocol === location.protocol && link.hostname === location.hostname && link.port === location.port;
+    }
+
+    // this function is copied from v-bind:class implementation until
+    // we properly expose it...
+    function toggleClasses(el, key, fn) {
+      key = key.trim();
+      if (key.indexOf(' ') === -1) {
+        fn(el, key);
+        return;
+      }
+      var keys = key.split(/\s+/);
+      for (var i = 0, l = keys.length; i < l; i++) {
+        fn(el, keys[i]);
+      }
+    }
+  }
+
+  var historyBackends = {
+    abstract: AbstractHistory,
+    hash: HashHistory,
+    html5: HTML5History
+  };
+
+  // late bind during install
+  var Vue = undefined;
+
+  /**
+   * Router constructor
+   *
+   * @param {Object} [options]
+   */
+
+  var Router = (function () {
+    function Router() {
+      var _this = this;
+
+      var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+      var _ref$hashbang = _ref.hashbang;
+      var hashbang = _ref$hashbang === undefined ? true : _ref$hashbang;
+      var _ref$abstract = _ref.abstract;
+      var abstract = _ref$abstract === undefined ? false : _ref$abstract;
+      var _ref$history = _ref.history;
+      var history = _ref$history === undefined ? false : _ref$history;
+      var _ref$saveScrollPosition = _ref.saveScrollPosition;
+      var saveScrollPosition = _ref$saveScrollPosition === undefined ? false : _ref$saveScrollPosition;
+      var _ref$transitionOnLoad = _ref.transitionOnLoad;
+      var transitionOnLoad = _ref$transitionOnLoad === undefined ? false : _ref$transitionOnLoad;
+      var _ref$suppressTransitionError = _ref.suppressTransitionError;
+      var suppressTransitionError = _ref$suppressTransitionError === undefined ? false : _ref$suppressTransitionError;
+      var _ref$root = _ref.root;
+      var root = _ref$root === undefined ? null : _ref$root;
+      var _ref$linkActiveClass = _ref.linkActiveClass;
+      var linkActiveClass = _ref$linkActiveClass === undefined ? 'v-link-active' : _ref$linkActiveClass;
+      babelHelpers.classCallCheck(this, Router);
+
+      /* istanbul ignore if */
+      if (!Router.installed) {
+        throw new Error('Please install the Router with Vue.use() before ' + 'creating an instance.');
+      }
+
+      // Vue instances
+      this.app = null;
+      this._children = [];
+
+      // route recognizer
+      this._recognizer = new RouteRecognizer();
+      this._guardRecognizer = new RouteRecognizer();
+
+      // state
+      this._started = false;
+      this._startCb = null;
+      this._currentRoute = {};
+      this._currentTransition = null;
+      this._previousTransition = null;
+      this._notFoundHandler = null;
+      this._notFoundRedirect = null;
+      this._beforeEachHooks = [];
+      this._afterEachHooks = [];
+
+      // trigger transition on initial render?
+      this._rendered = false;
+      this._transitionOnLoad = transitionOnLoad;
+
+      // history mode
+      this._root = root;
+      this._abstract = abstract;
+      this._hashbang = hashbang;
+
+      // check if HTML5 history is available
+      var hasPushState = typeof window !== 'undefined' && window.history && window.history.pushState;
+      this._history = history && hasPushState;
+      this._historyFallback = history && !hasPushState;
+
+      // create history object
+      var inBrowser = Vue.util.inBrowser;
+      this.mode = !inBrowser || this._abstract ? 'abstract' : this._history ? 'html5' : 'hash';
+
+      var History = historyBackends[this.mode];
+      this.history = new History({
+        root: root,
+        hashbang: this._hashbang,
+        onChange: function onChange(path, state, anchor) {
+          _this._match(path, state, anchor);
+        }
+      });
+
+      // other options
+      this._saveScrollPosition = saveScrollPosition;
+      this._linkActiveClass = linkActiveClass;
+      this._suppress = suppressTransitionError;
+    }
+
+    /**
+     * Allow directly passing components to a route
+     * definition.
+     *
+     * @param {String} path
+     * @param {Object} handler
+     */
+
+    // API ===================================================
+
+    /**
+    * Register a map of top-level paths.
+    *
+    * @param {Object} map
+    */
+
+    Router.prototype.map = function map(_map) {
+      for (var route in _map) {
+        this.on(route, _map[route]);
+      }
+      return this;
+    };
+
+    /**
+     * Register a single root-level path
+     *
+     * @param {String} rootPath
+     * @param {Object} handler
+     *                 - {String} component
+     *                 - {Object} [subRoutes]
+     *                 - {Boolean} [forceRefresh]
+     *                 - {Function} [before]
+     *                 - {Function} [after]
+     */
+
+    Router.prototype.on = function on(rootPath, handler) {
+      if (rootPath === '*') {
+        this._notFound(handler);
+      } else {
+        this._addRoute(rootPath, handler, []);
+      }
+      return this;
+    };
+
+    /**
+     * Set redirects.
+     *
+     * @param {Object} map
+     */
+
+    Router.prototype.redirect = function redirect(map) {
+      for (var path in map) {
+        this._addRedirect(path, map[path]);
+      }
+      return this;
+    };
+
+    /**
+     * Set aliases.
+     *
+     * @param {Object} map
+     */
+
+    Router.prototype.alias = function alias(map) {
+      for (var path in map) {
+        this._addAlias(path, map[path]);
+      }
+      return this;
+    };
+
+    /**
+     * Set global before hook.
+     *
+     * @param {Function} fn
+     */
+
+    Router.prototype.beforeEach = function beforeEach(fn) {
+      this._beforeEachHooks.push(fn);
+      return this;
+    };
+
+    /**
+     * Set global after hook.
+     *
+     * @param {Function} fn
+     */
+
+    Router.prototype.afterEach = function afterEach(fn) {
+      this._afterEachHooks.push(fn);
+      return this;
+    };
+
+    /**
+     * Navigate to a given path.
+     * The path can be an object describing a named path in
+     * the format of { name: '...', params: {}, query: {}}
+     * The path is assumed to be already decoded, and will
+     * be resolved against root (if provided)
+     *
+     * @param {String|Object} path
+     * @param {Boolean} [replace]
+     */
+
+    Router.prototype.go = function go(path) {
+      var replace = false;
+      var append = false;
+      if (Vue.util.isObject(path)) {
+        replace = path.replace;
+        append = path.append;
+      }
+      path = this.stringifyPath(path);
+      if (path) {
+        this.history.go(path, replace, append);
+      }
+    };
+
+    /**
+     * Short hand for replacing current path
+     *
+     * @param {String} path
+     */
+
+    Router.prototype.replace = function replace(path) {
+      if (typeof path === 'string') {
+        path = { path: path };
+      }
+      path.replace = true;
+      this.go(path);
+    };
+
+    /**
+     * Start the router.
+     *
+     * @param {VueConstructor} App
+     * @param {String|Element} container
+     * @param {Function} [cb]
+     */
+
+    Router.prototype.start = function start(App, container, cb) {
+      /* istanbul ignore if */
+      if (this._started) {
+        warn$1('already started.');
+        return;
+      }
+      this._started = true;
+      this._startCb = cb;
+      if (!this.app) {
+        /* istanbul ignore if */
+        if (!App || !container) {
+          throw new Error('Must start vue-router with a component and a ' + 'root container.');
+        }
+        /* istanbul ignore if */
+        if (App instanceof Vue) {
+          throw new Error('Must start vue-router with a component, not a ' + 'Vue instance.');
+        }
+        this._appContainer = container;
+        var Ctor = this._appConstructor = typeof App === 'function' ? App : Vue.extend(App);
+        // give it a name for better debugging
+        Ctor.options.name = Ctor.options.name || 'RouterApp';
+      }
+
+      // handle history fallback in browsers that do not
+      // support HTML5 history API
+      if (this._historyFallback) {
+        var _location = window.location;
+        var _history = new HTML5History({ root: this._root });
+        var path = _history.root ? _location.pathname.replace(_history.rootRE, '') : _location.pathname;
+        if (path && path !== '/') {
+          _location.assign((_history.root || '') + '/' + this.history.formatPath(path) + _location.search);
+          return;
+        }
+      }
+
+      this.history.start();
+    };
+
+    /**
+     * Stop listening to route changes.
+     */
+
+    Router.prototype.stop = function stop() {
+      this.history.stop();
+      this._started = false;
+    };
+
+    /**
+     * Normalize named route object / string paths into
+     * a string.
+     *
+     * @param {Object|String|Number} path
+     * @return {String}
+     */
+
+    Router.prototype.stringifyPath = function stringifyPath(path) {
+      var generatedPath = '';
+      if (path && typeof path === 'object') {
+        if (path.name) {
+          var extend = Vue.util.extend;
+          var currentParams = this._currentTransition && this._currentTransition.to.params;
+          var targetParams = path.params || {};
+          var params = currentParams ? extend(extend({}, currentParams), targetParams) : targetParams;
+          generatedPath = encodeURI(this._recognizer.generate(path.name, params));
+        } else if (path.path) {
+          generatedPath = encodeURI(path.path);
+        }
+        if (path.query) {
+          // note: the generated query string is pre-URL-encoded by the recognizer
+          var query = this._recognizer.generateQueryString(path.query);
+          if (generatedPath.indexOf('?') > -1) {
+            generatedPath += '&' + query.slice(1);
+          } else {
+            generatedPath += query;
+          }
+        }
+      } else {
+        generatedPath = encodeURI(path ? path + '' : '');
+      }
+      return generatedPath;
+    };
+
+    // Internal methods ======================================
+
+    /**
+    * Add a route containing a list of segments to the internal
+    * route recognizer. Will be called recursively to add all
+    * possible sub-routes.
+    *
+    * @param {String} path
+    * @param {Object} handler
+    * @param {Array} segments
+    */
+
+    Router.prototype._addRoute = function _addRoute(path, handler, segments) {
+      guardComponent(path, handler);
+      handler.path = path;
+      handler.fullPath = (segments.reduce(function (path, segment) {
+        return path + segment.path;
+      }, '') + path).replace('//', '/');
+      segments.push({
+        path: path,
+        handler: handler
+      });
+      this._recognizer.add(segments, {
+        as: handler.name
+      });
+      // add sub routes
+      if (handler.subRoutes) {
+        for (var subPath in handler.subRoutes) {
+          // recursively walk all sub routes
+          this._addRoute(subPath, handler.subRoutes[subPath],
+          // pass a copy in recursion to avoid mutating
+          // across branches
+          segments.slice());
+        }
+      }
+    };
+
+    /**
+     * Set the notFound route handler.
+     *
+     * @param {Object} handler
+     */
+
+    Router.prototype._notFound = function _notFound(handler) {
+      guardComponent('*', handler);
+      this._notFoundHandler = [{ handler: handler }];
+    };
+
+    /**
+     * Add a redirect record.
+     *
+     * @param {String} path
+     * @param {String} redirectPath
+     */
+
+    Router.prototype._addRedirect = function _addRedirect(path, redirectPath) {
+      if (path === '*') {
+        this._notFoundRedirect = redirectPath;
+      } else {
+        this._addGuard(path, redirectPath, this.replace);
+      }
+    };
+
+    /**
+     * Add an alias record.
+     *
+     * @param {String} path
+     * @param {String} aliasPath
+     */
+
+    Router.prototype._addAlias = function _addAlias(path, aliasPath) {
+      this._addGuard(path, aliasPath, this._match);
+    };
+
+    /**
+     * Add a path guard.
+     *
+     * @param {String} path
+     * @param {String} mappedPath
+     * @param {Function} handler
+     */
+
+    Router.prototype._addGuard = function _addGuard(path, mappedPath, _handler) {
+      var _this2 = this;
+
+      this._guardRecognizer.add([{
+        path: path,
+        handler: function handler(match, query) {
+          var realPath = mapParams(mappedPath, match.params, query);
+          _handler.call(_this2, realPath);
+        }
+      }]);
+    };
+
+    /**
+     * Check if a path matches any redirect records.
+     *
+     * @param {String} path
+     * @return {Boolean} - if true, will skip normal match.
+     */
+
+    Router.prototype._checkGuard = function _checkGuard(path) {
+      var matched = this._guardRecognizer.recognize(path, true);
+      if (matched) {
+        matched[0].handler(matched[0], matched.queryParams);
+        return true;
+      } else if (this._notFoundRedirect) {
+        matched = this._recognizer.recognize(path);
+        if (!matched) {
+          this.replace(this._notFoundRedirect);
+          return true;
+        }
+      }
+    };
+
+    /**
+     * Match a URL path and set the route context on vm,
+     * triggering view updates.
+     *
+     * @param {String} path
+     * @param {Object} [state]
+     * @param {String} [anchor]
+     */
+
+    Router.prototype._match = function _match(path, state, anchor) {
+      var _this3 = this;
+
+      if (this._checkGuard(path)) {
+        return;
+      }
+
+      var currentRoute = this._currentRoute;
+      var currentTransition = this._currentTransition;
+
+      if (currentTransition) {
+        if (currentTransition.to.path === path) {
+          // do nothing if we have an active transition going to the same path
+          return;
+        } else if (currentRoute.path === path) {
+          // We are going to the same path, but we also have an ongoing but
+          // not-yet-validated transition. Abort that transition and reset to
+          // prev transition.
+          currentTransition.aborted = true;
+          this._currentTransition = this._prevTransition;
+          return;
+        } else {
+          // going to a totally different path. abort ongoing transition.
+          currentTransition.aborted = true;
+        }
+      }
+
+      // construct new route and transition context
+      var route = new Route(path, this);
+      var transition = new RouteTransition(this, route, currentRoute);
+
+      // current transition is updated right now.
+      // however, current route will only be updated after the transition has
+      // been validated.
+      this._prevTransition = currentTransition;
+      this._currentTransition = transition;
+
+      if (!this.app) {
+        (function () {
+          // initial render
+          var router = _this3;
+          _this3.app = new _this3._appConstructor({
+            el: _this3._appContainer,
+            created: function created() {
+              this.$router = router;
+            },
+            _meta: {
+              $route: route
+            }
+          });
+        })();
+      }
+
+      // check global before hook
+      var beforeHooks = this._beforeEachHooks;
+      var startTransition = function startTransition() {
+        transition.start(function () {
+          _this3._postTransition(route, state, anchor);
+        });
+      };
+
+      if (beforeHooks.length) {
+        transition.runQueue(beforeHooks, function (hook, _, next) {
+          if (transition === _this3._currentTransition) {
+            transition.callHook(hook, null, next, {
+              expectBoolean: true
+            });
+          }
+        }, startTransition);
+      } else {
+        startTransition();
+      }
+
+      if (!this._rendered && this._startCb) {
+        this._startCb.call(null);
+      }
+
+      // HACK:
+      // set rendered to true after the transition start, so
+      // that components that are acitvated synchronously know
+      // whether it is the initial render.
+      this._rendered = true;
+    };
+
+    /**
+     * Set current to the new transition.
+     * This is called by the transition object when the
+     * validation of a route has succeeded.
+     *
+     * @param {Transition} transition
+     */
+
+    Router.prototype._onTransitionValidated = function _onTransitionValidated(transition) {
+      // set current route
+      var route = this._currentRoute = transition.to;
+      // update route context for all children
+      if (this.app.$route !== route) {
+        this.app.$route = route;
+        this._children.forEach(function (child) {
+          child.$route = route;
+        });
+      }
+      // call global after hook
+      if (this._afterEachHooks.length) {
+        this._afterEachHooks.forEach(function (hook) {
+          return hook.call(null, {
+            to: transition.to,
+            from: transition.from
+          });
+        });
+      }
+      this._currentTransition.done = true;
+    };
+
+    /**
+     * Handle stuff after the transition.
+     *
+     * @param {Route} route
+     * @param {Object} [state]
+     * @param {String} [anchor]
+     */
+
+    Router.prototype._postTransition = function _postTransition(route, state, anchor) {
+      // handle scroll positions
+      // saved scroll positions take priority
+      // then we check if the path has an anchor
+      var pos = state && state.pos;
+      if (pos && this._saveScrollPosition) {
+        Vue.nextTick(function () {
+          window.scrollTo(pos.x, pos.y);
+        });
+      } else if (anchor) {
+        Vue.nextTick(function () {
+          var el = document.getElementById(anchor.slice(1));
+          if (el) {
+            window.scrollTo(window.scrollX, el.offsetTop);
+          }
+        });
+      }
+    };
+
+    return Router;
+  })();
+
+  function guardComponent(path, handler) {
+    var comp = handler.component;
+    if (Vue.util.isPlainObject(comp)) {
+      comp = handler.component = Vue.extend(comp);
+    }
+    /* istanbul ignore if */
+    if (typeof comp !== 'function') {
+      handler.component = null;
+      warn$1('invalid component for route "' + path + '".');
+    }
+  }
+
+  /* Installation */
+
+  Router.installed = false;
+
+  /**
+   * Installation interface.
+   * Install the necessary directives.
+   */
+
+  Router.install = function (externalVue) {
+    /* istanbul ignore if */
+    if (Router.installed) {
+      warn$1('already installed.');
+      return;
+    }
+    Vue = externalVue;
+    applyOverride(Vue);
+    View(Vue);
+    Link(Vue);
+    exports$1.Vue = Vue;
+    Router.installed = true;
+  };
+
+  // auto install
+  /* istanbul ignore if */
+  if (typeof window !== 'undefined' && window.Vue) {
+    window.Vue.use(Router);
+  }
+
+  return Router;
+
+}));
+},{}],68:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.26
@@ -10760,6 +14361,26 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":3}]},{},[1]);
+},{"_process":65}],69:[function(require,module,exports){
+var inserted = exports.cache = {}
+
+exports.insert = function (css) {
+  if (inserted[css]) return
+  inserted[css] = true
+
+  var elem = document.createElement('style')
+  elem.setAttribute('type', 'text/css')
+
+  if ('textContent' in elem) {
+    elem.textContent = css
+  } else {
+    elem.styleSheet.cssText = css
+  }
+
+  document.getElementsByTagName('head')[0].appendChild(elem)
+  return elem
+}
+
+},{}]},{},[6]);
 
 //# sourceMappingURL=app.js.map

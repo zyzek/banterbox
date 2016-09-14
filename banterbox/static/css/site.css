@@ -24,6 +24,14 @@ body {
   justify-content: center;
   width: 100%; }
 
+.blur {
+  -webkit-transition: -webkit-filter 0.15s ease-out;
+  transition: -webkit-filter 0.15s ease-out;
+  transition: filter 0.15s ease-out;
+  transition: filter 0.15s ease-out, -webkit-filter 0.15s ease-out;
+  -webkit-filter: blur(0.1rem);
+  filter: blur(0.1rem); }
+
 .unit-component {
   cursor: pointer; }
   .unit-component * {
@@ -51,11 +59,11 @@ body {
       -webkit-box-pack: justify;
       justify-content: space-between;
       border: 2px solid #373a3c;
-      box-shadow: 0px 9px 5px -5px rgba(0, 0, 0, 0.5); }
+      box-shadow: 0px 4px 2px -2px rgba(0, 0, 0, 0.6); }
       .unit-component .unit-content-container .unit-content:hover {
         -webkit-transform: scale(1.15);
         transform: scale(1.15);
-        box-shadow: 0px 17px 28px -11px rgba(0, 0, 0, 0.5); }
+        box-shadow: 0px 17px 28px -11px black; }
 
 .unit-code {
   text-align: center;
