@@ -1,14 +1,17 @@
+'''
+	Django Rest Framework Model Testing 
+'''
 from myproject.apps.core.models import Account
 from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
-#account tests
-class AccountTests(APITestCase):
+'''
+	Profile Model Tests
+'''
+class ProfileModelTests(APITestCase):
+
     def test_create_account(self):
-        """
-        Ensure we can create a new account object.
-        """
         url = reverse('account-list')
         print(url)
 
@@ -18,4 +21,4 @@ class AccountTests(APITestCase):
         self.assertEqual(Account.objects.count(), 1)
         self.assertEqual(Account.objects.get().name, 'myusername')
 
-#
+        
