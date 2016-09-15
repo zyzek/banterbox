@@ -1,4 +1,3 @@
-import datetime
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
@@ -7,24 +6,45 @@ from rest_framework import viewsets
 from banterbox.serializers import *
 
 
-class ClassViewSet(viewsets.ModelViewSet):
-    queryset = Unit.objects.all().order_by('-created_at')
-    serializer_class = ClassSerializer
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
 
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-join_date')
-    serializer_class = UserSerializer
-
+class RoomStatusViewSet(viewsets.ModelViewSet):
+    queryset = RoomStatus.objects.all()
+    serializer_class = RoomStatusSerializer
 
 class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all().order_by('-created_at')
     serializer_class = RoomSerializer
 
-
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
-    serializer_class = ClassSerializer
+    serializer_class = CommentSerializer
+
+class UserRoleViewSet(viewsets.ModelViewSet):
+    queryset = UserRole.objects.all()
+    serializer_class = UserRoleSerializer
+
+class UserUnitRoleViewSet(viewsets.ModelViewSet):
+    queryset = UserUnitRole.objects.all()
+    serializer_class = UserUnitRoleSerializer
+
+class UnitViewSet(viewsets.ModelViewSet):
+    queryset = Unit.objects.all().order_by('-created_at')
+    serializer_class = UnitSerializer
+
+class UserUnitEnrolmentViewSet(viewsets.ModelViewSet):
+    queryset = UserUnitEnrolment.objects.all()
+    serializer_class = UserUnitEnrolmentSerializer
+
+class ScheduledRoomViewSet(viewsets.ModelViewSet):
+    queryset = ScheduledRoom.objects.all()
+    serializer_class = ScheduledRoomSerializer
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 def index(request):
@@ -35,11 +55,3 @@ def index(request):
     }
 
     return render(request, 'index.html', context)
-
-def room(request):
-    return render(request, 'room.html')
-
-def current_datetime(request):
-    now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
-    return HttpResponse(html)

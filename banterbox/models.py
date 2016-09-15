@@ -2,6 +2,17 @@ from django.db import models
 from django.contrib.auth.models import User
 from uuid import uuid4
 
+# For creating auth tokens
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+
+
+'''
+    Profile Model
+    description: TODO
+'''
 class Profile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -11,12 +22,20 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+'''
+    Room Status 
+    description: enumerates on ("commencing", "running", "paused", "concluding", "closed")
+'''
 class RoomStatus(models.Model):
     name = models.CharField(max_length=255, unique=True)
     
     def __str__(self):
         return self.name
 
+'''
+    Room model
+    description: TODO
+'''
 class Room(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
@@ -34,6 +53,10 @@ class Room(models.Model):
     def __str__(self):
         return self.name
 
+'''
+    Comment model
+    description: TODO
+'''
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     room = models.ForeignKey(Room, models.CASCADE)
@@ -48,12 +71,20 @@ class Comment(models.Model):
                                               self.timestamp.minute, self.room.name, \
                                               self.content[:20])
 
+'''
+    UserRole model
+    description: TODO
+'''
 class UserRole(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.name
 
+'''
+    User Unit model
+    description: TODO
+'''
 class UserUnitRole(models.Model):
     user = models.ForeignKey(User, models.CASCADE)
     unit = models.ForeignKey('Unit', models.CASCADE)
@@ -65,6 +96,10 @@ class UserUnitRole(models.Model):
     def __str__(self):
         return "{} is {} in {}".format(self.user.username, self.role.name, self.unit.code)
 
+'''
+    Unit model
+    description: TODO
+'''
 class Unit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
@@ -76,6 +111,10 @@ class Unit(models.Model):
     def __str__(self):
         return "{}: {}".format(self.code, self.name)
 
+'''
+    User Unit Enrolement model
+    description: TODO
+'''
 class UserUnitEnrolment(models.Model):
     unit = models.ForeignKey(Unit, models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
@@ -83,6 +122,10 @@ class UserUnitEnrolment(models.Model):
     def __str__(self):
         return "{} takes {}".format(self.user.username, self.unit.code)
 
+'''
+    Scheduled Room model
+    description: TODO
+'''
 class ScheduledRoom(models.Model):
     day = models.PositiveIntegerField()
     unit = models.ForeignKey(Unit, models.CASCADE)
@@ -92,3 +135,10 @@ class ScheduledRoom(models.Model):
     def __str__(self):
         return "{}: {}, [{} - {}]".format(self.unit.code, self.day, self.start_time, self.end_time)
 
+
+
+# Signal for auth tokens to create a token on save
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
