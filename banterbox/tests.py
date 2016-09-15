@@ -29,9 +29,7 @@ class ProfileModelTests(APITestCase):
         self.assertEqual(Account.objects.get().user, 'Alex')
         self.assertEqual(Account.objects.get().icon, 'iconString')
         self.assertEqual(Account.objects.get().email_notifications, 'True')
-        
-
-
+    
 
 '''
     Room status Model Tests
