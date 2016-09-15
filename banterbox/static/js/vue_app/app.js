@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Resource from 'vue-resource'
 import NotFound from './NotFound.vue'
 import Home from './Home.vue'
 import Rooms from './Rooms.vue'
@@ -7,6 +8,11 @@ import App from './App.vue'
 import Login from './Login.vue'
 
 Vue.use(Router)
+Vue.use(Resource)
+
+//
+Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('id_token');
+
 
 
 export const store = {
