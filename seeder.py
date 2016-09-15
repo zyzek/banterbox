@@ -75,6 +75,7 @@ def make_users(num):
         user.first_name = fake.first_name()
         user.last_name = fake.last_name()
         user.username = make_unikey(user.first_name, user.last_name)
+        user.email = fake.email()
         user.password = user_password
         user.save()
 
@@ -96,6 +97,7 @@ def make_units(num):
         lecturer.last_name = eu_fake.last_name()
         lecturer.username = make_unikey(lecturer.first_name, lecturer.last_name)
         lecturer.password = user_password
+        lecturer.email = eu_fake.email()
         lecturer.save()
         
         # Make the unit itself.

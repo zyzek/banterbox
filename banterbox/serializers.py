@@ -3,22 +3,24 @@ from rest_framework import serializers
 from banterbox.models import *
 
 
-class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profile
-        fields = ('id', 'user', 'icon', 'email_notifications')
+        model = User
+        fields = ('email', 'username', 'first_name','last_name','is_active','is_staff')
 
 
-class RoomStatusSerializer(serializers.HyperlinkedModelSerializer):
+class RoomStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomStatus
-        fields = ('name')
+        fields = ('id', 'name',)
 
 
 class RoomSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Room
-        fields = ('id', 'name', 'lecturer', 'unit', 'status', 'private', 'password_protected', 'password', 'created_at', 'commenced_at', 'concluded_at', 'closed_at')
+        fields = ('url', 'id', 'name', 'lecturer', 'unit', 'status', 'private', 'password_protected', 'created_at',
+                  'commenced_at', 'concluded_at', 'closed_at')
 
 
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
@@ -30,37 +32,42 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
 class UserRoleSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserRole
-        fields = ('name')
+        fields = ('id', 'name',)
 
 
 class UserUnitRoleSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserUnitRole
-        fields = ('user', 'unit', 'role')
+        fields = ('id', 'user', 'unit', 'role')
 
 
 class UnitSerializer(serializers.HyperlinkedModelSerializer):
+    lecturer = UserSerializer()
     class Meta:
         model = Unit
-        fields = ('id', 'name', 'code', 'lecturer', 'created_at', 'icon')
+        fields = ('url', 'id', 'name', 'code', 'lecturer', 'created_at', 'icon')
 
 
-class UserUnitEnrolmentSerializer(serializers.HyperlinkedModelSerializer):
+class UserUnitEnrolmentSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    unit = UnitSerializer()
+
     class Meta:
         model = UserUnitEnrolment
-        fields = ('unit', 'user')
+        fields = ('id','unit', 'user')
+
 
 class ScheduledRoomSerializer(serializers.HyperlinkedModelSerializer):
+    unit = UnitSerializer()
     class Meta:
         model = ScheduledRoom
-        fields = ('day', 'user', 'start_time', 'end_time')
+        fields = ('id', 'day', 'start_time', 'end_time','unit')
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    # Foreign key to user profile done like so
+    user = UserSerializer()
+
     class Meta:
-        model = User
-        fields = ('public_id', 'name', 'email', 'active', 'active', 'password', 'join_date')
-
-
-
-
+        model = Profile
+        fields = ('url', 'id','icon','email_notifications','user')

@@ -42,6 +42,9 @@ class ScheduledRoomViewSet(viewsets.ModelViewSet):
     queryset = ScheduledRoom.objects.all()
     serializer_class = ScheduledRoomSerializer
 
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 def index(request):
@@ -52,9 +55,3 @@ def index(request):
     }
 
     return render(request, 'index.html', context)
-
-
-def current_datetime(request):
-    now = datetime.datetime.now()
-    html = "<html><body>It is now %s.</body></html>" % now
-    return HttpResponse(html)
