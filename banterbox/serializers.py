@@ -44,10 +44,16 @@ class UnitSerializer(serializers.HyperlinkedModelSerializer):
         model = Unit
         fields = ('id', 'name', 'code', 'lecturer', 'created_at', 'icon')
 
-class UserUnitEnrolement(serializers.HyperlinkedModelSerializer):
+
+class UserUnitEnrolmentSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = UserUnitEnrolement
+        model = UserUnitEnrolment
         fields = ('unit', 'user')
+
+class ScheduledRoomSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ScheduledRoom
+        fields = ('day', 'user', 'start_time', 'end_time')
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -55,11 +61,6 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ('public_id', 'name', 'email', 'active', 'active', 'password', 'join_date')
 
-
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ('public_id', 'name', 'email', 'active', 'active', 'password', 'join_date')
 
 
 

@@ -34,11 +34,13 @@ class UnitViewSet(viewsets.ModelViewSet):
     queryset = Unit.objects.all().order_by('-created_at')
     serializer_class = UnitSerializer
 
+class UserUnitEnrolmentViewSet(viewsets.ModelViewSet):
+    queryset = UserUnitEnrolment.objects.all()
+    serializer_class = UserUnitEnrolmentSerializer
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-join_date')
-    serializer_class = UserSerializer
-
+class ScheduledRoomViewSet(viewsets.ModelViewSet):
+    queryset = ScheduledRoom.objects.all()
+    serializer_class = ScheduledRoomSerializer
 
 
 
