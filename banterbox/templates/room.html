@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block body %}
+    {% load static %}
+    <script src="{% static "js/chart.js" %}"></script>
+    <style>
+        #site-container {
+            width: 100%;
+        }
+
+        .vote-icon {
+            margin: 20px;
+            padding: 10px;
+        }
+
+        .vote-icon-container {
+            display: inline-flex;
+            width: 100px;
+            height: 100px;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            border-radius: 50px;
+            background-color: white;
+            color: black;
+            transition: all 0.15s ease-out;
+        }
+
+        .vote-icon-container:hover {
+            transform: scale(1.15);
+        }
+
+        .clicked {
+            transform: scale(1.15);
+        }
+
+        .clicked.active-red {
+            background-color: red;
+        }
+
+        .clicked.active-green {
+            background-color: green;
+        }
+
+        .comments-panel {
+            height: 350px;
+
+            width: 100%;
+            margin-top: 20px;
+            background-color: #ececec;
+            overflow-y: scroll;
+        }
+
+        .comment {
+            background-color: white;
+            border: 1px solid #d4d4d4;
+            border-radius: 3px;
+            padding: 7px;
+            margin: 5px;
+            transition: background-color 1s ease-out;
+        }
+
+        .comment-username {
+            font-weight: bold;
+        }
+
+        #canvas {
+            height: 250px;
+            background-color: white;
+            max-height: 250px;
+        }
+
+
+    .new{
+        background-color: deeppink;
+    }
+
+    </style>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="col-xs-12">
+                <div><h1><i class="unit-icon fa  fa-anchor"> </i> AUTO3300</h1></div>
+                <div style="color:dimgray;"><h3 style="font-weight: 200;">Automated executive Local Area
+                    Network</h3></div>
+            </div>
+            <canvas id="canvas" style="width:100%; height:350px;">
+            </canvas>
+            <div class="col-xs-12">
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="text-xs-center">
+                        <span class="vote-icon-container active-green" id="upvote">
+                            <i class="vote-icon fa fa-5x fa-thumbs-o-up"></i>
+                        </span>
+                        </div>
+                        <div class="text-xs-center">
+                        <span class="vote-icon-container active-red" id="downvote">
+                            <i class="vote-icon fa fa-5x fa-thumbs-o-down"></i>
+                        </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-8">
+                        <div class="comments-panel">
+                            <div class="comment">
+                                <span class="comment-username">Jimmy Bob</span>
+                                <div class="comment-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                    Consequuntur, cumque excepturi explicabo maiores modi nam quisquam soluta! Autem
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        var template = `
+                                    <span class="comment-username">Jimmy Bob</span>
+                                    <div class="comment-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+                                        Consequuntur, cumque excepturi explicabo maiores modi nam quisquam soluta! Autem
+                                </div>
+
+`
+        var comment_container = document.querySelector('.comments-panel')
+
+        var firstnames = [
+            'adorable',
+            'beautiful',
+            'clean',
+            'drab',
+            'elegant',
+            'fancy',
+            'glamorous',
+            'handsome',
+            'long',
+            'magnificent',
+            'old-Fashioned',
+            'plain',
+            'quaint',
+            'sparkling',
+            'ugliest',
+            'unsightly',
+            'wide-Eyed',
+        ]
+
+        var lastnames = [
+            'bird',
+            'cat',
+            'chicken',
+            'dog',
+            'duck',
+            'fish',
+            'frog',
+            'cow',
+            'hamster',
+            'horse',
+            'mouse',
+            'pig',
+            'rabbit',
+            'sheep',
+            'turtle',
+            'fox',
+            'goat',
+            'squirrel',
+            'monkey',
+            'kangaroo',
+            'giraffe',
+            'panda',
+            'lion',
+            'tiger',
+            'elephant',
+            'snake',
+            'alligator',
+            'koala',
+            'bear',
+            'zebra',
+            'hippo',
+            'rhino',
+            'seal',
+            'whale',
+            'shark',
+            'walrus',
+            'penguin',
+            'octopus',
+        ]
+
+        function randomName(arr) {
+            var name = arr[Math.floor(Math.random() * arr.length)];
+            name = name[0].toUpperCase() + name.substr(1).replace('-', '');
+            return name;
+        }
+
+        function addComment() {
+            var div = document.createElement('DIV')
+            div.classList.add('comment')
+            div.style.display = 'none';
+            div.innerHTML = template;
+
+            $(div).find('.comment-username').html(randomName(firstnames) + '' + randomName(lastnames))
+
+
+            comment_container.insertBefore(div, comment_container.children[0])
+            $(div).addClass('new')
+            $(div).slideDown(250)
+            setTimeout(() => $(div).removeClass('new'), 100)
+        }
+
+
+        (function loop() {
+            var rand = Math.round(Math.random() * (5000 - 500)) + 500;
+            setTimeout(function () {
+                addComment();
+                loop();
+            }, rand);
+        }());
+
+
+
+        var multiplier  = 4;
+
+        $('.vote-icon-container').on('click', function () {
+
+            if($(this).attr('id') === 'upvote'){
+                multiplier = 4
+            }else{
+                multiplier = -2
+            }
+
+            if ($(this).hasClass('clicked')) {
+                $('.clicked').removeClass('clicked')
+                multiplier = 0
+
+            } else {
+                $('.clicked').removeClass('clicked')
+                $(this).addClass('clicked')
+            }
+        })
+
+        Chart.defaults.global.maintainAspectRatio = false;
+        Chart.defaults.global.legend.display = false;
+
+
+        var canvas = document.getElementById('canvas')
+        var ctx = canvas.getContext('2d')
+
+
+        var arr = Array.from({length: 150}, (v, k) => Math.random() * 5)
+
+        config = {
+            data: {
+                labels: arr,
+                datasets: [{
+                    radius: 0,
+                    label: '# of Votes',
+                    data: arr,
+                    backgroundColor: 'rgba(255, 99, 132, 1)',
+                    borderColor: 'rgba(0,0,0,0.25)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        display: false,
+                        gridLines: {
+                            display: false
+                        },
+                    }],
+                    yAxes: [{
+                        display: false,
+                        gridLines: {
+                            display: false
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            {#                            min:0,#}
+                            {#                            max:10#}
+                        }
+                    }]
+                }
+            },
+            type: 'line'
+        }
+
+
+        var myLineChart = new Chart(ctx, config);
+
+
+        function randomLine() {
+            var data = myLineChart.data.datasets[0].data;
+            data.shift()
+            myLineChart.data.datasets[0].data.push(Math.max(0,(Math.random() * 10) + multiplier))
+            myLineChart.update();
+        }
+
+        setInterval(randomLine, 50)
+    </script>
+
+{% endblock %}
