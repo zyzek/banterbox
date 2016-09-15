@@ -44,6 +44,15 @@ def get_icon():
 
     return choice(fa_icons)
 
+def sample_with_dupes(population, num_items):
+    remaining = num_items
+    out_list = []
+    while remaining > 0:
+        to_remove = min(len(population), remaining)
+        remaining -= to_remove
+        out_list += sample(population, to_remove)
+    return out_list
+
 def add_statuses():
     for status in ["commencing", "running", "paused", "concluding", "closed"]:
         m = models.RoomStatus()
@@ -115,7 +124,7 @@ def make_units(num):
 
         # Select a bunch of users to be students of this unit.
         num_users = randint(STUDENTS//(2*UNITS), (2*STUDENTS)//UNITS)
-        users = sample(all_users, num_users)
+        users = sample_with_dupes(all_users, num_users)
 
         for i, user in enumerate(users):
             enrolment = models.UserUnitEnrolment()
@@ -157,7 +166,7 @@ def make_rooms(comments_per_room):
 
         unit_user_enrolments = models.UserUnitEnrolment.objects.all().filter(unit=cur_unit)
         unit_users = [enrolment.user for enrolment in unit_user_enrolments]
-        unit_user_sample = sample(unit_users, comments_per_room)
+        unit_user_sample = sample_with_dupes(unit_users, comments_per_room)
 
         for i in range(comments_per_room):
             comment = models.Comment()
