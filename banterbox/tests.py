@@ -12,13 +12,94 @@ from rest_framework import status
 class ProfileModelTests(APITestCase):
 
     def test_create_account(self):
+        #TODO - Set Correct URL
         url = reverse('account-list')
-        print(url)
 
-        data = {'name': 'myusername'}
+        #set user data
+        data = {'user': {'username' : 'Alex'}, 'icon' : 'iconString', 'email_notifications' : 'True'}
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Account.objects.count(), 1)
-        self.assertEqual(Account.objects.get().name, 'myusername')
 
+        #check responce code
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        #check object count
+        self.assertEqual(Account.objects.count(), 1)
+
+        #check attributes
+        self.assertEqual(Account.objects.get().user, 'Alex')
+        self.assertEqual(Account.objects.get().icon, 'iconString')
+        self.assertEqual(Account.objects.get().email_notifications, 'True')
         
+
+
+
+'''
+    Room status Model Tests
+'''
+class RoomStatusModelTests(APITestCase):
+    def __init__():
+        pass
+    #TESTS GO HERE
+
+'''
+    Room Model Tests
+'''
+class RoomModelTests(APITestCase):
+    def __init__():
+        pass
+    #TESTS GO HERE
+
+'''
+    Comment Model Tests
+'''
+class CommentModelTests(APITestCase):
+    def __init__():
+        pass
+    #TESTS GO HERE
+
+'''
+    User Role Model Tests
+'''
+class UserRoleModelTests(APITestCase):
+    def __init__():
+        pass
+    #TESTS GO HERE
+
+'''
+    User Unit Model Tests
+'''
+class UserUnitModelTests(APITestCase):
+    def __init__():
+        pass
+    #TESTS GO HERE
+
+'''
+    User Unit Enrolement Model Tests
+'''
+class UserUnitEnrolementModelTests(APITestCase):
+    def __init__():
+        pass
+    #TESTS GO HERE
+
+'''
+    Scheduled Room model Model Tests
+'''
+class ScheduledroomModelTests(APITestCase):
+    def __init__():
+        pass
+    #TESTS GO HERE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

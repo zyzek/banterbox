@@ -16,7 +16,8 @@ class Profile(models.Model):
         return self.user.username
 
 '''
-    Room Status enumerates on ("commencing", "running", "paused", "concluding", "closed")
+    Room Status 
+    description: enumerates on ("commencing", "running", "paused", "concluding", "closed")
 '''
 class RoomStatus(models.Model):
     name = models.CharField(max_length=255, unique=True)
