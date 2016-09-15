@@ -4,16 +4,16 @@ from rest_framework import routers
 from . import views
 
 router = routers.DefaultRouter()
-router.register(r'profile', views.ProfileViewSet)
-router.register(r'room-status', views.RoomStatusViewSet)
-router.register(r'room', views.RoomViewSet)
-router.register(r'comment', views.CommentViewSet)
-router.register(r'user', views.UserViewSet)
-router.register(r'user-role', views.UserRoleViewSet)
-router.register(r'user-unit-role', views.UserUnitRoleViewSet)
-router.register(r'unit', views.UnitViewSet)
-router.register(r'user-unit-enrolment', views.UserUnitEnrolmentViewSet)
-router.register(r'scheduled-room', views.ScheduledRoomViewSet)
+router.register(r'api/profile', views.ProfileViewSet)
+router.register(r'api/room-status', views.RoomStatusViewSet)
+router.register(r'api/room', views.RoomViewSet)
+router.register(r'api/comment', views.CommentViewSet)
+router.register(r'api/user', views.UserViewSet)
+router.register(r'api/user-role', views.UserRoleViewSet)
+router.register(r'api/user-unit-role', views.UserUnitRoleViewSet)
+router.register(r'api/unit', views.UnitViewSet)
+router.register(r'api/user-unit-enrolment', views.UserUnitEnrolmentViewSet)
+router.register(r'api/scheduled-room', views.ScheduledRoomViewSet)
 
 
 
