@@ -6,9 +6,33 @@ from rest_framework import viewsets
 from banterbox.serializers import *
 
 
-class ClassViewSet(viewsets.ModelViewSet):
-    queryset = Class.objects.all().order_by('-created_at')
-    serializer_class = ClassSerializer
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+class RoomStatusViewSet(viewsets.ModelViewSet):
+    queryset = RoomStatus.objects.all()
+    serializer_class = RoomStatusSerializer
+
+class RoomViewSet(viewsets.ModelViewSet):
+    queryset = Room.objects.all().order_by('-created_at')
+    serializer_class = RoomSerializer
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+class UserRoleViewSet(viewsets.ModelViewSet):
+    queryset = UserRole.objects.all()
+    serializer_class = UserRoleSerializer
+
+class UserUnitRoleViewSet(viewsets.ModelViewSet):
+    queryset = UserUnitRole.objects.all()
+    serializer_class = UserUnitRoleSerializer
+
+class UnitViewSet(viewsets.ModelViewSet):
+    queryset = Unit.objects.all().order_by('-created_at')
+    serializer_class = UnitSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -16,14 +40,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-class RoomViewSet(viewsets.ModelViewSet):
-    queryset = Room.objects.all().order_by('-created_at')
-    serializer_class = RoomSerializer
-
-
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = ClassSerializer
 
 
 def index(request):
