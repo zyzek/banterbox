@@ -38,6 +38,10 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
+    .unit-component{
+        /*transition: all 0.25s ease-out;*/
+    }
+
     .unit-component {
         z-index: 1;
 

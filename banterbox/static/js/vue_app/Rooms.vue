@@ -47,11 +47,9 @@
         route: {
             activate: function () {
                 this.store.state.main_centered = true;
-                console.log('ACTIVATING ROOMS')
             },
             deactivate: function () {
                 this.store.state.main_centered = false;
-                console.log('LATER, ROOMS')
             }
         }
     }

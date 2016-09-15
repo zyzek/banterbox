@@ -4,6 +4,7 @@ import NotFound from './NotFound.vue'
 import Home from './Home.vue'
 import Rooms from './Rooms.vue'
 import App from './App.vue'
+import Login from './Login.vue'
 
 Vue.use(Router)
 
@@ -23,6 +24,9 @@ export const router = new Router()
 router.map({
     '/home' : {
         component : Home
+    },
+    '/login' : {
+        component : Login
     },
     '/rooms' : {
         component : Rooms
