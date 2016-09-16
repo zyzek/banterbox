@@ -18,6 +18,9 @@ router.register(r'user-unit-enrolment', views.UserUnitEnrolmentViewSet)
 router.register(r'scheduled-room', views.ScheduledRoomViewSet)
 
 
+# router.register(r'user/current', views.current_user)
+
+
 
 
 
@@ -26,6 +29,7 @@ router.register(r'scheduled-room', views.ScheduledRoomViewSet)
 
 urlpatterns = [
     url(r'^api/auth/', auth_views.obtain_auth_token),
+    url(r'api/user/current', views.current_user),
     url(r'^api/', include(router.urls)),
     url(r'^$', views.index, name='index'),
 ]
