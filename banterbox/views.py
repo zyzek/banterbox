@@ -7,6 +7,7 @@ from random import random
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.request import Request
 from banterbox.models import  UserRole,UserUnitRole
 
 from banterbox.serializers import *
@@ -63,32 +64,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 
-# Decorator for a role permission thingo
-def requires_role(roles):
-    def function(func):
-        def func_wrapper(*args,**kwargs):
-
-            # If there's a list of permissions
-            if isinstance(roles,list):
-                pass
-
-            # Otherwise direct comparator
-            else:
-                pass
-
-
-            request = args[0]
-            user = request.user
-            user_role = UserUnitRole.objects.filter(user_id=user.id)
-
-            return Response({'user':request.user.username, 'roles' : [{'role' : r.role.name, 'unit' : {'name':r.unit.name, 'code' : r.unit.code}} for r in user_role]})
-        return func_wrapper
-    return function
-
-
-
+# Custom API view/responses etc
 @api_view(['GET'])
-@requires_role('')
 def current_user(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
