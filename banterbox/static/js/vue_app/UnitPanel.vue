@@ -1,6 +1,6 @@
 <template>
     <div @click="changeStatus"
-         class="unit-component col-xs-12 col-md-6 col-lg-3 animated"
+         class="unit-component col-xs-12 col-md-6 col-lg-3 "
          :class="{'status-open' : unit.status === 'open'}"
          :id="unit.public_id"
          style="border-radius:3px; padding:5px;display:flex"
@@ -9,7 +9,8 @@
         <div class="unit-content-container flex flex-direction-column"
              :class="{'full-height' : unit.status === 'open' ? true : false}"
         >
-            <div class="unit-next-day flex flex-children-center" :class="{'move-up' : hovered}" v-if="unit.status !== 'open'">
+            <div class="unit-next-day flex flex-children-center" :class="{'move-up' : hovered}"
+                 v-if="unit.status !== 'open'">
                 <span style="font-size:1.15rem">NEXT SESSION:</span>
                 <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
             </div>
@@ -38,19 +39,31 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
-    .unit-component{
-        /*transition: all 0.25s ease-out;*/
+    .unit-content {
+        &:hover{
+            transform:rotateX(25deg)
+        }
     }
 
-    .move-up{
-        transition: all 0.4s  ease;
-        transform:translateY(-30px);
+    .move-up {
+        transition: all 0.4s ease;
+        transform: translateY(-30px);
     }
 
     .unit-component {
         z-index: 1;
+        perspective:700px;
+        transition: all 0.25s ease-out;
+
 
         &:hover {
+
+            .unit-icon {
+                transform: scale(1.25) translateY(-10px);
+                box-shadow: 0px 7px 2px -2px rgba(0, 0, 0, 0.4);
+                transition: all 0.55s ease;
+            }
+
             .unit-button {
                 background-color: rgba(255, 255, 255, 0.5);
                 &:hover {
@@ -69,7 +82,7 @@
             return {
                 clicked: false,
                 store,
-                hovered : false,
+                hovered: false,
             }
         },
         methods: {

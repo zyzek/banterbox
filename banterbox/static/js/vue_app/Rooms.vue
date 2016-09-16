@@ -7,7 +7,7 @@
                 </h3>
                 <unit-panel :class="{blur: [null,unit.public_id].indexOf(store.rooms.hovered) < 0}"
                             v-for="unit in store.state.units"
-                            :unit="unit" transition="zoom" stagger="125"></unit-panel>
+                            :unit="unit" transition="expand" stagger="125"></unit-panel>
             </div>
         </div>
 

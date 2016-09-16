@@ -31,7 +31,6 @@
 <style lang="scss" rel="stylesheet/scss">
     $distance: 500px;
 
-
     #header {
         z-index: 100;
         width: 100%;
@@ -61,7 +60,6 @@
         }
     }
 
-
     #header-links {
         margin: 0;
         list-style: none;
@@ -86,16 +84,16 @@
     // Used for router transitions
     .expand {
         &-transition {
-            transition: all .3s ease;
+            transition: all .5s ease;
         }
 
         &-enter {
-            opacity: 0;
+            transform:scale(0);
 
         }
 
         &-leave {
-            opacity: 0;
+            transform:scale(0);
         }
     }
 
