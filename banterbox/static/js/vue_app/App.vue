@@ -5,10 +5,12 @@
             <div style="color: #eaeae5; padding:5px; font-size:1.6rem">BanterBox</div>
             <ul id="header-links">
                 <li v-link-active><a v-link="{ path : '/home'}">Home</a></li>
-                <li v-link-active><a v-link="{ path : '/login'}">Login</a></li>
                 <li v-link-active><a v-link="{ path : '/rooms' }">Rooms</a></li>
                 <li v-link-active><a v-link="{ path : '/404' }">404</a></li>
             </ul>
+
+            <div><a v-link="{ path : '/login'}"> <i class="fa fa-user"></i> Profile/Login</a>
+            </div>
         </div>
 
         <div class="container" id="main" :class="{centered : store.state.main_centered}">
@@ -81,21 +83,6 @@
         color: white;
     }
 
-    // Used for router transitions
-    .expand {
-        &-transition {
-            transition: all .5s ease;
-        }
-
-        &-enter {
-            transform:scale(0);
-
-        }
-
-        &-leave {
-            transform:scale(0);
-        }
-    }
 
 </style>
 

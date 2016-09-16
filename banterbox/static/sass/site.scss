@@ -13,6 +13,8 @@ $highlight: $sand;
 $primary: $chili-sauce;
 $secondary: $tomato-sauce;
 
+@import "transitions";
+
 
 #app{
   z-index: 1;

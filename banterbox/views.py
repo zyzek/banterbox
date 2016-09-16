@@ -8,7 +8,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from banterbox.models import  UserRole,UserUnitRole
+from banterbox.models import UserRole, UserUnitRole
 
 from banterbox.serializers import *
 
@@ -63,14 +63,21 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-
 # Custom API view/responses etc
 @api_view(['GET'])
 def current_user(request):
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
+    profile = Profile.objects.get(user_id=request.user.id)
 
+    output = {
+        'id'        : profile.id,
+        'icon'      : profile.icon,
+        'email'     : profile.user.email,
+        'first_name': profile.user.first_name,
+        'last_name' : profile.user.last_name,
+        'username'  : profile.user.username,
+    }
 
+    return Response(output)
 
 
 def index(request):

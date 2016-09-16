@@ -10,54 +10,65 @@ import Login from './Login.vue'
 Vue.use(Router)
 Vue.use(Resource)
 
-//
-Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('id_token');
-
+// Vue.http.headers.common['Authorization'] = 'Token ' + localStorage.getItem('id_token');
 
 
 export const store = {
-    rooms : {
-      hovered : null
+    user: {
+        authenticated: false,
+        profile_loaded: false,
+        username: null,
+        first_name: null,
+        last_name: null,
+        get full_name() {
+            if (!this.first_name || !this.last_name) {
+                return null
+            }
+            return `${this.first_name} ${this.last_name}`
+        }
+    },
+    rooms: {
+        hovered: null
     },
     state: {
         main_centered: false,
-        units : []
+        units: []
     },
     methodA: () => 1
 }
 export const router = new Router()
 
 router.map({
-    '/home' : {
-        component : Home
+    '/home': {
+        component: Home
     },
-    '/login' : {
-        component : Login
+    '/login': {
+        component: Login
     },
-    '/rooms' : {
-        component : Rooms
+    '/rooms': {
+        component: Rooms
     },
-    '/404' : {
-        component : NotFound
+    '/404': {
+        component: NotFound
     }
 })
 
 router.redirect({
-  '*': '/404'
+    '*': '/404'
 })
 
 
 router.start(App, '#app')
 
 Vue.transition('flip', {
-  enterClass: 'flipInY',
-  leaveClass: 'flipOutY'
+    enterClass: 'flipInY',
+    leaveClass: 'flipOutY'
 })
 Vue.transition('zoom', {
-  enterClass: 'zoomIn',
-  leaveClass: 'zoomOut'
+    enterClass: 'zoomIn',
+    leaveClass: 'zoomOut'
 })
 Vue.transition('fade', {
-  enterClass: 'fadeIn',
-  leaveClass: 'fadeOut'
+    enterClass: 'fadeIn',
+    leaveClass: 'fadeOut'
 })

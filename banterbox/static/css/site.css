@@ -1,3 +1,37 @@
+.expand-transition {
+  -webkit-transition: all .5s ease;
+  transition: all .5s ease; }
+
+.expand-enter {
+  -webkit-transform: scale(0);
+  transform: scale(0); }
+
+.expand-leave {
+  -webkit-transform: scale(0);
+  transform: scale(0); }
+
+.fade-transition {
+  -webkit-transition: all .5s ease;
+  transition: all .5s ease; }
+
+.fade-enter {
+  opacity: 0; }
+
+.fade-leave {
+  opacity: 0; }
+
+.grow-transition {
+  -webkit-transition: all 1s ease;
+  transition: all 1s ease;
+  overflow: hidden;
+  max-height: 100vh; }
+
+.grow-enter {
+  max-height: 0; }
+
+.grow-leave {
+  max-height: 0; }
+
 #app {
   z-index: 1; }
 
