@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import {store} from './app'
+import {store, router} from './app'
 
 
 const TOKEN_NAME = 'token_id'
@@ -28,8 +28,16 @@ export default {
     },
 
     logout(){
-        store.user.authenticated = false;
+        store.user.authenticated = false
+        store.user.email = null
+        store.user.first_name = null
+        store.user.icon = null
+        store.user.id = null
+        store.user.last_name = null
+        store.user.profile_loaded = false
+        store.user.username = null
         this.removeToken()
+        router.go('/login')
     },
 
     retrieveProfile(){

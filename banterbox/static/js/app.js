@@ -9,12 +9,23 @@ Object.defineProperty(exports, "__esModule", {
 
 var _app = require('./app');
 
+var _auth = require('./auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 exports.default = {
     data: function data() {
         return {
             store: _app.store,
             year: new Date().getFullYear()
         };
+    },
+    methods: {
+        logout: function logout() {
+            _auth2.default.logout();
+        }
     },
     computed: {
         centered: function centered() {
@@ -24,7 +35,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div id=\"content-wrapper\">\n    <div id=\"header\">\n        <div style=\"color: #eaeae5; padding:5px; font-size:1.6rem\">BanterBox</div>\n        <ul id=\"header-links\">\n            <li v-link-active=\"\"><a v-link=\"{ path : '/home'}\">Home</a></li>\n            <li v-link-active=\"\"><a v-link=\"{ path : '/rooms' }\">Rooms</a></li>\n            <li v-link-active=\"\"><a v-link=\"{ path : '/404' }\">404</a></li>\n        </ul>\n\n        <div><a v-link=\"{ path : '/login'}\"> <i class=\"fa fa-user\"></i> Profile/Login</a>\n        </div>\n    </div>\n\n    <div class=\"container\" id=\"main\" :class=\"{centered : store.state.main_centered}\">\n        <!--<router-view transition=\"expand\" transition-mode=\"out-in\"></router-view>-->\n        <router-view></router-view>\n    </div>\n\n\n    <div id=\"footer\">\n        <div style=\"padding:5px;\">\n            <div style=\"font-size: 0.5rem\">BanterBoys ™ ® {{ year }}</div>\n            <div style=\"font-size: 0.5rem\">By using this site, you agree to give HDs to the creators if you are in a\n                position of marking them.\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div id=\"content-wrapper\">\n    <div id=\"header\">\n        <div style=\"color: #eaeae5; padding:5px; font-size:1.6rem\">BanterBox</div>\n        <ul id=\"header-links\">\n            <li v-link-active=\"\"><a v-link=\"{ path : '/home'}\">Home</a></li>\n            <li v-link-active=\"\"><a v-link=\"{ path : '/rooms' }\">Rooms</a></li>\n            <li v-link-active=\"\"><a v-link=\"{ path : '/404' }\">404</a></li>\n        </ul>\n\n        <div>\n            <a v-link=\"{ path : '/login'}\"> <i class=\"fa fa-user\"></i> Profile/Login</a>\n            <span @click=\"logout\"> <i class=\"fa fa-sign-out\"></i> Logout</span>\n        </div>\n    </div>\n\n    <div class=\"container\" id=\"main\" :class=\"{centered : store.state.main_centered}\">\n        <!--<router-view transition=\"expand\" transition-mode=\"out-in\"></router-view>-->\n        <router-view></router-view>\n    </div>\n\n\n    <div id=\"footer\">\n        <div style=\"padding:5px;\">\n            <div style=\"font-size: 0.5rem\">BanterBoys ™ ® {{ year }}</div>\n            <div style=\"font-size: 0.5rem\">By using this site, you agree to give HDs to the creators if you are in a\n                position of marking them.\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -39,7 +50,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-da297784", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"./app":7,"vue":71,"vue-hot-reload-api":68,"vueify/lib/insert-css":72}],2:[function(require,module,exports){
+},{"./app":7,"./auth":8,"vue":71,"vue-hot-reload-api":68,"vueify/lib/insert-css":72}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -318,11 +329,15 @@ if (_auth2.default.getToken()) {
 
 var store = exports.store = {
     user: {
+        id: null,
         authenticated: false,
         profile_loaded: false,
-        username: null,
+        email: null,
+        icon: null,
         first_name: null,
         last_name: null,
+        username: null,
+
         get full_name() {
             if (!this.first_name || !this.last_name) {
                 return null;
@@ -420,7 +435,15 @@ exports.default = {
     },
     logout: function logout() {
         _app.store.user.authenticated = false;
+        _app.store.user.email = null;
+        _app.store.user.first_name = null;
+        _app.store.user.icon = null;
+        _app.store.user.id = null;
+        _app.store.user.last_name = null;
+        _app.store.user.profile_loaded = false;
+        _app.store.user.username = null;
         this.removeToken();
+        _app.router.go('/login');
     },
     retrieveProfile: function retrieveProfile() {
         _vue2.default.http.get('/api/user/current').then(function (response) {

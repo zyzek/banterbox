@@ -9,7 +9,9 @@
                 <li v-link-active><a v-link="{ path : '/404' }">404</a></li>
             </ul>
 
-            <div><a v-link="{ path : '/login'}"> <i class="fa fa-user"></i> Profile/Login</a>
+            <div>
+                <a v-link="{ path : '/login'}"> <i class="fa fa-user"></i> Profile/Login</a>
+                <span @click="logout"> <i class="fa fa-sign-out"></i> Logout</span>
             </div>
         </div>
 
@@ -88,11 +90,17 @@
 
 <script>
     import {store} from './app'
+    import Auth from './auth'
     export default {
         data: () => {
             return {
                 store,
                 year: new Date().getFullYear()
+            }
+        },
+        methods : {
+            logout : function () {
+                Auth.logout()
             }
         },
         computed: {
