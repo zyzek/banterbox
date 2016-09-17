@@ -63,5 +63,3 @@ router.beforeEach(function (transition) {
 
 // Start the app!
 router.start(App, '#app')
-
-console.log(router)

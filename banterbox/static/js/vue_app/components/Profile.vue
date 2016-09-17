@@ -63,6 +63,7 @@
     }
 
     #header-profile {
+        min-width: 120px;
         cursor: pointer;
         margin-right: 10px;
         color: white;
