@@ -33,16 +33,13 @@
 .grow {
   &-transition {
     transition: all 1s ease;
-    overflow: hidden;
-    max-height: 100vh;
-  }
-
-  &-enter {
-    max-height: 0;
+    max-height: 2rem;
 
   }
 
-  &-leave {
+  &-leave, &-enter  {
     max-height: 0;
+    transform:scaleY(0);
+    opacity:0;
   }
 }

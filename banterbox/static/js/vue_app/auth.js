@@ -9,7 +9,7 @@ export default {
 
 
     authenticate(username, password, remember_me = false) {
-        Vue.http.post('/api/auth/', {username, password})
+        return Vue.http.post('/api/auth/', {username, password})
 
         // On success
             .then(response => {
@@ -17,18 +17,17 @@ export default {
                     console.log(token, response)
 
                     this.storeToken(token, remember_me)
-
-                    // Now that we're authenticated, collect profile data
-                    this.retrieveProfile()
+                    return Promise.resolve(response)
                 },
                 // On error
                 err => {
-                    console.log({err})
                     this.removeToken()
+                    return Promise.reject(err)
                 })
     },
 
     logout(){
+        let auth = store.user.authenticated
         store.user.authenticated = false
         store.user.email = null
         store.user.first_name = null
@@ -38,7 +37,12 @@ export default {
         store.user.profile_loaded = false
         store.user.username = null
         this.removeToken()
-        router.go('/login')
+
+        if(auth) {
+            return Promise.resolve()
+        }else{
+            return Promise.reject()
+        }
     },
 
     retrieveProfile(){
@@ -81,7 +85,6 @@ export default {
             console.log(store)
             store.user.authenticated = true
         }
-
 
 
         return token;

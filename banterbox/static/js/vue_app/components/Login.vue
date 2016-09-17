@@ -13,15 +13,19 @@
 
 
             <div class="col-xs-12">
-                <input type="checkbox" v-model="remember_me" id="remember-me"> <label for="remember-me">Remember me</label>
+                <input type="checkbox" v-model="remember_me" id="remember-me"> <label for="remember-me">Remember
+                me</label>
             </div>
 
             <div class="col-xs-12" v-if="store.user.profile_loaded" transition="grow">
-                <p>Welcome back, <i class="fa fa-{{store.user.icon}}"></i>{{store.user.first_name}} {{store.user.last_name}}</p>
+                <p>Welcome back, <i class="fa fa-{{store.user.icon}}"></i>{{store.user.first_name}}
+                    {{store.user.last_name}}</p>
             </div>
 
             <div class="col-xs-12">
-                <button class="btn btn-success btn-block" :disabled="username.length == 0 || password.length == 0">SUBMIT</button>
+                <button class="btn btn-success btn-block" :disabled="username.length == 0 || password.length == 0">
+                    SUBMIT
+                </button>
             </div>
 
 
@@ -33,12 +37,12 @@
 <style lang="scss" rel="stylesheet/scss">
     #login-view {
 
-        #remember-me{
+        #remember-me {
             margin-right: 10px;;
         }
 
-        input{
-            padding:5px;
+        input {
+            padding: 5px;
         }
 
         .large-text {
@@ -60,8 +64,9 @@
 
 
 <script>
-    import {store} from './store'
-    import AuthService from './auth'
+    import {store} from '../store'
+    import {router} from '../app'
+    import AuthService from '../auth'
 
     export default {
         data: function () {
@@ -69,12 +74,23 @@
                 store,
                 username: '',
                 password: '',
-                remember_me : false
+                remember_me: true
             }
         },
-        methods : {
+        methods: {
             authenticate(){
-                AuthService.authenticate(this.username,this.password,this.remember_me)
+                AuthService.authenticate(this.username, this.password, this.remember_me)
+                        // If auth worked
+                        .then(response => {
+                            AuthService.retrieveProfile()
+                            this.store.alerts.addAlert({message:'Login successful. Redirecting to room selection',type:'success', duration:2000})
+
+                            setTimeout(() => {
+                                router.go('/rooms')
+                            }, 1500)
+                        })
+                        // If auth failed
+                        .catch(reject => console.log({reject}))
 
             }
         },

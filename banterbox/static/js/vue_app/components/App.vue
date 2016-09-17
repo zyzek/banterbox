@@ -13,6 +13,7 @@
                 <a v-link="{ path : '/login'}"> <i class="fa fa-user"></i> Profile/Login</a>
                 <span @click="logout"> <i class="fa fa-sign-out"></i> Logout</span>
             </div>
+            <alert-box></alert-box>
         </div>
 
         <div class="container" id="main" :class="{centered : store.state.main_centered}">
@@ -42,6 +43,7 @@
         background-color: #323e4c;
         display: flex;
         align-items: baseline;
+        flex-direction: column;
     }
 
     #content-wrapper {
@@ -89,9 +91,14 @@
 </style>
 
 <script>
-    import {store} from './store'
-    import Auth from './auth'
+    import {store} from '../store'
+    import Auth from '../auth'
+    import AlertBox from './AlertBox.vue'
+    import {router} from '../app'
     export default {
+        components : {
+            'alert-box' : AlertBox
+        },
         data: () => {
             return {
                 store,
@@ -100,7 +107,10 @@
         },
         methods : {
             logout : function () {
-                Auth.logout()
+                Auth.logout().then(() => {
+                    store.alerts.addAlert({message:'Logged out.', duration:1500})
+                    setTimeout(() => router.go('/login'), 500)
+                })
             }
         },
         computed: {

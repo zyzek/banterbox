@@ -75,7 +75,7 @@
 </style>
 
 <script>
-    import {store} from './store'
+    import {store} from '../store'
     export default {
         props: ['unit'],
         data: function () {

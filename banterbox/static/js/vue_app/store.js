@@ -23,5 +23,42 @@ export const store = {
         main_centered: false,
         units: []
     },
-    methodA: () => 1
+    alerts: {
+        alerts: [],
+
+        /**
+         * Adds an alert
+         * @param message
+         * @param type
+         * @param duration : if this is set to a falsey value, it is treated as a non dismissible alert
+         */
+        addAlert({message, type = 'info', duration = 3500}){
+
+            const valid_types = ['info', 'warning', 'danger', 'success']
+            if (valid_types.indexOf(type) === -1) {
+                type = 'info'
+            }
+
+            const alert = {message, type, duration}
+            this.alerts.push(alert)
+
+
+            if (duration) {
+                setTimeout(() => {
+                    const index = this.alerts.indexOf(alert)
+                    this.alerts.splice(index, 1)
+                }, duration)
+            }
+        },
+
+        /**
+         * Dismisses an alert if it's possible to do so.
+         * @param index
+         */
+        dismissAlert(index){
+            if (this.alerts[index].duration) {
+                this.alerts.splice(index, 1)
+            }
+        }
+    }
 }

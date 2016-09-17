@@ -24,9 +24,9 @@
 
 
 <script>
-    import {store} from './store'
+    import {store} from '../store'
     import UnitPanel from './UnitPanel.vue'
-    import units from './units'
+    import units from '../units'
 
     export default {
         components: {

@@ -23,14 +23,13 @@
 .grow-transition {
   -webkit-transition: all 1s ease;
   transition: all 1s ease;
-  overflow: hidden;
-  max-height: 100vh; }
+  max-height: 2rem; }
 
-.grow-enter {
-  max-height: 0; }
-
-.grow-leave {
-  max-height: 0; }
+.grow-leave, .grow-enter {
+  max-height: 0;
+  -webkit-transform: scaleY(0);
+  transform: scaleY(0);
+  opacity: 0; }
 
 #app {
   z-index: 1; }
