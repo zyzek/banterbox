@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import {store, router} from './app'
+import {router} from './app'
+import {store} from './store'
 
 
 const TOKEN_NAME = 'token_id'
@@ -74,9 +75,14 @@ export default {
             token = sessionStorage.getItem(TOKEN_NAME)
         }
 
+        // Todo : ping server to check if token is valid, if not then invalidate everything
         if (token) {
             this.setTokenHeader(token)
+            console.log(store)
+            store.user.authenticated = true
         }
+
+
 
         return token;
     },

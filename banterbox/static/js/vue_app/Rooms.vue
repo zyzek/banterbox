@@ -24,7 +24,7 @@
 
 
 <script>
-    import {store} from './app'
+    import {store} from './store'
     import UnitPanel from './UnitPanel.vue'
     import units from './units'
 

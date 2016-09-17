@@ -6,6 +6,7 @@ import Home from './Home.vue'
 import Rooms from './Rooms.vue'
 import App from './App.vue'
 import Login from './Login.vue'
+import {store} from './store'
 
 Vue.use(Router)
 Vue.use(Resource)
@@ -19,33 +20,6 @@ if (Auth.getToken()) {
 // Vue.http.headers.common['Authorization'] = 'Token ' + localStorage.getItem('id_token');
 
 
-export const store = {
-    user: {
-        id: null,
-        authenticated: false,
-        profile_loaded: false,
-        email: null,
-        icon: null,
-        first_name: null,
-        last_name: null,
-        username: null,
-
-        get full_name() {
-            if (!this.first_name || !this.last_name) {
-                return null
-            }
-            return `${this.first_name} ${this.last_name}`
-        }
-    },
-    rooms: {
-        hovered: null
-    },
-    state: {
-        main_centered: false,
-        units: []
-    },
-    methodA: () => 1
-}
 export const router = new Router()
 
 router.map({
@@ -65,6 +39,18 @@ router.map({
 
 router.redirect({
     '*': '/404'
+})
+
+// The routes that do not require authentication
+const free_routes = ['/login','/404']
+
+// Check auth before travelling to the next route
+router.beforeEach(function (transition) {
+  if (free_routes.indexOf(transition.to.path) === -1  && !store.user.authenticated) {
+    transition.redirect('/login')
+  } else {
+    transition.next()
+  }
 })
 
 

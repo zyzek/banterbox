@@ -89,7 +89,7 @@
 </style>
 
 <script>
-    import {store} from './app'
+    import {store} from './store'
     import Auth from './auth'
     export default {
         data: () => {
