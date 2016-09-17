@@ -10,6 +10,12 @@ import Login from './Login.vue'
 Vue.use(Router)
 Vue.use(Resource)
 
+import Auth from './auth'
+
+if(Auth.getToken()){
+    Auth.retrieveProfile()
+}
+
 // Vue.http.headers.common['Authorization'] = 'Token ' + localStorage.getItem('id_token');
 
 

@@ -1,14 +1,19 @@
 <template>
     <div id="login-view">
         <form class="row" @submit.prevent="authenticate">
-            <div class="col-xs-12">
+            <div class="col-xs-12 large-text column-stack">
                 <label>Unikey</label>
                 <input type="text" v-model="username">
             </div>
 
-            <div class="col-xs-12">
+            <div class="col-xs-12 large-text column-stack">
                 <label>Password</label>
                 <input type="password" v-model="password">
+            </div>
+
+
+            <div class="col-xs-12">
+                <input type="checkbox" v-model="remember_me" id="remember-me"> <label for="remember-me">Remember me</label>
             </div>
 
             <div class="col-xs-12" v-if="store.user.profile_loaded" transition="grow">
@@ -28,15 +33,19 @@
 <style lang="scss" rel="stylesheet/scss">
     #login-view {
 
+        #remember-me{
+            margin-right: 10px;;
+        }
+
         input{
             padding:5px;
         }
 
-        .row {
+        .large-text {
             font-size: 2rem;
         }
 
-        .row > div {
+        .column-stack {
             display: flex;
             flex-direction: column;
             margin-bottom: 15px;
@@ -46,47 +55,27 @@
             margin-top: 1.5rem;
             font-size: 1.2rem;
         }
-
-        label {
-            display: block;
-        }
     }
 </style>
 
 
 <script>
-    import Vue from 'vue'
     import {store} from './app'
+    import AuthService from './auth'
+
     export default {
         data: function () {
             return {
                 store,
                 username: '',
                 password: '',
-
+                remember_me : false
             }
         },
-        methods: {
-            authenticate: function () {
-                this.$http.post('/api/auth/', {username: this.username, password: this.password})
-                        .then(response => {
-                                    console.log(response.data.token, response)
-                                    Vue.http.headers.common['Authorization'] = `Token ${response.data.token}`;
-                                    this.store.user.authenticated = true;
+        methods : {
+            authenticate(){
+                AuthService.authenticate(this.username,this.password,this.remember_me)
 
-                                    // Now that we're authenticated, collect profile data
-                                    this.$http.get('/api/user/current').then(response => {
-                                        this.store.user.profile_loaded = true
-                                        Object.assign(this.store.user,response.data)
-                                    }, err => console.log({err_2: err}))
-
-
-                                },
-                                err => {
-                                    console.log({err})
-                                    delete Vue.http.headers.common['Authorization'];
-                                    this.store.user.authenticated = false;
-                                })
             }
         },
         route: {
