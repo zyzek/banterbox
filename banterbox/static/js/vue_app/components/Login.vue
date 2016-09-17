@@ -1,6 +1,8 @@
 <template>
     <div id="login-view">
         <form class="row" @submit.prevent="authenticate">
+
+
             <div class="col-xs-12 large-text column-stack">
                 <label>Unikey</label>
                 <input type="text" v-model="username">
@@ -17,10 +19,12 @@
                 me</label>
             </div>
 
-            <div class="col-xs-12" v-if="store.user.profile_loaded" transition="grow">
-                <p>Welcome back, <i class="fa fa-{{store.user.icon}}"></i>{{store.user.first_name}}
-                    {{store.user.last_name}}</p>
+            <div class="col-xs-12 ">
+                <div class="col-xs-12" id="login-error" :class="{open : rejected}">
+                    Incorrect name or password.
+                </div>
             </div>
+
 
             <div class="col-xs-12">
                 <button class="btn btn-success btn-block" :disabled="username.length == 0 || password.length == 0">
@@ -35,6 +39,20 @@
 
 
 <style lang="scss" rel="stylesheet/scss">
+
+    #login-error {
+        overflow: hidden;
+        max-height: 0px;
+        transition: all 0.3s ease;
+        color: white;
+
+        &.open {
+            padding: 10px;
+            background-color: red;
+            max-height: 3rem;
+        }
+    }
+
     #login-view {
 
         #remember-me {
@@ -74,23 +92,35 @@
                 store,
                 username: '',
                 password: '',
-                remember_me: true
+                remember_me: true,
+                rejected: false
             }
         },
         methods: {
             authenticate(){
+                this.rejected = false
                 AuthService.authenticate(this.username, this.password, this.remember_me)
-                        // If auth worked
+                // If auth worked
                         .then(response => {
                             AuthService.retrieveProfile()
-                            this.store.alerts.addAlert({message:'Login successful. Redirecting to room selection',type:'success', duration:2000})
+                            this.store.alerts.addAlert({
+                                message: 'Login successful. Redirecting to room selection',
+                                type: 'success',
+                                duration: 2000
+                            })
 
                             setTimeout(() => {
                                 router.go('/rooms')
                             }, 1500)
                         })
+
                         // If auth failed
-                        .catch(reject => console.log({reject}))
+                        .catch(reject => {
+                            if (reject.status === 400) {
+                                this.rejected = true
+                            }
+                            console.log({reject})
+                        })
 
             }
         },

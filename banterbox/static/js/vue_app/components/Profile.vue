@@ -84,6 +84,9 @@
 
 
 <script>
+
+    import swal from 'sweetalert2'
+
     import {store} from '../store'
     import AuthService from '../auth'
     import {router} from '../app'
@@ -99,10 +102,20 @@
                 this.dropdown_open = !this.dropdown_open
             },
             logout() {
-                AuthService.logout().then(() => {
-                    this.dropdown_open = false
-                    store.alerts.addAlert({message: 'Logged out.', duration: 1500})
-                    setTimeout(() => router.go('/login'), 250)
+
+                swal({
+                    title: 'Are you sure?',
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#17b000',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, log me out'
+                }).then(function () {
+                    AuthService.logout().then(() => {
+                        this.dropdown_open = false
+                        store.alerts.addAlert({message: 'Logged out.', duration: 1500})
+                        setTimeout(() => router.go('/login'), 250)
+                    })
                 })
             }
         },

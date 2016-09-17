@@ -9,7 +9,7 @@ elixir.config.publicPath =  __dirname + '/banterbox/static/'
 
 
 elixir(function(mix) {
-    mix.sass('site.scss')
+    mix.sass(['./node_modules/sweetalert2/src/sweetalert2.scss','site.scss'])
 
     mix.browserify('vue_app/app.js')
 });
