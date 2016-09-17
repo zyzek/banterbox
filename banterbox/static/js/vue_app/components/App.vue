@@ -2,16 +2,19 @@
 
     <div id="content-wrapper">
         <div id="header">
-            <div style="color: #eaeae5; padding:5px; font-size:1.6rem">BanterBox</div>
-            <ul id="header-links">
-                <li v-link-active><a v-link="{ path : '/home'}">Home</a></li>
-                <li v-link-active><a v-link="{ path : '/rooms' }">Rooms</a></li>
-                <li v-link-active><a v-link="{ path : '/404' }">404</a></li>
-            </ul>
+            <div id="header-main"
+                 style="display:flex; justify-content: space-between; align-items: baseline; width:100%; flex-wrap: wrap">
+                <div style="display:flex;align-items: baseline">
+                    <div style="color: #eaeae5; padding:5px; font-size:1.6rem">BanterBox</div>
+                    <ul id="header-links">
+                        <li v-link-active><a v-link="{ path : '/home'}">Home</a></li>
+                        <li v-link-active><a v-link="{ path : '/rooms' }">Rooms</a></li>
+                        <li v-link-active><a v-link="{ path : '/404' }">404</a></li>
+                    </ul>
+                </div>
 
-            <div>
-                <a v-link="{ path : '/login'}"> <i class="fa fa-user"></i> Profile/Login</a>
-                <span @click="logout"> <i class="fa fa-sign-out"></i> Logout</span>
+                <!-- TODO: PROFILE GOETH HERETH -->
+                <profile></profile>
             </div>
             <alert-box></alert-box>
         </div>
@@ -34,13 +37,14 @@
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
+    @import "../../../sass/colours";
     $distance: 500px;
 
     #header {
         z-index: 100;
         width: 100%;
         margin-bottom: 15px;
-        background-color: #323e4c;
+        background-color: $header-background;
         display: flex;
         align-items: baseline;
         flex-direction: column;
@@ -70,7 +74,7 @@
         margin: 0;
         list-style: none;
 
-        color: #757f8c;
+        color: $header-link-default;
 
         a {
             color: inherit;
@@ -92,12 +96,17 @@
 
 <script>
     import {store} from '../store'
-    import Auth from '../auth'
-    import AlertBox from './AlertBox.vue'
+    import AuthService from '../auth'
     import {router} from '../app'
+
+    import AlertBox from './AlertBox.vue'
+    import Profile from './Profile.vue'
+
+
     export default {
-        components : {
-            'alert-box' : AlertBox
+        components: {
+            'alert-box': AlertBox,
+            'profile' : Profile
         },
         data: () => {
             return {
@@ -105,19 +114,10 @@
                 year: new Date().getFullYear()
             }
         },
-        methods : {
-            logout : function () {
-                Auth.logout().then(() => {
-                    store.alerts.addAlert({message:'Logged out.', duration:1500})
-                    setTimeout(() => router.go('/login'), 500)
-                })
-            }
-        },
         computed: {
             centered: function () {
-                console.log(this.$route.path)
                 return this.$route.path === '/rooms'
             }
-        },
+        }
     }
 </script>

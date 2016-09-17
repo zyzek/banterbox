@@ -32,7 +32,7 @@ export const store = {
          * @param type
          * @param duration : if this is set to a falsey value, it is treated as a non dismissible alert
          */
-        addAlert({message, type = 'info', duration = 3500}){
+        addAlert({message, type = 'info', duration = 2500}){
 
             const valid_types = ['info', 'warning', 'danger', 'success']
             if (valid_types.indexOf(type) === -1) {

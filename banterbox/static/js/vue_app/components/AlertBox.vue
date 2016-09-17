@@ -7,7 +7,7 @@
                  :class="alert.type"
                  transition="grow"
             >
-                <span>{{ alert.message }}</span> <i v-if="alert.duration" class="fa fa-times"></i>
+                <span class="alert-message">{{ alert.message }}</span> <i v-if="alert.duration" class="fa fa-times"></i>
             </div>
         </div>
     </div>
@@ -15,6 +15,12 @@
 
 
 <style lang="scss" rel="stylesheet/scss">
+
+    .alert-message{
+        flex:1;
+        text-align: center;
+    }
+
     #alert-box-container {
         position: relative;
         width: 100%;

@@ -82,7 +82,6 @@ export default {
         // Todo : ping server to check if token is valid, if not then invalidate everything
         if (token) {
             this.setTokenHeader(token)
-            console.log(store)
             store.user.authenticated = true
         }
 

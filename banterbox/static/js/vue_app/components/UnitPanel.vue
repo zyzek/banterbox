@@ -87,7 +87,6 @@
         },
         methods: {
             click: function () {
-                console.log(this.clicked)
                 this.clicked = !this.clicked
                 window.location.href = '/room'
             },

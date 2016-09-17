@@ -1,19 +1,12 @@
-$swamp-green: #468966;
-$sand: #FFF0A5;
-$subway-cheese: #ffc36b;
-$usyd-orange : rgb(231,79,49);
-$chili-sauce: #B64926;
-$tomato-sauce: #8E2800;
-$sleepy-blue: #7a9cb2;
-$faded-black: #373a3c;
-$pastel-gray: #dbdbdb;
+@import "transitions";
+@import "colours";
+
 
 $background: $pastel-gray;
 $highlight: $sand;
 $primary: $chili-sauce;
 $secondary: $tomato-sauce;
 
-@import "transitions";
 
 
 #app{

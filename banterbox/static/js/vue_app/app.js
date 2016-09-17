@@ -17,9 +17,6 @@ if (Auth.getToken()) {
     Auth.retrieveProfile()
 }
 
-// Vue.http.headers.common['Authorization'] = 'Token ' + localStorage.getItem('id_token');
-
-
 export const router = new Router()
 
 router.map({
@@ -64,17 +61,7 @@ router.beforeEach(function (transition) {
 })
 
 
+// Start the app!
 router.start(App, '#app')
 
-Vue.transition('flip', {
-    enterClass: 'flipInY',
-    leaveClass: 'flipOutY'
-})
-Vue.transition('zoom', {
-    enterClass: 'zoomIn',
-    leaveClass: 'zoomOut'
-})
-Vue.transition('fade', {
-    enterClass: 'fadeIn',
-    leaveClass: 'fadeOut'
-})
+console.log(router)
