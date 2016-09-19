@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK_DOCS = {
-    'HIDE_DOCS': True  # Default: False
+    'HIDE_DOCS': False  # Default: False
 }
 
 MIDDLEWARE_CLASSES = [
