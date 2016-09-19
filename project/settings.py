@@ -39,8 +39,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_extensions',
+    'rest_framework_docs',
 
 ]
+
+REST_FRAMEWORK_DOCS = {
+    'HIDE_DOCS': False  # Default: False
+}
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
