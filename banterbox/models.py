@@ -139,6 +139,7 @@ class ScheduledRoom(models.Model):
 
 # Signal for auth tokens to create a token on save
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
+def create_user_extras(sender, instance=None, created=False, **kwargs):
     if created:
+        Profile.objects.create(user_id=instance.id, icon='university')
         Token.objects.create(user=instance)

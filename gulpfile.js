@@ -1,7 +1,19 @@
 const gulp = require('gulp')
-const sass = require('gulp-sass')
-const autoprefixer = require('gulp-autoprefixer');
-const sourcemaps = require('gulp-sourcemaps')
+const elixir = require('laravel-elixir')
+require('laravel-elixir-vueify');
+
+
+elixir.config.assetsPath =  __dirname +  '/banterbox/static/'
+elixir.config.publicPath =  __dirname + '/banterbox/static/'
+
+
+
+elixir(function(mix) {
+    mix.sass(['./node_modules/sweetalert2/src/sweetalert2.scss','site.scss'])
+
+    mix.browserify('vue_app/app.js')
+});
+
 
 
 gulp.task('say-hi', () => {
@@ -15,11 +27,11 @@ const sass_options = {
 };
 
 
-
-gulp.task('scss', () => {
-    return gulp.src('banterbox/static/scss/site.scss')
-        .pipe(sass())
-        .pipe(autoprefixer())
-        .pipe(sourcemaps.write())
-        .pipe(gulp.dest('banterbox/static/css'))
-})
+//
+// gulp.task('sass', () => {
+//     return gulp.src('banterbox/static/sass/site.sass')
+//         .pipe(sass())
+//         .pipe(autoprefixer())
+//         .pipe(sourcemaps.write())
+//         .pipe(gulp.dest('banterbox/static/css'))
+// })

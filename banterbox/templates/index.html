@@ -1,64 +1,15 @@
-{% extends "base.html" %}
+{% extends "vue_base.html" %}
 
 {% block body %}
     {% load static %}
 
-    {% verbatim %}
-    <div id="app">
-        <div class="row">
-            <unit-panel :unit="units[0]"></unit-panel>
-            <unit-panel :unit="units[1]"></unit-panel>
-            <unit-panel :unit="units[2]"></unit-panel>
-            <unit-panel :unit="units[3]"></unit-panel>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-12" style="font-size: 0.85rem;">
-            <div>Here's your classes. This line of text is to make the page look like it knows what
-            it's doing. Ahoy mihoy.</div>
-            <div>Make lectures great again 2016</div>
-        </div>
-    </div>
+    <div id="app"></div>
 
 
-
-    <script type="vue/template" id="unit-template">
-        <div @click="click"
-
-             class="unit-component col-xs-12 col-md-6 col-lg-3"
-             :class="{'status-open' : unit.status === 'open'}"
-             :id="unit.public_id"
-             style="border-radius:3px; padding:5px;display:flex"
-        >
-            <div class="unit-content-container flex flex-direction-column"
-                 :class="{'full-height' : unit.status === 'open' ? true : false}"
-            >
-                <div class="unit-next-day flex flex-children-center" v-if="unit.status !== 'open'">
-                    <span style="font-size:1.15rem">NEXT SESSION:</span>
-                    <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
-                </div>
-                <div class="unit-content">
-                    <div>
-                        <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
-                            <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
-                        </div>
-                        <p class="unit-code">{{ unit.code }}</p>
-                        <p class="unit-name">{{ unit.name }}</p>
-                    </div>
-
-                    <div class="flex flex-direction-column flex-children-center">
-                        <span style="font-size:0.75rem;margin-bottom:10px">STATUS : {{ unit.status.toUpperCase() }}</span>
-                        <div class="unit-button-border" style="margin-bottom: 15px;">
-                            <button class="unit-button">ENTER ROOM</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </script>
-    {% endverbatim %}
-
-    <script src="{% static "js/vue_app/app.js" %}"></script>
+    <script src="{% static "js/app.js" %}"></script>
 {% endblock %}
+
+
+
+
+

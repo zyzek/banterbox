@@ -69,6 +69,7 @@ def make_superuser():
     admin = models.User()
     admin.username = "admin"
     admin.password = make_password("admin")
+    admin.email = 'admin@banterbox.edu.au'
     admin.is_superuser = True
     admin.is_staff = True
     admin.save()
@@ -88,10 +89,11 @@ def make_users(num):
         user.password = user_password
         user.save()
 
-        profile = models.Profile()
-        profile.user = user
-        profile.icon = get_icon()
-        profile.save()
+        # Profile is now auto generator when a user is created
+        # profile = models.Profile()
+        # profile.user = user
+        # profile.icon = get_icon()
+        # profile.save()
 
 def make_units(num):
     all_users = list(models.User.objects.all())
