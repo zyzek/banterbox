@@ -1,0 +1,45 @@
+// Used for router transitions
+.expand {
+  &-transition {
+    transition: all .5s ease;
+  }
+
+  &-enter {
+    transform: scale(0);
+
+  }
+
+  &-leave {
+    transform: scale(0);
+  }
+}
+
+.fade {
+  &-transition {
+    transition: all .5s ease;
+  }
+
+  &-enter {
+    opacity : 0;
+
+  }
+
+  &-leave {
+    opacity : 0;
+  }
+}
+
+
+.grow {
+  &-transition {
+    transition: all 1s ease;
+    max-height: 2rem;
+
+  }
+
+  &-leave, &-enter  {
+    max-height: 0;
+    transform:scaleY(0);
+    opacity:0;
+  }
+}
