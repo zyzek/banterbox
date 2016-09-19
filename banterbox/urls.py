@@ -28,4 +28,5 @@ urlpatterns = [
     url(r'^api/auth/', auth_views.obtain_auth_token),
     url(r'^api/', include(router.urls)),
     url(r'^$', views.index, name='index'),
+    url(r'^docs/', include('rest_framework_docs.urls')),
 ]
