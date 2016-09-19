@@ -1,3 +1,5 @@
+### Ignore virtual env
+pythonEnvironment
 
 ### Windows template
 # Windows image file caches

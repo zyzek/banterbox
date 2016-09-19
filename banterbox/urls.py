@@ -18,12 +18,6 @@ router.register(r'user-unit-enrolment', views.UserUnitEnrolmentViewSet)
 router.register(r'scheduled-room', views.ScheduledRoomViewSet)
 
 
-# router.register(r'user/current', views.current_user)
-
-
-
-
-
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 
@@ -32,4 +26,5 @@ urlpatterns = [
     url(r'api/user/current', views.current_user),
     url(r'^api/', include(router.urls)),
     url(r'^$', views.index, name='index'),
+    url(r'^docs/', include('rest_framework_docs.urls')),
 ]
