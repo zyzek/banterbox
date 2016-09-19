@@ -18,9 +18,6 @@ router.register(r'user-unit-enrolment', views.UserUnitEnrolmentViewSet)
 router.register(r'scheduled-room', views.ScheduledRoomViewSet)
 
 
-
-
-
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 
