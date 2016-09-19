@@ -38,9 +38,9 @@ export default {
         store.user.username = null
         this.removeToken()
 
-        if(auth) {
+        if (auth) {
             return Promise.resolve()
-        }else{
+        } else {
             return Promise.reject()
         }
     },

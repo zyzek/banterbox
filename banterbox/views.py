@@ -63,10 +63,11 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
+
 # Custom API view/responses etc
 @api_view(['GET'])
 def current_user(request):
-    profile = Profile.objects.get(user_id=request.user.id)
+    profile = request.user.profile
 
     output = {
         'id'        : profile.id,

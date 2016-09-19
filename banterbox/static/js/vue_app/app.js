@@ -20,6 +20,9 @@ if (Auth.getToken()) {
 export const router = new Router()
 
 router.map({
+    '/': {
+        component: Home
+    },
     '/home': {
         component: Home
     },
@@ -39,25 +42,23 @@ router.redirect({
 })
 
 // The routes that do not require authentication
-const free_routes = ['/login','/404']
-const unauthorized_alert = {message : 'You must be logged in to visit that page', type : 'danger'}
+const free_routes = ['/login', '/404']
 
 // Check auth before travelling to the next route
 router.beforeEach(function (transition) {
-  if (free_routes.indexOf(transition.to.path) === -1  && !store.user.authenticated) {
+    if (free_routes.indexOf(transition.to.path) === -1 && !store.user.authenticated) {
 
-      // Set the alert to unauthorized
-      if(store.alerts.alerts.indexOf(unauthorized_alert) === -1){
-          let {message,type} = unauthorized_alert
-          store.alerts.addAlert({message,type})
-      }
+        // Set the alert to unauthorized
+        store.alerts.addAlert({
+            message: 'You must be logged in to visit that page',
+            type: 'danger'
+        })
 
 
-
-    transition.redirect('/login')
-  } else {
-    transition.next()
-  }
+        transition.redirect('/login')
+    } else {
+        transition.next()
+    }
 })
 
 

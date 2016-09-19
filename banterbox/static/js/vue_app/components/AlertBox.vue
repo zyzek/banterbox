@@ -7,7 +7,7 @@
                  :class="alert.type"
                  transition="grow"
             >
-                <span class="alert-message">{{ alert.message }}</span> <i v-if="alert.duration" class="fa fa-times"></i>
+                <span class="alert-message">{{ alert.message }} </span> <i v-if="alert.duration" class="fa fa-times"></i>
             </div>
         </div>
     </div>

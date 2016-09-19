@@ -56,6 +56,9 @@ if (_auth2.default.getToken()) {
 var router = exports.router = new _vueRouter2.default();
 
 router.map({
+    '/': {
+        component: _Home2.default
+    },
     '/home': {
         component: _Home2.default
     },
@@ -76,19 +79,16 @@ router.redirect({
 
 // The routes that do not require authentication
 var free_routes = ['/login', '/404'];
-var unauthorized_alert = { message: 'You must be logged in to visit that page', type: 'danger' };
 
 // Check auth before travelling to the next route
 router.beforeEach(function (transition) {
     if (free_routes.indexOf(transition.to.path) === -1 && !_store.store.user.authenticated) {
 
         // Set the alert to unauthorized
-        if (_store.store.alerts.alerts.indexOf(unauthorized_alert) === -1) {
-            var message = unauthorized_alert.message;
-            var type = unauthorized_alert.type;
-
-            _store.store.alerts.addAlert({ message: message, type: type });
-        }
+        _store.store.alerts.addAlert({
+            message: 'You must be logged in to visit that page',
+            type: 'danger'
+        });
 
         transition.redirect('/login');
     } else {
