@@ -20,7 +20,6 @@
         </div>
 
         <div class="container" id="main" :class="{centered : store.state.main_centered}">
-            <!--<router-view transition="expand" transition-mode="out-in"></router-view>-->
             <router-view></router-view>
         </div>
 

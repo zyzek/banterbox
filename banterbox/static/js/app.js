@@ -26,9 +26,13 @@ var _Home = require('./components/Home.vue');
 
 var _Home2 = _interopRequireDefault(_Home);
 
-var _Rooms = require('./components/Rooms.vue');
+var _RoomPage = require('./components/RoomPage.vue');
 
-var _Rooms2 = _interopRequireDefault(_Rooms);
+var _RoomPage2 = _interopRequireDefault(_RoomPage);
+
+var _Room = require('./components/Room.vue');
+
+var _Room2 = _interopRequireDefault(_Room);
 
 var _App = require('./components/App.vue');
 
@@ -66,7 +70,10 @@ router.map({
         component: _Login2.default
     },
     '/rooms': {
-        component: _Rooms2.default
+        component: _RoomPage2.default
+    },
+    '/rooms/:id': {
+        component: _Room2.default
     },
     '/404': {
         component: _NotFound2.default
@@ -99,7 +106,7 @@ router.beforeEach(function (transition) {
 // Start the app!
 router.start(_App2.default, '#app');
 
-},{"./auth":2,"./components/App.vue":4,"./components/Home.vue":5,"./components/Login.vue":6,"./components/NotFound.vue":7,"./components/Rooms.vue":9,"./store":11,"vue":75,"vue-resource":73,"vue-router":74}],2:[function(require,module,exports){
+},{"./auth":2,"./components/App.vue":4,"./components/Home.vue":5,"./components/Login.vue":6,"./components/NotFound.vue":7,"./components/Room.vue":9,"./components/RoomPage.vue":10,"./store":12,"vue":76,"vue-resource":74,"vue-router":75}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -208,7 +215,7 @@ exports.default = {
     }
 };
 
-},{"./app":1,"./store":11,"vue":75}],3:[function(require,module,exports){
+},{"./app":1,"./store":12,"vue":76}],3:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.alert-message {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  text-align: center; }\n\n/* line 8, stdin */\n#alert-box-container {\n  position: relative;\n  width: 100%; }\n\n/* line 13, stdin */\n#alert-box {\n  position: absolute;\n  width: 100%; }\n\n/* line 18, stdin */\n.alert-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: white;\n  cursor: pointer; }\n  /* line 25, stdin */\n  .alert-row:not(:last-of-type) {\n    border-bottom: 1px solid #717171; }\n  /* line 29, stdin */\n  .alert-row:last-of-type {\n    box-shadow: 0 2px 2px 0 #c5c5c5; }\n  /* line 33, stdin */\n  .alert-row i {\n    padding: 4px; }\n  /* line 37, stdin */\n  .alert-row.warning {\n    background-color: #fcad10; }\n  /* line 41, stdin */\n  .alert-row.danger {\n    background-color: #F00; }\n  /* line 45, stdin */\n  .alert-row.success {\n    background-color: #17b000; }\n  /* line 49, stdin */\n  .alert-row.info {\n    background-color: #0089ff; }\n")
 'use strict';
@@ -227,7 +234,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"alert-box-container\">\n    <div id=\"alert-box\">\n        <div v-for=\"alert in store.alerts.alerts\" @click=\"store.alerts.dismissAlert($index)\" class=\"alert-row\" :class=\"alert.type\" transition=\"grow\">\n            <span class=\"alert-message\">{{ alert.message }}</span> <i v-if=\"alert.duration\" class=\"fa fa-times\"></i>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"alert-box-container\">\n    <div id=\"alert-box\">\n        <div v-for=\"alert in store.alerts.alerts\" @click=\"store.alerts.dismissAlert($index)\" class=\"alert-row\" :class=\"alert.type\" transition=\"grow\">\n            <span class=\"alert-message\">{{ alert.message }} </span> <i v-if=\"alert.duration\" class=\"fa fa-times\"></i>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -242,7 +249,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-75b22685", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":11,"vue":75,"vue-hot-reload-api":72,"vueify/lib/insert-css":76}],4:[function(require,module,exports){
+},{"../store":12,"vue":76,"vue-hot-reload-api":73,"vueify/lib/insert-css":77}],4:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 5, stdin */\n#header {\n  z-index: 100;\n  width: 100%;\n  margin-bottom: 15px;\n  background-color: #323e4c;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: baseline;\n      -ms-flex-align: baseline;\n          align-items: baseline;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column; }\n\n/* line 15, stdin */\n#content-wrapper {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1; }\n\n/* line 21, stdin */\n#main {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1; }\n  /* line 26, stdin */\n  #main > div {\n    width: 100%; }\n  /* line 30, stdin */\n  #main.centered {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n                -ms-grid-row-align: center;\n            align-items: center; }\n\n/* line 35, stdin */\n#header-links {\n  margin: 0;\n  list-style: none;\n  color: #757f8c; }\n  /* line 41, stdin */\n  #header-links a {\n    color: inherit;\n    text-decoration: inherit; }\n  /* line 46, stdin */\n  #header-links li {\n    padding: 0px 15px;\n    display: inline-block; }\n\n/* line 52, stdin */\n.v-link-active {\n  color: white; }\n")
 'use strict';
@@ -287,7 +294,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div id=\"content-wrapper\">\n    <div id=\"header\">\n        <div id=\"header-main\" style=\"display:flex; justify-content: space-between; align-items: baseline; width:100%; flex-wrap: wrap\">\n            <div style=\"display:flex;align-items: baseline\">\n                <div style=\"color: #eaeae5; padding:5px; font-size:1.6rem\">BanterBox</div>\n                <ul id=\"header-links\">\n                    <li v-link-active=\"\"><a v-link=\"{ path : '/home'}\">Home</a></li>\n                    <li v-link-active=\"\"><a v-link=\"{ path : '/rooms' }\">Rooms</a></li>\n                    <li v-link-active=\"\"><a v-link=\"{ path : '/404' }\">404</a></li>\n                </ul>\n            </div>\n\n            <!-- TODO: PROFILE GOETH HERETH -->\n            <profile></profile>\n        </div>\n        <alert-box></alert-box>\n    </div>\n\n    <div class=\"container\" id=\"main\" :class=\"{centered : store.state.main_centered}\">\n        <!--<router-view transition=\"expand\" transition-mode=\"out-in\"></router-view>-->\n        <router-view></router-view>\n    </div>\n\n\n    <div id=\"footer\">\n        <div style=\"padding:5px;\">\n            <div style=\"font-size: 0.5rem\">BanterBoys ™ ® {{ year }}</div>\n            <div style=\"font-size: 0.5rem\">By using this site, you agree to give HDs to the creators if you are in a\n                position of marking them.\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div id=\"content-wrapper\">\n    <div id=\"header\">\n        <div id=\"header-main\" style=\"display:flex; justify-content: space-between; align-items: baseline; width:100%; flex-wrap: wrap\">\n            <div style=\"display:flex;align-items: baseline\">\n                <div style=\"color: #eaeae5; padding:5px; font-size:1.6rem\">BanterBox</div>\n                <ul id=\"header-links\">\n                    <li v-link-active=\"\"><a v-link=\"{ path : '/home'}\">Home</a></li>\n                    <li v-link-active=\"\"><a v-link=\"{ path : '/rooms' }\">Rooms</a></li>\n                    <li v-link-active=\"\"><a v-link=\"{ path : '/404' }\">404</a></li>\n                </ul>\n            </div>\n\n            <!-- TODO: PROFILE GOETH HERETH -->\n            <profile></profile>\n        </div>\n        <alert-box></alert-box>\n    </div>\n\n    <div class=\"container\" id=\"main\" :class=\"{centered : store.state.main_centered}\">\n        <router-view></router-view>\n    </div>\n\n\n    <div id=\"footer\">\n        <div style=\"padding:5px;\">\n            <div style=\"font-size: 0.5rem\">BanterBoys ™ ® {{ year }}</div>\n            <div style=\"font-size: 0.5rem\">By using this site, you agree to give HDs to the creators if you are in a\n                position of marking them.\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -302,7 +309,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-338a84db", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../app":1,"../auth":2,"../store":11,"./AlertBox.vue":3,"./Profile.vue":8,"vue":75,"vue-hot-reload-api":72,"vueify/lib/insert-css":76}],5:[function(require,module,exports){
+},{"../app":1,"../auth":2,"../store":12,"./AlertBox.vue":3,"./Profile.vue":8,"vue":76,"vue-hot-reload-api":73,"vueify/lib/insert-css":77}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -330,7 +337,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-446038d6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":75,"vue-hot-reload-api":72}],6:[function(require,module,exports){
+},{"vue":76,"vue-hot-reload-api":73}],6:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#login-error {\n  overflow: hidden;\n  max-height: 0px;\n  -webkit-transition: all 0.3s ease;\n  transition: all 0.3s ease;\n  color: white; }\n  /* line 9, stdin */\n  #login-error.open {\n    padding: 10px;\n    background-color: red;\n    max-height: 3rem; }\n\n/* line 18, stdin */\n#login-view #remember-me {\n  margin-right: 10px; }\n\n/* line 22, stdin */\n#login-view input {\n  padding: 5px; }\n\n/* line 26, stdin */\n#login-view .large-text {\n  font-size: 2rem; }\n\n/* line 30, stdin */\n#login-view .column-stack {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  margin-bottom: 15px; }\n\n/* line 36, stdin */\n#login-view button {\n  margin-top: 1.5rem;\n  font-size: 1.2rem; }\n")
 'use strict';
@@ -413,7 +420,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bdd14ba", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../app":1,"../auth":2,"../store":11,"vue":75,"vue-hot-reload-api":72,"vueify/lib/insert-css":76}],7:[function(require,module,exports){
+},{"../app":1,"../auth":2,"../store":12,"vue":76,"vue-hot-reload-api":73,"vueify/lib/insert-css":77}],7:[function(require,module,exports){
 ;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<h1 style=\"color:red\">OH NO 404</h1>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
@@ -425,7 +432,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-26cd1fb6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":75,"vue-hot-reload-api":72}],8:[function(require,module,exports){
+},{"vue":76,"vue-hot-reload-api":73}],8:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 8, stdin */\n#header-profile-dropdown-links {\n  position: relative;\n  color: #323e4c; }\n  /* line 12, stdin */\n  #header-profile-dropdown-links .dropdown-menu-item {\n    border: 1px solid #a8a8a8;\n    border-bottom: none;\n    display: block; }\n    /* line 16, stdin */\n    #header-profile-dropdown-links .dropdown-menu-item:last-of-type {\n      border-bottom: 1px solid #a8a8a8; }\n    /* line 22, stdin */\n    #header-profile-dropdown-links .dropdown-menu-item:hover {\n      color: #ececec;\n      background-color: #323e4c; }\n  /* line 29, stdin */\n  #header-profile-dropdown-links > div {\n    width: 100%;\n    max-height: 0;\n    overflow: hidden;\n    -webkit-transition: all 0.25s ease-out;\n    transition: all 0.25s ease-out;\n    position: absolute;\n    background-color: #ececec; }\n  /* line 38, stdin */\n  #header-profile-dropdown-links .open {\n    max-height: 100px; }\n\n/* line 43, stdin */\n#header-profile {\n  min-width: 120px;\n  cursor: pointer;\n  margin-right: 10px;\n  color: white; }\n  /* line 49, stdin */\n  #header-profile i {\n    padding: 7px; }\n  /* line 53, stdin */\n  #header-profile a {\n    color: inherit;\n    text-decoration: inherit; }\n    /* line 57, stdin */\n    #header-profile a.v-link-active {\n      color: white; }\n")
 'use strict';
@@ -507,7 +514,30 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-9291213a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../app":1,"../auth":2,"../store":11,"sweetalert2":71,"vue":75,"vue-hot-reload-api":72,"vueify/lib/insert-css":76}],9:[function(require,module,exports){
+},{"../app":1,"../auth":2,"../store":12,"sweetalert2":72,"vue":76,"vue-hot-reload-api":73,"vueify/lib/insert-css":77}],9:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    data: function data() {
+        return {};
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n    <div class=\"col-xs-12\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-anchor\"> </i> AUTO3300</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">Automated executive Local Area\n                Network</h3></div>\n        </div>\n        <canvas id=\"canvas\" style=\"width:100%; height:350px;\">\n        </canvas>\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-green\" id=\"upvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-up\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-red\" id=\"downvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-down\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n                    <div class=\"comments-panel\">\n                        <div class=\"comment\">\n                            <span class=\"comment-username\">Jimmy Bob</span>\n                            <div class=\"comment-text\">Lorem ipsum dolor sit amet, consectetur adipisicing elit.\n                                Consequuntur, cumque excepturi explicabo maiores modi nam quisquam soluta! Autem\n                            </div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-1f13dcde", module.exports)
+  } else {
+    hotAPI.update("_v-1f13dcde", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":76,"vue-hot-reload-api":73}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -572,14 +602,14 @@ if (module.hot) {(function () {  module.hot.accept()
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   if (!module.hot.data) {
-    hotAPI.createRecord("_v-21f7c1b2", module.exports)
+    hotAPI.createRecord("_v-1a38d440", module.exports)
   } else {
-    hotAPI.update("_v-21f7c1b2", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+    hotAPI.update("_v-1a38d440", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":11,"../units":12,"./UnitPanel.vue":10,"babel-runtime/helpers/slicedToArray":15,"vue":75,"vue-hot-reload-api":72}],10:[function(require,module,exports){
+},{"../store":12,"../units":13,"./UnitPanel.vue":11,"babel-runtime/helpers/slicedToArray":16,"vue":76,"vue-hot-reload-api":73}],11:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.unit-content:hover {\n  -webkit-transform: rotateX(25deg);\n          transform: rotateX(25deg); }\n\n/* line 8, stdin */\n.move-up {\n  -webkit-transition: all 0.4s ease;\n  transition: all 0.4s ease;\n  -webkit-transform: translateY(-30px);\n          transform: translateY(-30px); }\n\n/* line 13, stdin */\n.unit-component {\n  z-index: 1;\n  -webkit-perspective: 700px;\n          perspective: 700px;\n  -webkit-transition: all 0.25s ease-out;\n  transition: all 0.25s ease-out; }\n  /* line 21, stdin */\n  .unit-component:hover .unit-icon {\n    -webkit-transform: scale(1.25) translateY(-10px);\n            transform: scale(1.25) translateY(-10px);\n    box-shadow: 0px 7px 2px -2px rgba(0, 0, 0, 0.4);\n    -webkit-transition: all 0.55s ease;\n    transition: all 0.55s ease; }\n  /* line 27, stdin */\n  .unit-component:hover .unit-button {\n    background-color: rgba(255, 255, 255, 0.5); }\n    /* line 29, stdin */\n    .unit-component:hover .unit-button:hover {\n      background-color: white; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.unit-content:hover {\n  -webkit-transform: rotateX(25deg);\n          transform: rotateX(25deg); }\n\n/* line 8, stdin */\n.move-up {\n  -webkit-transition: all 0.4s ease;\n  transition: all 0.4s ease;\n  -webkit-transform: translateY(-30px);\n          transform: translateY(-30px); }\n\n/* line 13, stdin */\n.unit-component {\n  z-index: 1;\n  -webkit-perspective: 700px;\n          perspective: 700px;\n  -webkit-transition: all 0.25s ease-out;\n  transition: all 0.25s ease-out; }\n  /* line 18, stdin */\n  .unit-component a {\n    color: inherit;\n    text-decoration: inherit; }\n  /* line 25, stdin */\n  .unit-component:hover .unit-icon {\n    -webkit-transform: scale(1.25) translateY(-10px);\n            transform: scale(1.25) translateY(-10px);\n    box-shadow: 0px 7px 2px -2px rgba(0, 0, 0, 0.4);\n    -webkit-transition: all 0.55s ease;\n    transition: all 0.55s ease; }\n  /* line 31, stdin */\n  .unit-component:hover .unit-button {\n    background-color: rgba(255, 255, 255, 0.5); }\n    /* line 33, stdin */\n    .unit-component:hover .unit-button:hover {\n      background-color: white; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -616,13 +646,13 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div @click=\"changeStatus\" class=\"unit-component col-xs-12 col-md-6 col-lg-3 \" :class=\"{'status-open' : unit.status === 'open'}\" :id=\"unit.public_id\" style=\"border-radius:3px; padding:5px;display:flex\">\n    <div class=\"unit-content-container flex flex-direction-column\" :class=\"{'full-height' : unit.status === 'open' ? true : false}\">\n        <div class=\"unit-next-day flex flex-children-center\" :class=\"{'move-up' : hovered}\" v-if=\"unit.status !== 'open'\">\n            <span style=\"font-size:1.15rem\">NEXT SESSION:</span>\n            <span style=\"text-align: center\">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>\n        </div>\n        <div class=\"unit-content\" @mouseenter=\"onMouseEnter\" @mouseleave=\"onMouseLeave\">\n            <div>\n                <div class=\"unit-icon-container\" style=\"text-align: center; margin:15px 0;\">\n                    <i :class=\"'fa fa-5x fa-' + unit.icon\" class=\"unit-icon\"></i>\n                </div>\n                <p class=\"unit-code\">{{ unit.code }}</p>\n                <p class=\"unit-name\">{{ unit.name }}</p>\n            </div>\n\n            <div class=\"flex flex-direction-column flex-children-center\">\n                <span style=\"font-size:0.75rem;margin-bottom:10px\">STATUS : {{ unit.status.toUpperCase() }}</span>\n                <div class=\"unit-button-border\" style=\"margin-bottom: 15px;\">\n                    <button class=\"unit-button\">ENTER ROOM</button>\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div @click=\"changeStatus\" class=\"unit-component col-xs-12 col-md-6 col-lg-3 \" :class=\"{'status-open' : unit.status === 'open'}\" :id=\"unit.public_id\" style=\"border-radius:3px; padding:5px;display:flex\">\n    <a v-link=\"{ path : '/rooms/' +  unit.public_id }\">\n        <div class=\"unit-content-container flex flex-direction-column\" :class=\"{'full-height' : unit.status === 'open' ? true : false}\">\n            <div class=\"unit-next-day flex flex-children-center\" :class=\"{'move-up' : hovered}\" v-if=\"unit.status !== 'open'\">\n                <span style=\"font-size:1.15rem\">NEXT SESSION:</span>\n                <span style=\"text-align: center\">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>\n            </div>\n            <div class=\"unit-content\" @mouseenter=\"onMouseEnter\" @mouseleave=\"onMouseLeave\">\n                <div>\n                    <div class=\"unit-icon-container\" style=\"text-align: center; margin:15px 0;\">\n                        <i :class=\"'fa fa-5x fa-' + unit.icon\" class=\"unit-icon\"></i>\n                    </div>\n                    <p class=\"unit-code\">{{ unit.code }}</p>\n                    <p class=\"unit-name\">{{ unit.name }}</p>\n                </div>\n\n                <div class=\"flex flex-direction-column flex-children-center\">\n                    <span style=\"font-size:0.75rem;margin-bottom:10px\">STATUS : {{ unit.status.toUpperCase() }}</span>\n                    <div class=\"unit-button-border\" style=\"margin-bottom: 15px;\">\n                        <button class=\"unit-button\">ENTER ROOM</button>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n    </a>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 3, stdin */\n.unit-content:hover {\n  -webkit-transform: rotateX(25deg);\n          transform: rotateX(25deg); }\n\n/* line 8, stdin */\n.move-up {\n  -webkit-transition: all 0.4s ease;\n  transition: all 0.4s ease;\n  -webkit-transform: translateY(-30px);\n          transform: translateY(-30px); }\n\n/* line 13, stdin */\n.unit-component {\n  z-index: 1;\n  -webkit-perspective: 700px;\n          perspective: 700px;\n  -webkit-transition: all 0.25s ease-out;\n  transition: all 0.25s ease-out; }\n  /* line 21, stdin */\n  .unit-component:hover .unit-icon {\n    -webkit-transform: scale(1.25) translateY(-10px);\n            transform: scale(1.25) translateY(-10px);\n    box-shadow: 0px 7px 2px -2px rgba(0, 0, 0, 0.4);\n    -webkit-transition: all 0.55s ease;\n    transition: all 0.55s ease; }\n  /* line 27, stdin */\n  .unit-component:hover .unit-button {\n    background-color: rgba(255, 255, 255, 0.5); }\n    /* line 29, stdin */\n    .unit-component:hover .unit-button:hover {\n      background-color: white; }\n"] = false
+    __vueify_insert__.cache["/* line 3, stdin */\n.unit-content:hover {\n  -webkit-transform: rotateX(25deg);\n          transform: rotateX(25deg); }\n\n/* line 8, stdin */\n.move-up {\n  -webkit-transition: all 0.4s ease;\n  transition: all 0.4s ease;\n  -webkit-transform: translateY(-30px);\n          transform: translateY(-30px); }\n\n/* line 13, stdin */\n.unit-component {\n  z-index: 1;\n  -webkit-perspective: 700px;\n          perspective: 700px;\n  -webkit-transition: all 0.25s ease-out;\n  transition: all 0.25s ease-out; }\n  /* line 18, stdin */\n  .unit-component a {\n    color: inherit;\n    text-decoration: inherit; }\n  /* line 25, stdin */\n  .unit-component:hover .unit-icon {\n    -webkit-transform: scale(1.25) translateY(-10px);\n            transform: scale(1.25) translateY(-10px);\n    box-shadow: 0px 7px 2px -2px rgba(0, 0, 0, 0.4);\n    -webkit-transition: all 0.55s ease;\n    transition: all 0.55s ease; }\n  /* line 31, stdin */\n  .unit-component:hover .unit-button {\n    background-color: rgba(255, 255, 255, 0.5); }\n    /* line 33, stdin */\n    .unit-component:hover .unit-button:hover {\n      background-color: white; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -631,7 +661,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-d218b6cc", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":11,"vue":75,"vue-hot-reload-api":72,"vueify/lib/insert-css":76}],11:[function(require,module,exports){
+},{"../store":12,"vue":76,"vue-hot-reload-api":73,"vueify/lib/insert-css":77}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -710,7 +740,7 @@ var store = exports.store = {
     }
 };
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -818,11 +848,11 @@ exports.default = [{
     next_session: { day: "MONDAY", time: "12:00" }
 }];
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/get-iterator"), __esModule: true };
-},{"core-js/library/fn/get-iterator":16}],14:[function(require,module,exports){
+},{"core-js/library/fn/get-iterator":17}],15:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/is-iterable"), __esModule: true };
-},{"core-js/library/fn/is-iterable":17}],15:[function(require,module,exports){
+},{"core-js/library/fn/is-iterable":18}],16:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -874,28 +904,28 @@ exports.default = function () {
     }
   };
 }();
-},{"../core-js/get-iterator":13,"../core-js/is-iterable":14}],16:[function(require,module,exports){
+},{"../core-js/get-iterator":14,"../core-js/is-iterable":15}],17:[function(require,module,exports){
 require('../modules/web.dom.iterable');
 require('../modules/es6.string.iterator');
 module.exports = require('../modules/core.get-iterator');
-},{"../modules/core.get-iterator":65,"../modules/es6.string.iterator":68,"../modules/web.dom.iterable":69}],17:[function(require,module,exports){
+},{"../modules/core.get-iterator":66,"../modules/es6.string.iterator":69,"../modules/web.dom.iterable":70}],18:[function(require,module,exports){
 require('../modules/web.dom.iterable');
 require('../modules/es6.string.iterator');
 module.exports = require('../modules/core.is-iterable');
-},{"../modules/core.is-iterable":66,"../modules/es6.string.iterator":68,"../modules/web.dom.iterable":69}],18:[function(require,module,exports){
+},{"../modules/core.is-iterable":67,"../modules/es6.string.iterator":69,"../modules/web.dom.iterable":70}],19:[function(require,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
 };
-},{}],19:[function(require,module,exports){
-module.exports = function(){ /* empty */ };
 },{}],20:[function(require,module,exports){
+module.exports = function(){ /* empty */ };
+},{}],21:[function(require,module,exports){
 var isObject = require('./_is-object');
 module.exports = function(it){
   if(!isObject(it))throw TypeError(it + ' is not an object!');
   return it;
 };
-},{"./_is-object":38}],21:[function(require,module,exports){
+},{"./_is-object":39}],22:[function(require,module,exports){
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = require('./_to-iobject')
@@ -917,7 +947,7 @@ module.exports = function(IS_INCLUDES){
     } return !IS_INCLUDES && -1;
   };
 };
-},{"./_to-index":56,"./_to-iobject":58,"./_to-length":59}],22:[function(require,module,exports){
+},{"./_to-index":57,"./_to-iobject":59,"./_to-length":60}],23:[function(require,module,exports){
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = require('./_cof')
   , TAG = require('./_wks')('toStringTag')
@@ -941,16 +971,16 @@ module.exports = function(it){
     // ES3 arguments fallback
     : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
 };
-},{"./_cof":23,"./_wks":63}],23:[function(require,module,exports){
+},{"./_cof":24,"./_wks":64}],24:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = function(it){
   return toString.call(it).slice(8, -1);
 };
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 // optional / simple context binding
 var aFunction = require('./_a-function');
 module.exports = function(fn, that, length){
@@ -971,18 +1001,18 @@ module.exports = function(fn, that, length){
     return fn.apply(that, arguments);
   };
 };
-},{"./_a-function":18}],26:[function(require,module,exports){
+},{"./_a-function":19}],27:[function(require,module,exports){
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function(it){
   if(it == undefined)throw TypeError("Can't call method on  " + it);
   return it;
 };
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 // Thank's IE8 for his funny defineProperty
 module.exports = !require('./_fails')(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_fails":31}],28:[function(require,module,exports){
+},{"./_fails":32}],29:[function(require,module,exports){
 var isObject = require('./_is-object')
   , document = require('./_global').document
   // in old IE typeof document.createElement is 'object'
@@ -990,12 +1020,12 @@ var isObject = require('./_is-object')
 module.exports = function(it){
   return is ? document.createElement(it) : {};
 };
-},{"./_global":32,"./_is-object":38}],29:[function(require,module,exports){
+},{"./_global":33,"./_is-object":39}],30:[function(require,module,exports){
 // IE 8- don't enum bug keys
 module.exports = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var global    = require('./_global')
   , core      = require('./_core')
   , ctx       = require('./_ctx')
@@ -1057,7 +1087,7 @@ $export.W = 32;  // wrap
 $export.U = 64;  // safe
 $export.R = 128; // real proto method for `library` 
 module.exports = $export;
-},{"./_core":24,"./_ctx":25,"./_global":32,"./_hide":34}],31:[function(require,module,exports){
+},{"./_core":25,"./_ctx":26,"./_global":33,"./_hide":35}],32:[function(require,module,exports){
 module.exports = function(exec){
   try {
     return !!exec();
@@ -1065,17 +1095,17 @@ module.exports = function(exec){
     return true;
   }
 };
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
 if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var hasOwnProperty = {}.hasOwnProperty;
 module.exports = function(it, key){
   return hasOwnProperty.call(it, key);
 };
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var dP         = require('./_object-dp')
   , createDesc = require('./_property-desc');
 module.exports = require('./_descriptors') ? function(object, key, value){
@@ -1084,23 +1114,23 @@ module.exports = require('./_descriptors') ? function(object, key, value){
   object[key] = value;
   return object;
 };
-},{"./_descriptors":27,"./_object-dp":45,"./_property-desc":50}],35:[function(require,module,exports){
+},{"./_descriptors":28,"./_object-dp":46,"./_property-desc":51}],36:[function(require,module,exports){
 module.exports = require('./_global').document && document.documentElement;
-},{"./_global":32}],36:[function(require,module,exports){
+},{"./_global":33}],37:[function(require,module,exports){
 module.exports = !require('./_descriptors') && !require('./_fails')(function(){
   return Object.defineProperty(require('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_descriptors":27,"./_dom-create":28,"./_fails":31}],37:[function(require,module,exports){
+},{"./_descriptors":28,"./_dom-create":29,"./_fails":32}],38:[function(require,module,exports){
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = require('./_cof');
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
-},{"./_cof":23}],38:[function(require,module,exports){
+},{"./_cof":24}],39:[function(require,module,exports){
 module.exports = function(it){
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 var create         = require('./_object-create')
   , descriptor     = require('./_property-desc')
@@ -1114,7 +1144,7 @@ module.exports = function(Constructor, NAME, next){
   Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
   setToStringTag(Constructor, NAME + ' Iterator');
 };
-},{"./_hide":34,"./_object-create":44,"./_property-desc":50,"./_set-to-string-tag":52,"./_wks":63}],40:[function(require,module,exports){
+},{"./_hide":35,"./_object-create":45,"./_property-desc":51,"./_set-to-string-tag":53,"./_wks":64}],41:[function(require,module,exports){
 'use strict';
 var LIBRARY        = require('./_library')
   , $export        = require('./_export')
@@ -1185,15 +1215,15 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED
   }
   return methods;
 };
-},{"./_export":30,"./_has":33,"./_hide":34,"./_iter-create":39,"./_iterators":42,"./_library":43,"./_object-gpo":47,"./_redefine":51,"./_set-to-string-tag":52,"./_wks":63}],41:[function(require,module,exports){
+},{"./_export":31,"./_has":34,"./_hide":35,"./_iter-create":40,"./_iterators":43,"./_library":44,"./_object-gpo":48,"./_redefine":52,"./_set-to-string-tag":53,"./_wks":64}],42:[function(require,module,exports){
 module.exports = function(done, value){
   return {value: value, done: !!done};
 };
-},{}],42:[function(require,module,exports){
-module.exports = {};
 },{}],43:[function(require,module,exports){
-module.exports = true;
+module.exports = {};
 },{}],44:[function(require,module,exports){
+module.exports = true;
+},{}],45:[function(require,module,exports){
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject    = require('./_an-object')
   , dPs         = require('./_object-dps')
@@ -1236,7 +1266,7 @@ module.exports = Object.create || function create(O, Properties){
   return Properties === undefined ? result : dPs(result, Properties);
 };
 
-},{"./_an-object":20,"./_dom-create":28,"./_enum-bug-keys":29,"./_html":35,"./_object-dps":46,"./_shared-key":53}],45:[function(require,module,exports){
+},{"./_an-object":21,"./_dom-create":29,"./_enum-bug-keys":30,"./_html":36,"./_object-dps":47,"./_shared-key":54}],46:[function(require,module,exports){
 var anObject       = require('./_an-object')
   , IE8_DOM_DEFINE = require('./_ie8-dom-define')
   , toPrimitive    = require('./_to-primitive')
@@ -1253,7 +1283,7 @@ exports.f = require('./_descriptors') ? Object.defineProperty : function defineP
   if('value' in Attributes)O[P] = Attributes.value;
   return O;
 };
-},{"./_an-object":20,"./_descriptors":27,"./_ie8-dom-define":36,"./_to-primitive":61}],46:[function(require,module,exports){
+},{"./_an-object":21,"./_descriptors":28,"./_ie8-dom-define":37,"./_to-primitive":62}],47:[function(require,module,exports){
 var dP       = require('./_object-dp')
   , anObject = require('./_an-object')
   , getKeys  = require('./_object-keys');
@@ -1267,7 +1297,7 @@ module.exports = require('./_descriptors') ? Object.defineProperties : function 
   while(length > i)dP.f(O, P = keys[i++], Properties[P]);
   return O;
 };
-},{"./_an-object":20,"./_descriptors":27,"./_object-dp":45,"./_object-keys":49}],47:[function(require,module,exports){
+},{"./_an-object":21,"./_descriptors":28,"./_object-dp":46,"./_object-keys":50}],48:[function(require,module,exports){
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has         = require('./_has')
   , toObject    = require('./_to-object')
@@ -1281,7 +1311,7 @@ module.exports = Object.getPrototypeOf || function(O){
     return O.constructor.prototype;
   } return O instanceof Object ? ObjectProto : null;
 };
-},{"./_has":33,"./_shared-key":53,"./_to-object":60}],48:[function(require,module,exports){
+},{"./_has":34,"./_shared-key":54,"./_to-object":61}],49:[function(require,module,exports){
 var has          = require('./_has')
   , toIObject    = require('./_to-iobject')
   , arrayIndexOf = require('./_array-includes')(false)
@@ -1299,7 +1329,7 @@ module.exports = function(object, names){
   }
   return result;
 };
-},{"./_array-includes":21,"./_has":33,"./_shared-key":53,"./_to-iobject":58}],49:[function(require,module,exports){
+},{"./_array-includes":22,"./_has":34,"./_shared-key":54,"./_to-iobject":59}],50:[function(require,module,exports){
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys       = require('./_object-keys-internal')
   , enumBugKeys = require('./_enum-bug-keys');
@@ -1307,7 +1337,7 @@ var $keys       = require('./_object-keys-internal')
 module.exports = Object.keys || function keys(O){
   return $keys(O, enumBugKeys);
 };
-},{"./_enum-bug-keys":29,"./_object-keys-internal":48}],50:[function(require,module,exports){
+},{"./_enum-bug-keys":30,"./_object-keys-internal":49}],51:[function(require,module,exports){
 module.exports = function(bitmap, value){
   return {
     enumerable  : !(bitmap & 1),
@@ -1316,9 +1346,9 @@ module.exports = function(bitmap, value){
     value       : value
   };
 };
-},{}],51:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 module.exports = require('./_hide');
-},{"./_hide":34}],52:[function(require,module,exports){
+},{"./_hide":35}],53:[function(require,module,exports){
 var def = require('./_object-dp').f
   , has = require('./_has')
   , TAG = require('./_wks')('toStringTag');
@@ -1326,20 +1356,20 @@ var def = require('./_object-dp').f
 module.exports = function(it, tag, stat){
   if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
 };
-},{"./_has":33,"./_object-dp":45,"./_wks":63}],53:[function(require,module,exports){
+},{"./_has":34,"./_object-dp":46,"./_wks":64}],54:[function(require,module,exports){
 var shared = require('./_shared')('keys')
   , uid    = require('./_uid');
 module.exports = function(key){
   return shared[key] || (shared[key] = uid(key));
 };
-},{"./_shared":54,"./_uid":62}],54:[function(require,module,exports){
+},{"./_shared":55,"./_uid":63}],55:[function(require,module,exports){
 var global = require('./_global')
   , SHARED = '__core-js_shared__'
   , store  = global[SHARED] || (global[SHARED] = {});
 module.exports = function(key){
   return store[key] || (store[key] = {});
 };
-},{"./_global":32}],55:[function(require,module,exports){
+},{"./_global":33}],56:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , defined   = require('./_defined');
 // true  -> String#at
@@ -1357,7 +1387,7 @@ module.exports = function(TO_STRING){
       : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
   };
 };
-},{"./_defined":26,"./_to-integer":57}],56:[function(require,module,exports){
+},{"./_defined":27,"./_to-integer":58}],57:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , max       = Math.max
   , min       = Math.min;
@@ -1365,34 +1395,34 @@ module.exports = function(index, length){
   index = toInteger(index);
   return index < 0 ? max(index + length, 0) : min(index, length);
 };
-},{"./_to-integer":57}],57:[function(require,module,exports){
+},{"./_to-integer":58}],58:[function(require,module,exports){
 // 7.1.4 ToInteger
 var ceil  = Math.ceil
   , floor = Math.floor;
 module.exports = function(it){
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
-},{}],58:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = require('./_iobject')
   , defined = require('./_defined');
 module.exports = function(it){
   return IObject(defined(it));
 };
-},{"./_defined":26,"./_iobject":37}],59:[function(require,module,exports){
+},{"./_defined":27,"./_iobject":38}],60:[function(require,module,exports){
 // 7.1.15 ToLength
 var toInteger = require('./_to-integer')
   , min       = Math.min;
 module.exports = function(it){
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
-},{"./_to-integer":57}],60:[function(require,module,exports){
+},{"./_to-integer":58}],61:[function(require,module,exports){
 // 7.1.13 ToObject(argument)
 var defined = require('./_defined');
 module.exports = function(it){
   return Object(defined(it));
 };
-},{"./_defined":26}],61:[function(require,module,exports){
+},{"./_defined":27}],62:[function(require,module,exports){
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = require('./_is-object');
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
@@ -1405,13 +1435,13 @@ module.exports = function(it, S){
   if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
   throw TypeError("Can't convert object to primitive value");
 };
-},{"./_is-object":38}],62:[function(require,module,exports){
+},{"./_is-object":39}],63:[function(require,module,exports){
 var id = 0
   , px = Math.random();
 module.exports = function(key){
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 var store      = require('./_shared')('wks')
   , uid        = require('./_uid')
   , Symbol     = require('./_global').Symbol
@@ -1423,7 +1453,7 @@ var $exports = module.exports = function(name){
 };
 
 $exports.store = store;
-},{"./_global":32,"./_shared":54,"./_uid":62}],64:[function(require,module,exports){
+},{"./_global":33,"./_shared":55,"./_uid":63}],65:[function(require,module,exports){
 var classof   = require('./_classof')
   , ITERATOR  = require('./_wks')('iterator')
   , Iterators = require('./_iterators');
@@ -1432,7 +1462,7 @@ module.exports = require('./_core').getIteratorMethod = function(it){
     || it['@@iterator']
     || Iterators[classof(it)];
 };
-},{"./_classof":22,"./_core":24,"./_iterators":42,"./_wks":63}],65:[function(require,module,exports){
+},{"./_classof":23,"./_core":25,"./_iterators":43,"./_wks":64}],66:[function(require,module,exports){
 var anObject = require('./_an-object')
   , get      = require('./core.get-iterator-method');
 module.exports = require('./_core').getIterator = function(it){
@@ -1440,7 +1470,7 @@ module.exports = require('./_core').getIterator = function(it){
   if(typeof iterFn != 'function')throw TypeError(it + ' is not iterable!');
   return anObject(iterFn.call(it));
 };
-},{"./_an-object":20,"./_core":24,"./core.get-iterator-method":64}],66:[function(require,module,exports){
+},{"./_an-object":21,"./_core":25,"./core.get-iterator-method":65}],67:[function(require,module,exports){
 var classof   = require('./_classof')
   , ITERATOR  = require('./_wks')('iterator')
   , Iterators = require('./_iterators');
@@ -1450,7 +1480,7 @@ module.exports = require('./_core').isIterable = function(it){
     || '@@iterator' in O
     || Iterators.hasOwnProperty(classof(O));
 };
-},{"./_classof":22,"./_core":24,"./_iterators":42,"./_wks":63}],67:[function(require,module,exports){
+},{"./_classof":23,"./_core":25,"./_iterators":43,"./_wks":64}],68:[function(require,module,exports){
 'use strict';
 var addToUnscopables = require('./_add-to-unscopables')
   , step             = require('./_iter-step')
@@ -1485,7 +1515,7 @@ Iterators.Arguments = Iterators.Array;
 addToUnscopables('keys');
 addToUnscopables('values');
 addToUnscopables('entries');
-},{"./_add-to-unscopables":19,"./_iter-define":40,"./_iter-step":41,"./_iterators":42,"./_to-iobject":58}],68:[function(require,module,exports){
+},{"./_add-to-unscopables":20,"./_iter-define":41,"./_iter-step":42,"./_iterators":43,"./_to-iobject":59}],69:[function(require,module,exports){
 'use strict';
 var $at  = require('./_string-at')(true);
 
@@ -1503,7 +1533,7 @@ require('./_iter-define')(String, 'String', function(iterated){
   this._i += point.length;
   return {value: point, done: false};
 });
-},{"./_iter-define":40,"./_string-at":55}],69:[function(require,module,exports){
+},{"./_iter-define":41,"./_string-at":56}],70:[function(require,module,exports){
 require('./es6.array.iterator');
 var global        = require('./_global')
   , hide          = require('./_hide')
@@ -1517,7 +1547,7 @@ for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList'
   if(proto && !proto[TO_STRING_TAG])hide(proto, TO_STRING_TAG, NAME);
   Iterators[NAME] = Iterators.Array;
 }
-},{"./_global":32,"./_hide":34,"./_iterators":42,"./_wks":63,"./es6.array.iterator":67}],70:[function(require,module,exports){
+},{"./_global":33,"./_hide":35,"./_iterators":43,"./_wks":64,"./es6.array.iterator":68}],71:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -1699,7 +1729,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],71:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 /*!
  * sweetalert2 v4.3.3
  * Released under the MIT License.
@@ -3264,7 +3294,7 @@ process.umask = function() { return 0; };
   return sweetAlert;
 
 }));
-},{}],72:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 var Vue // late bind
 var map = Object.create(null)
 var shimmed = false
@@ -3565,7 +3595,7 @@ function format (id) {
   return match ? match[0] : id
 }
 
-},{}],73:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 /*!
  * vue-resource v1.0.2
  * https://github.com/vuejs/vue-resource
@@ -5077,7 +5107,7 @@ if (typeof window !== 'undefined' && window.Vue) {
 }
 
 module.exports = plugin;
-},{}],74:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /*!
  * vue-router v0.7.13
  * (c) 2016 Evan You
@@ -7787,7 +7817,7 @@ module.exports = plugin;
   return Router;
 
 }));
-},{}],75:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.26
@@ -17864,7 +17894,7 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":70}],76:[function(require,module,exports){
+},{"_process":71}],77:[function(require,module,exports){
 var inserted = exports.cache = {}
 
 exports.insert = function (css) {

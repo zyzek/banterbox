@@ -6,42 +6,44 @@
          style="border-radius:3px; padding:5px;display:flex"
 
     >
-        <div class="unit-content-container flex flex-direction-column"
-             :class="{'full-height' : unit.status === 'open' ? true : false}"
-        >
-            <div class="unit-next-day flex flex-children-center" :class="{'move-up' : hovered}"
-                 v-if="unit.status !== 'open'">
-                <span style="font-size:1.15rem">NEXT SESSION:</span>
-                <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
-            </div>
-            <div class="unit-content"
-                 @mouseenter="onMouseEnter"
-                 @mouseleave="onMouseLeave"
+        <a v-link="{ path : '/rooms/' +  unit.public_id }">
+            <div class="unit-content-container flex flex-direction-column"
+                 :class="{'full-height' : unit.status === 'open' ? true : false}"
             >
-                <div>
-                    <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
-                        <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
-                    </div>
-                    <p class="unit-code">{{ unit.code }}</p>
-                    <p class="unit-name">{{ unit.name }}</p>
+                <div class="unit-next-day flex flex-children-center" :class="{'move-up' : hovered}"
+                     v-if="unit.status !== 'open'">
+                    <span style="font-size:1.15rem">NEXT SESSION:</span>
+                    <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
                 </div>
-
-                <div class="flex flex-direction-column flex-children-center">
-                    <span style="font-size:0.75rem;margin-bottom:10px">STATUS : {{ unit.status.toUpperCase() }}</span>
-                    <div class="unit-button-border" style="margin-bottom: 15px;">
-                        <button class="unit-button">ENTER ROOM</button>
+                <div class="unit-content"
+                     @mouseenter="onMouseEnter"
+                     @mouseleave="onMouseLeave"
+                >
+                    <div>
+                        <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
+                            <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
+                        </div>
+                        <p class="unit-code">{{ unit.code }}</p>
+                        <p class="unit-name">{{ unit.name }}</p>
                     </div>
-                </div>
 
+                    <div class="flex flex-direction-column flex-children-center">
+                        <span style="font-size:0.75rem;margin-bottom:10px">STATUS : {{ unit.status.toUpperCase() }}</span>
+                        <div class="unit-button-border" style="margin-bottom: 15px;">
+                            <button class="unit-button">ENTER ROOM</button>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
+        </a>
     </div>
 </template>
 
 <style lang="scss" rel="stylesheet/scss">
     .unit-content {
-        &:hover{
-            transform:rotateX(25deg)
+        &:hover {
+            transform: rotateX(25deg)
         }
     }
 
@@ -52,9 +54,13 @@
 
     .unit-component {
         z-index: 1;
-        perspective:700px;
+        perspective: 700px;
         transition: all 0.25s ease-out;
 
+        a{
+            color:inherit;
+            text-decoration: inherit;
+        }
 
         &:hover {
 
