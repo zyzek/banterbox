@@ -1,6 +1,10 @@
 ### Ignore virtual env
 pythonEnvironment
 
+### Ignore Migrations
+banterbox/migrations/*
+!banterbox/migrations/__init_.py
+
 ### Windows template
 # Windows image file caches
 Thumbs.db

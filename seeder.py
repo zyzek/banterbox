@@ -190,15 +190,33 @@ def run_step(func, args, pre_string=None, fail_string=None):
     try:
         func(*args)
         print("OK")
-    except:
+    except Exception as e:
         if fail_string is None:
             print("Failed")
         else:
             print("\n" + fail_string)
+
+        with open("errors.log", "a") as logfile:
+            logfile.write("Error Logged at {}:\n".format(str(datetime.now())))
+            logfile.write("  {}\n\n".format(str(e)))
+
     sys.stdout.flush()
 
-if __name__ == "__main__":
-    run_step(manage.passthrough, [['manage.py', 'flush']], "Purging database...\n")
+
+def hard_reset_db():
+    def remove_migrations():
+        for filename in os.listdir("banterbox/migrations/"):
+            if not os.path.isdir(filename) and filename != "__init__.py":
+              os.remove(filename)
+
+    run_step(os.remove, ["db.sqlite3"], "Removing database.")
+    run_step(remove_migrations, [], "Removing all migrations.")
+    run_step(manage.passthrough, [['manage.py', 'makemigrations']], "Making migrations...\n")
+    run_step(manage.passthrough, [['manage.py', 'migrate']], "Migrating...\n")
+    print("Database purged.")
+
+def populate_db():
+    run_step(manage.passthrough, [['manage.py', 'flush']], "Flushing database...\n")
     run_step(add_roles, [], "Setting Roles...", "Roles already exist.")
     run_step(add_statuses, [], "Setting Statuses...", "Statuses already exist.")
     run_step(make_superuser, [], "Adding super-user...", "User 'admin' already exists.")
@@ -209,3 +227,13 @@ if __name__ == "__main__":
     run_step(make_rooms, [COMMENTS_PER_ROOM], \
              "Adding a room per unit with {} comments each...".format(COMMENTS_PER_ROOM))
     print("All Done.")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Flags:")
+        print("    --populate    :  populate the database with example data.")
+        print("    --purge       :  delete the database and migrations.")
+    elif sys.argv[1] == "--populate":
+        populate_db()
+    elif sys.argv[1] == "--purge":
+        hard_reset_db()
