@@ -80,10 +80,6 @@ def current_user(request):
 
     return Response(output)
 
-@api_view(['GET'])
-def get_rooms(request):
-    return Response(Room.objects.all().order_by('-created_at'))
-
 
 def index(request):
     return render(request, 'index.html')
