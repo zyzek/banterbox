@@ -112,7 +112,7 @@ class Unit(models.Model):
         return "{}: {}".format(self.code, self.name)
 
 '''
-    User Unit Enrolement model
+    User Unit Enrolment model
     description: TODO
 '''
 class UserUnitEnrolment(models.Model):
