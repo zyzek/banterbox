@@ -206,7 +206,7 @@ def run_step(func, args, pre_string=None, fail_string=None):
 def hard_reset_db():
     def remove_migrations():
         for filename in os.listdir("banterbox/migrations/"):
-            if not os.path.isdir(filename):
+            if not os.path.isdir(filename) and filename != "__init__.py":
               os.remove(filename)
 
     run_step(os.remove, ["db.sqlite3"], "Removing database.")
