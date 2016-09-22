@@ -5,17 +5,17 @@ from . import views
 from rest_framework.authtoken import views as auth_views
 
 
-router = routers.DefaultRouter()
-router.register(r'profile', views.ProfileViewSet)
-router.register(r'room-status', views.RoomStatusViewSet)
-router.register(r'room', views.RoomViewSet)
-router.register(r'comment', views.CommentViewSet)
-router.register(r'user', views.UserViewSet)
-router.register(r'user-role', views.UserRoleViewSet)
-router.register(r'user-unit-role', views.UserUnitRoleViewSet)
-router.register(r'unit', views.UnitViewSet)
-router.register(r'user-unit-enrolment', views.UserUnitEnrolmentViewSet)
-router.register(r'scheduled-room', views.ScheduledRoomViewSet)
+#router = routers.DefaultRouter()
+#router.register(r'profile', views.ProfileViewSet)
+#router.register(r'room-status', views.RoomStatusViewSet)
+#router.register(r'room', views.RoomViewSet)
+#router.register(r'comment', views.CommentViewSet)
+#router.register(r'user', views.UserViewSet)
+#router.register(r'user-role', views.UserRoleViewSet)
+#router.register(r'user-unit-role', views.UserUnitRoleViewSet)
+#router.register(r'unit', views.UnitViewSet)
+#router.register(r'user-unit-enrolment', views.UserUnitEnrolmentViewSet)
+#router.register(r'scheduled-room', views.ScheduledRoomViewSet)
 
 
 # Wire up our API using automatic URL routing.
@@ -23,8 +23,9 @@ router.register(r'scheduled-room', views.ScheduledRoomViewSet)
 
 urlpatterns = [
     url(r'^api/auth/', auth_views.obtain_auth_token),
-    url(r'api/user/current', views.current_user),
-    url(r'^api/', include(router.urls)),
+    url(r'^api/user/current', views.current_user),
+    url(r'^api/rooms', views.get_rooms),
+    #url(r'^api/', include(router.urls)),
     url(r'^$', views.index, name='index'),
     url(r'^docs/', include('rest_framework_docs.urls')),
 ]
