@@ -63,7 +63,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-
 # Custom API view/responses etc
 @api_view(['GET'])
 def current_user(request):
@@ -80,27 +79,31 @@ def current_user(request):
 
     return Response(output)
 
+
 '''
 include lecutrer object with name and email
 
 '''
+
+
 @api_view(['GET'])
 def rooms(request):
     rooms = []
-    for userEnrolement in UserUnitEnrolment.objects.filter(user_id = request.user.id):
-        unit = Unit.objects.get( id = userEnrolement.unit_id )
-        room = Room.objects.get( unit_id = unit.id )
+    for userEnrolement in UserUnitEnrolment.objects.filter(user_id=request.user.id):
+        unit = Unit.objects.get(id=userEnrolement.unit_id)
+        room = Room.objects.get(unit_id=unit.id)
         rooms.append({
-            "id": room.id,
-            "lecturer": {"email": unit.lecturer.email, "username": unit.lecturer.username},
+            "id"        : room.id,
+            "lecturer"  : {"email"   : unit.lecturer.email, "name": '{0} {1}'.format(unit.lecturer.first_name, unit.lecturer.last_name)},
             "created_at": room.created_at,
-            "name": room.name,
-            "code": unit.code,
-            "icon": unit.icon,
-            "status": room.status.name,
-            #next_session: {day: , time: "14:00"},
+            "name"      : room.name,
+            "code"      : unit.code,
+            "icon"      : unit.icon,
+            "status"    : room.status.name,
+            # next_session: {day: , time: "14:00"},
         })
-    return Response( rooms )
+    return Response({'rooms':rooms})
+
 
 def index(request):
     return render(request, 'index.html')
