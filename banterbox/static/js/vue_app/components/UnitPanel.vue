@@ -1,24 +1,24 @@
 <template>
     <div @click="changeStatus"
          class="unit-component col-xs-12 col-md-6 col-lg-3 "
-         :class="{'status-open' : unit.status === 'open'}"
-         :id="unit.public_id"
+         :class="{'status-open' : unit.status === 'running'}"
+         :id="unit.id"
          style="border-radius:3px; padding:5px;display:flex"
 
     >
-        <a v-link="{ path : '/rooms/' +  unit.public_id }">
-            <div class="unit-content-container flex flex-direction-column"
-                 :class="{'full-height' : unit.status === 'open' ? true : false}"
+        <div class="unit-content-container flex flex-direction-column"
+             :class="{'full-height' : unit.status === 'running' ? true : false}"
+        >
+            <div class="unit-next-day flex flex-children-center" :class="{'move-up' : hovered}"
+                 v-if="unit.status !== 'running'">
+                <span style="font-size:1.15rem">NEXT SESSION:</span>
+                <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
+            </div>
+            <div class="unit-content"
+                 @mouseenter="onMouseEnter"
+                 @mouseleave="onMouseLeave"
             >
-                <div class="unit-next-day flex flex-children-center" :class="{'move-up' : hovered}"
-                     v-if="unit.status !== 'open'">
-                    <span style="font-size:1.15rem">NEXT SESSION:</span>
-                    <span style="text-align: center">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>
-                </div>
-                <div class="unit-content"
-                     @mouseenter="onMouseEnter"
-                     @mouseleave="onMouseLeave"
-                >
+                <a v-link="{ path : '/rooms/' +  unit.public_id }">
                     <div>
                         <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
                             <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
@@ -33,10 +33,9 @@
                             <button class="unit-button">ENTER ROOM</button>
                         </div>
                     </div>
-
-                </div>
+                </a>
             </div>
-        </a>
+        </div>
     </div>
 </template>
 
@@ -57,8 +56,8 @@
         perspective: 700px;
         transition: all 0.25s ease-out;
 
-        a{
-            color:inherit;
+        a {
+            color: inherit;
             text-decoration: inherit;
         }
 

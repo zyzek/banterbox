@@ -19,7 +19,7 @@
             <alert-box></alert-box>
         </div>
 
-        <div class="container" id="main" :class="{centered : store.state.main_centered}">
+        <div class="container" id="main" :class="{centered : store.ui.main_centered}">
             <router-view></router-view>
         </div>
 

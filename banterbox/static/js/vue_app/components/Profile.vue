@@ -24,7 +24,6 @@
     @import "../../../sass/colours";
 
     #header-profile-dropdown {
-
     }
 
     #header-profile-dropdown-links {
@@ -115,7 +114,7 @@
                     AuthService.logout().then(() => {
                         this.dropdown_open = false
                         store.alerts.addAlert({message: 'Logged out.', duration: 1500})
-                        setTimeout(() => router.go('/login'), 250)
+                        router.go('/login')
                     })
                 })
             }
