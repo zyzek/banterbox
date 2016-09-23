@@ -1,3 +1,4 @@
+var canvas = $('#canvas');
 var context = null;
 
 var width = 0;
@@ -32,12 +33,30 @@ var data = [
 ];
 
 
+
+// Init
+context = canvas.get(0).getContext("2d");
+width = window.innerWidth;
+height = window.innerHeight;
+context.canvas.width = width;
+context.canvas.height = height;
+worm.push(height/2);
+angleSliderPosition = height/2;
+setNormalFill();
+animate()
+
+canvas.bind('keydown.return', restart);
+canvas.focus();
+
+
+// Stuff
+
 function setNormalFill() {context.fillStyle = "rgb(239, 5, 239)"; context.strokeStyle = "rgb(239, 5, 239)"; context.lineWidth = 4;}
 function setThinLine() { context.fillStyle = "rgb(255, 255, 255)"; context.strokeStyle = "rgb(255, 255, 255)"; context.lineWidth = 1;}
 function setCommentFill() {context.fillStyle = "rgb(128,0,128)"; context.strokeStyle = "rgb(128,0,128)"; context.linewidth = 4;}
 
 
-$('#canvas').on('mousemove', handleMouseMove);
+canvas.on('mousemove', handleMouseMove);
 
 function handleMouseMove(e){
     mouse_x = e.clientX;
@@ -96,7 +115,7 @@ function draw_worm(worm, zoom=100) {
     //context.beginPath();
 
 
-    var grad= context.createLinearGradient(50, 50, 150, 150);
+    var grad = context.createLinearGradient(0, 0, canvas.width()/1.5, canvas.height()/1.5);
     grad.addColorStop(0, "rgb(255,0,0)");
     grad.addColorStop(0.33, "rgb(255,255,0)");
     grad.addColorStop(0.66, "rgb(0,255,0)");
@@ -180,23 +199,3 @@ function animate() {
     requestAnimationFrame(animate)
 }
 
-
-$(document).ready(function() {
-    let canvas = $("#canvas");
-    context = canvas.get(0).getContext("2d");
-
-    width = window.innerWidth;  
-    height = window.innerHeight;
-    context.canvas.width = width;
-    context.canvas.height = height;
-
-    worm.push(height/2);
-    angleSliderPosition = height/2;
-
-    setNormalFill();
-
-    animate()
-
-    canvas.bind('keydown.return', restart);
-    canvas.focus();
-});
