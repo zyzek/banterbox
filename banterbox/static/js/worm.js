@@ -40,7 +40,6 @@ function setCommentFill() {context.fillStyle = "rgb(128,0,128)"; context.strokeS
 $('#canvas').on('mousemove', handleMouseMove);
 
 function handleMouseMove(e){
-    //console.log({x: e.clientX, y:e.clientY})
     mouse_x = e.clientX;
 }
 
@@ -61,7 +60,8 @@ function draw_comments(left_bound, right_bound) {
     context.beginPath();
     for (let i=0; i< data.length; i++) {
         let comment = data[i];
-        //console.log(comment);
+
+
         if (comment.time > left_bound || comment.time < right_bound ) {
             let x = (comment.time-left_bound) * ((width - 30) / (right_bound-left_bound - 1));
             let y = height - 30;
@@ -169,6 +169,17 @@ function restart() {
 }
 
 
+/**
+ * The render loop.
+ * Will run at 60fps, but if the window has no focus it won't run at all.
+ */
+function animate() {
+
+    update()
+
+    requestAnimationFrame(animate)
+}
+
 
 $(document).ready(function() {
     let canvas = $("#canvas");
@@ -184,7 +195,7 @@ $(document).ready(function() {
 
     setNormalFill();
 
-    setInterval(update, 30);
+    animate()
 
     canvas.bind('keydown.return', restart);
     canvas.focus();
