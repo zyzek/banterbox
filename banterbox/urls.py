@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^api/auth/', auth_views.obtain_auth_token),
     url(r'^api/user/current', views.current_user),
     url(r'^api/rooms/', views.rooms),
+    url(r'^api/comments', views.get_comments),
     url(r'^api/', include(router.urls)),
     url(r'^$', views.index, name='index'),
     url(r'^docs/', include('rest_framework_docs.urls')),
