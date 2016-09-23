@@ -18,7 +18,7 @@
                  @mouseenter="onMouseEnter"
                  @mouseleave="onMouseLeave"
             >
-                <a v-link="{ path : '/rooms/' +  unit.public_id }">
+                <a v-link="{ path : '/rooms/' +  unit.id }">
                     <div>
                         <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
                             <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
