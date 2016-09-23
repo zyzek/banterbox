@@ -157,6 +157,8 @@ def get_comments(request):
 
     return Response(outer_dict)
 
+def worm(request):
+    return render(request, 'worm.html')
 
 def index(request):
     return render(request, 'index.html')
