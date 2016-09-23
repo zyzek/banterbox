@@ -112,14 +112,17 @@ function draw_worm(worm, zoom=100) {
     let _x;
     let _y;
 
-    //context.beginPath();
 
 
-    var grad = context.createLinearGradient(0, 0, canvas.width()/1.5, canvas.height()/1.5);
+    // Create a gradient starting in top left corner and ending in top right corner
+    var grad = context.createLinearGradient(0, 0, canvas.width(), 0);
+
+    // Set up colours for the gradient
     grad.addColorStop(0, "rgb(255,0,0)");
     grad.addColorStop(0.33, "rgb(255,255,0)");
     grad.addColorStop(0.66, "rgb(0,255,0)");
     grad.addColorStop(1, "rgb(0,0,255)");
+
 
     context.beginPath();
     context.strokeStyle = grad;
