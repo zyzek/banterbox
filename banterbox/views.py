@@ -97,8 +97,9 @@ def get_update(request, room_id):
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
         return Response({"error":"room does not exist."})
-
-    room = updateCheckRoomStatus(room)
+    
+    next_session = ScheduledRoom.objects.filter(unit_id = room.unit_id).order_by("start_timestamp")[0]
+    room = updateCheckRoomStatus(room, next_session)
     result = {
         "room_status" : room.status.name
     }
@@ -142,10 +143,9 @@ def get_rooms(request):
         room = Room.objects.get(unit_id=unit.id)
 
         next_session = ScheduledRoom.objects.filter(unit_id = unit.id).order_by("start_timestamp")[0]
-        end_timestamp = 
 
-        room = updateCheckRoomStatus(room)
-        rooms.append({
+        room = updateCheckRoomStatus(room, next_session)
+        result = {
             "id"           : room.id,
             "lecturer"     : {"email"   : unit.lecturer.email, "name": '{0} {1}'.format(unit.lecturer.first_name, unit.lecturer.last_name)},
             "created_at"   : room.created_at,
@@ -154,7 +154,14 @@ def get_rooms(request):
             "icon"         : unit.icon,
             "status"       : room.status.name,
             "next_session" : next_session.start_timestamp,
-        })
+        }
+
+        if room.status.name == "running":
+            result["time_remaining"] = next_session.end_timestamp - timezone.now()
+        elif room.status.name == "commencing":
+            result["time_until_commencing"] = next_session.start_timestamp - timezone.now()
+
+        rooms.append(result)
     return Response({'rooms':rooms})
 
 
@@ -170,10 +177,16 @@ def make_comment(request, room_id):
     except:
         return Response({"error":"missing argument <content>."})
 
+
+
     user = request.user
     rooms = []
     for userEnrolement in UserUnitEnrolment.objects.filter(user_id = user.id):
         if room == Room.objects.get(unit_id=userEnrolement.unit_id):
+
+            if room.status.name != "active":
+                return Response({"error" : "room is not active."})
+
             comment = Comment()
             comment.room = room
             comment.user = user
@@ -220,10 +233,11 @@ def index(request):
     return render(request, 'index.html')
 
 
-def updateCheckRoomStatus(room):
+def updateCheckRoomStatus(room, next_session):
     #check the room status, update if required
+    
     roomCommenced = timezone.now() > next_session.start_timestamp
-    roomClosed = timezone.now() < next_session.end_timestamp
+    roomClosed = timezone.now() > next_session.end_timestamp
 
     if roomClosed:
         _name = "closed"
@@ -231,7 +245,8 @@ def updateCheckRoomStatus(room):
         _name = "running"
     else:
         _name = "commencing"
-    room.status = RoomStatus.objects.get(name=_name)
+    status = RoomStatus.objects.get(name=_name)
+    room.status = status
     room.save()
     return room
 
