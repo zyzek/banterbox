@@ -37,7 +37,7 @@ class RoomStatus(models.Model):
     description: TODO
 '''
 class Room(models.Model):
-    #id = models.UUIDField(primary_key=True, default=uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
     lecturer = models.ForeignKey(User)
     unit = models.ForeignKey('Unit', models.SET_NULL, null=True)
