@@ -37,7 +37,7 @@ class RoomStatus(models.Model):
     description: TODO
 '''
 class Room(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4)
+    #id = models.UUIDField(primary_key=True, default=uuid4)
     name = models.CharField(max_length=255)
     lecturer = models.ForeignKey(User)
     unit = models.ForeignKey('Unit', models.SET_NULL, null=True)
@@ -49,9 +49,19 @@ class Room(models.Model):
     commenced_at = models.DateTimeField(auto_now_add=True)
     concluded_at = models.DateTimeField(null=True)
     closed_at = models.DateTimeField(null=True)
-    
     def __str__(self):
         return self.name
+
+'''
+    User Room Blacklist Model
+    description: TODO
+'''
+class UserRoomBlacklist(models.Model):
+    user = models.ForeignKey(User, models.CASCADE)
+    room = models.ForeignKey('Room', models.CASCADE)
+    
+    class Meta:
+        unique_together = ('user', 'room')
 
 '''
     Comment model
@@ -107,7 +117,8 @@ class Unit(models.Model):
     lecturer = models.ForeignKey(User, models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     icon = models.CharField(max_length=255, default="pencil")
-    
+    description = models.CharField(max_length=1023, default="")
+
     def __str__(self):
         return "{}: {}".format(self.code, self.name)
 

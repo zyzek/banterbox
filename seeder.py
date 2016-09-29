@@ -64,7 +64,7 @@ def add_roles():
         m = models.UserRole()
         m.name = role
         m.save()
-    
+
 def make_superuser():
     admin = models.User()
     admin.username = "admin"
@@ -110,7 +110,7 @@ def make_units(num):
         lecturer.password = user_password
         lecturer.email = eu_fake.email()
         lecturer.save()
-        
+
         # Make the unit itself.
         unit = models.Unit()
         unit.name = fake.catch_phrase()
@@ -118,8 +118,8 @@ def make_units(num):
         unit.lecturer = lecturer
         unit.icon = get_icon()
         unit.save()
-        
-        # Attack the lecturer to the unit
+
+        # Attach the lecturer to the unit
         role = models.UserUnitRole()
         role.user = lecturer
         role.unit = unit
@@ -186,7 +186,7 @@ def run_step(func, args, pre_string=None, fail_string=None):
     else:
         print(pre_string, end=" ")
     sys.stdout.flush()
-   
+
     try:
         func(*args)
         print("OK")

@@ -4,63 +4,71 @@ from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.template import loader
 from random import random
-from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from banterbox.models import UserRole, UserUnitRole
-
+from banterbox.models import UserRole, UserUnitRole, UserRoomBlacklist
 from banterbox.serializers import *
+from django.db import IntegrityError
 
 
-class ProfileViewSet(viewsets.ModelViewSet):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+#blacklist a user/users from room
+@api_view(['PUT'])
+def blacklist_users(request, room_id):
+    user = request.user
+
+    #check if admin
+    if user.is_staff != 1:
+        return Responce({"error":"permission denied."})
+
+    #get the room
+    try:
+        room = Room.objects.get(id = room_id)
+    except Room.DoesNotExist:
+        return Response({"error":"room does not exist."})
+
+    #get the userids
+    try:
+        user_ids = request.data["user_ids"].split(",")
+    except KeyError:
+        return Response({"error":"missing argument <user_ids>."})
+
+    for user_id in user_ids:
+        user = User.objects.get(id=user_id)
+        urb = UserRoomBlacklist()
+        urb.user = user
+        urb.room = room
+        try:
+            urb.save()
+        except IntegrityError:
+            continue
+    return HttpResponse(200)
 
 
-class RoomStatusViewSet(viewsets.ModelViewSet):
-    queryset = RoomStatus.objects.all()
-    serializer_class = RoomStatusSerializer
+# Custom API view/responses etc
+@api_view(['GET'])
+def room_settings(request, room_id):
+    user = request.user
 
+    if user.is_staff != 1:
+        return Responce({"error":"permission denied."})
 
-class RoomViewSet(viewsets.ModelViewSet):
-    queryset = Room.objects.all().order_by('-created_at')
-    serializer_class = RoomSerializer
+    #get the room
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({"error":"room does not exist."})
 
+    result = {'name': room.name,
+              'visibility' : ("private" if room.private else "public"),
+              'password_protected' : room.password_protected,
+              'password' : room.password,
+              'icon' : room.unit.icon,
+              'description' : room.unit.description,  
+              'blacklisted_users' : [User.objects.get(id = UserRoomBlacklist.user_id).id for UserRoomBlacklist in UserRoomBlacklist.objects.filter(room_id=room.id)],
+              }
 
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-
-class UserRoleViewSet(viewsets.ModelViewSet):
-    queryset = UserRole.objects.all()
-    serializer_class = UserRoleSerializer
-
-
-class UserUnitRoleViewSet(viewsets.ModelViewSet):
-    queryset = UserUnitRole.objects.all()
-    serializer_class = UserUnitRoleSerializer
-
-
-class UnitViewSet(viewsets.ModelViewSet):
-    queryset = Unit.objects.all().order_by('-created_at')
-    serializer_class = UnitSerializer
-
-
-class UserUnitEnrolmentViewSet(viewsets.ModelViewSet):
-    queryset = UserUnitEnrolment.objects.all()
-    serializer_class = UserUnitEnrolmentSerializer
-
-
-class ScheduledRoomViewSet(viewsets.ModelViewSet):
-    queryset = ScheduledRoom.objects.all()
-    serializer_class = ScheduledRoomSerializer
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    return Response(result)
 
 
 # Custom API view/responses etc
@@ -79,19 +87,15 @@ def current_user(request):
 
     return Response(output)
 
-
-'''
-include lecutrer object with name and email
-
-'''
-
-
 @api_view(['GET'])
-def rooms(request):
+def get_rooms(request):
+    user = request.user
     rooms = []
-    for userEnrolement in UserUnitEnrolment.objects.filter(user_id=request.user.id):
+    for userEnrolement in UserUnitEnrolment.objects.filter(user_id = user.id):
+
         unit = Unit.objects.get(id=userEnrolement.unit_id)
         room = Room.objects.get(unit_id=unit.id)
+
         rooms.append({
             "id"        : room.id,
             "lecturer"  : {"email"   : unit.lecturer.email, "name": '{0} {1}'.format(unit.lecturer.first_name, unit.lecturer.last_name)},
@@ -104,59 +108,42 @@ def rooms(request):
         })
     return Response({'rooms':rooms})
 
-'''
-include lecutrer object with name and email
-
-'''
 
 # Custom API view/responses etc
 @api_view(['GET'])
 def get_comments(request):
+    
+    #get the room
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({"error":"room does not exist."})
 
-    #check whether room id exists in the request, if not return 400 response
-    if 'room_id' not in request.GET:
-        #THere is a better way to do this
-        return HttpResponse(400)
+    #get timestamp
+    try:
+        timestamp = request.GET['timestamp']
+    except KeyError:
+        timestamp = None
 
-    #check if there is no timestamp parameter
-    time_filter = False
-    if 'timestamp' in request.GET:
-        time_filter = True
+    #get query set
+    try:
+        queryset = Comment.objects.filter(room_id = requested_room, timestamp__gt = timestamp)
+    except:
+        #server error
+        HttpResponse(500)
 
-    #a request will always include the room id
-    requested_room = request.GET['room_id']
-
-    #A list to store all of the comment objects
-    queryset = []
-
-    #if there was a time specified, get tiems within a range, else get all of the comments
-    if time_filter:
-        query_time = requested_room = request.GET['timestamp']
-        queryset = Comment.objects.filter(room_id=requested_room, timestamp__gt=query_time)
-    else:
-        queryset = Comment.objects.filter(room_id=requested_room)
-
-
-    #outer_dict is an object to hold the list, so it's jsonable
-    outer_dict = {}
-    response = []
-
-    #loop throughh every comment object and serialise it
-    for comment in queryset:
-        output = {
-            'id'        : comment.id,
-            'timestamp' : comment.timestamp,
-            'content'   : comment.content,
-            'private'   : comment.private,
-            'room_id'   : comment.room_id,
-            'user_id'   : comment.user_id,
-        }
-        response.append(output)
-
-    outer_dict['values'] = response
-
-    return Response(outer_dict)
+    result = {'values' : [{'id'        : comment.id,
+                           'timestamp' : comment.timestamp,
+                           'content'   : comment.content,
+                           'private'   : comment.private,
+                           'room_id'   : comment.room_id,
+                           'user_id'   : comment.user_id,
+                           } for comment in queryset]}
+    return Response( result )
 
 
 def index(request):
     return render(request, 'index.html')
+
+
+

@@ -1,8 +1,8 @@
+from rest_framework.authtoken import views as auth_views
 from django.conf.urls import url, include
-from django.conf.urls import url
 from rest_framework import routers
 from . import views
-from rest_framework.authtoken import views as auth_views
+
 
 
 router = routers.DefaultRouter()
@@ -22,11 +22,15 @@ router = routers.DefaultRouter()
 # Additionally, we include login URLs for the browsable API.
 
 urlpatterns = [
-    url(r'^api/auth/', auth_views.obtain_auth_token),
-    url(r'^api/user/current', views.current_user),
-    url(r'^api/rooms/', views.rooms),
-    url(r'^api/comments', views.get_comments),
-    url(r'^api/', include(router.urls)),
-    url(r'^$', views.index, name='index'),
-    url(r'^docs/', include('rest_framework_docs.urls')),
+    url(r'^api/auth/',                      		auth_views.obtain_auth_token),
+    url(r'^api/user/current',               		views.current_user),
+    url(r'^api/user/rooms',                 		views.get_rooms),
+
+    url(r'^api/room/(?P<room_id>[0-9]+)/comments',     views.get_comments),
+    url(r'^api/room/(?P<room_id>[0-9]+)/blacklist',    views.blacklist_users),
+    url(r'^api/room/(?P<room_id>[0-9]+)/settings',     views.room_settings),
+
+    url(r'^api/',                           		include(router.urls)),
+    url(r'^$',                              		views.index, name='index'),
+    url(r'^docs/',                          		include('rest_framework_docs.urls')),
 ]
