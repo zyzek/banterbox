@@ -172,7 +172,7 @@ def make_rooms(comments_per_room):
         room.name = cur_unit.code + " Lecture"
         room.lecturer = cur_unit.lecturer
         room.unit = cur_unit
-        room.status = choice(statuses)
+        room.status = models.RoomStatus.objects.get(name="commencing")
         room.private = choice([True, False])
         room.password_protected = choice([True, False])
         if room.password_protected:

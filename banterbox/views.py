@@ -7,9 +7,11 @@ from random import random
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from banterbox.models import UserRole, UserUnitRole, UserRoomBlacklist
+from banterbox.models import UserRole, UserUnitRole, UserRoomBlacklist, RoomStatus
 from banterbox.serializers import *
 from django.db import IntegrityError
+from django.utils import timezone
+from datetime import timedelta
 
 
 #blacklist a user/users from room
@@ -49,6 +51,8 @@ def blacklist_users(request, room_id):
 @api_view(['GET'])
 def room_settings(request, room_id):
     user = request.user
+    print("room id<"+room_id+">.")
+    print(Room.objects.get(id=room_id))
 
     if user.is_staff != 1:
         return Response({"error":"permission denied."})
@@ -85,6 +89,43 @@ def current_user(request):
         'username'  : profile.user.username,
     }
     return Response(output)
+
+@api_view(['GET'])
+def get_update(request, room_id):
+    user = request.user
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({"error":"room does not exist."})
+    result = {
+        "room_status" : room.status.name
+    }
+    return Response(result)
+
+
+@api_view(['PUT'])
+def pause_room(request, room_id):
+    user = request.user
+    if user.is_staff != 1:
+        return Response({"error":"permission denied."})
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({"error":"room does not exist."})
+    if room.status != "paused" and room.pause_date_time == None:
+        #pause the room
+        room.pause_date_time = timezone.now()
+        status = RoomStatus.objects.get(name="paused")
+        print(status)
+        room.status = status
+        room.save()
+        return Response({"success" : "room paused, will unpause at "+str(timezone.now()+timedelta(minutes = 5))+"." })
+    elif room.status == "paused":
+        return Response({"error" : "room already paused."})
+    else:
+        return Response({"error" : "room has already been paused."})
+
+
 
 @api_view(['GET'])
 def get_rooms(request):

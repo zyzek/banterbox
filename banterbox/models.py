@@ -32,6 +32,7 @@ class RoomStatus(models.Model):
     def __str__(self):
         return self.name
 
+
 '''
     Room model
     description: TODO
@@ -45,6 +46,7 @@ class Room(models.Model):
     private = models.BooleanField(default=False)
     password_protected = models.BooleanField(default=False)
     password = models.CharField(max_length=255, null=True)
+    pause_date_time = models.DateTimeField(null=True, default = None)
     created_at = models.DateTimeField(auto_now_add=True)
     commenced_at = models.DateTimeField(auto_now_add=True)
     concluded_at = models.DateTimeField(null=True)
