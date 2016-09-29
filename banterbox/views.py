@@ -97,6 +97,8 @@ def get_update(request, room_id):
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
         return Response({"error":"room does not exist."})
+
+    room = updateCheckRoomStatus(room)
     result = {
         "room_status" : room.status.name
     }
@@ -125,8 +127,6 @@ def pause_room(request, room_id):
     else:
         return Response({"error" : "room has already been paused."})
 
-
-
 @api_view(['GET'])
 def get_rooms(request):
     #get the rooms associated to this user
@@ -142,7 +142,9 @@ def get_rooms(request):
         room = Room.objects.get(unit_id=unit.id)
 
         next_session = ScheduledRoom.objects.filter(unit_id = unit.id).order_by("start_timestamp")[0]
+        end_timestamp = 
 
+        room = updateCheckRoomStatus(room)
         rooms.append({
             "id"           : room.id,
             "lecturer"     : {"email"   : unit.lecturer.email, "name": '{0} {1}'.format(unit.lecturer.first_name, unit.lecturer.last_name)},
@@ -181,10 +183,6 @@ def make_comment(request, room_id):
     return Response({"error":"unable to post comment."})
 
 
-
-    
-    
-
 # Custom API view/responses etc
 @api_view(['GET'])
 def get_comments(request):
@@ -221,5 +219,20 @@ def get_comments(request):
 def index(request):
     return render(request, 'index.html')
 
+
+def updateCheckRoomStatus(room):
+    #check the room status, update if required
+    roomCommenced = timezone.now() > next_session.start_timestamp
+    roomClosed = timezone.now() < next_session.end_timestamp
+
+    if roomClosed:
+        _name = "closed"
+    elif roomCommenced:
+        _name = "running"
+    else:
+        _name = "commencing"
+    room.status = RoomStatus.objects.get(name=_name)
+    room.save()
+    return room
 
 
