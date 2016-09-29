@@ -27,9 +27,8 @@ urlpatterns = [
     url(r'^api/user/rooms',                 		views.get_rooms),
 
     url(r'^api/room/(?P<room_id>[0-9]+)/comments',     views.get_comments),
-    url(r'^api/room/(?P<room_id>[0-9]+)/blacklist',    views.blacklist_users),
-    url(r'^api/room/(?P<room_id>[0-9]+)/settings',     views.room_settings),
-
+    url(r'^api/room/(?P<room_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/blacklist',    views.blacklist_users),
+    url(r'^api/room/(?P<room_id>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/settings',     views.room_settings),
     url(r'^api/',                           		include(router.urls)),
     url(r'^$',                              		views.index, name='index'),
     url(r'^docs/',                          		include('rest_framework_docs.urls')),

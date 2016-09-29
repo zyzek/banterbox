@@ -51,7 +51,7 @@ def room_settings(request, room_id):
     user = request.user
 
     if user.is_staff != 1:
-        return Responce({"error":"permission denied."})
+        return Response({"error":"permission denied."})
 
     #get the room
     try:
@@ -84,27 +84,33 @@ def current_user(request):
         'last_name' : profile.user.last_name,
         'username'  : profile.user.username,
     }
-
     return Response(output)
 
 @api_view(['GET'])
 def get_rooms(request):
-    user = request.user
+    #get the rooms associated to this user
+    try:
+        user = request.user
+    except:
+        return response({'rooms':'[]'})
+
     rooms = []
     for userEnrolement in UserUnitEnrolment.objects.filter(user_id = user.id):
 
         unit = Unit.objects.get(id=userEnrolement.unit_id)
         room = Room.objects.get(unit_id=unit.id)
 
+        next_session = ScheduledRoom.objects.filter(unit_id = unit.id).order_by("start_timestamp")[0]
+
         rooms.append({
-            "id"        : room.id,
-            "lecturer"  : {"email"   : unit.lecturer.email, "name": '{0} {1}'.format(unit.lecturer.first_name, unit.lecturer.last_name)},
-            "created_at": room.created_at,
-            "name"      : room.name,
-            "code"      : unit.code,
-            "icon"      : unit.icon,
-            "status"    : room.status.name,
-            # next_session: {day: , time: "14:00"},
+            "id"           : room.id,
+            "lecturer"     : {"email"   : unit.lecturer.email, "name": '{0} {1}'.format(unit.lecturer.first_name, unit.lecturer.last_name)},
+            "created_at"   : room.created_at,
+            "name"         : room.name,
+            "code"         : unit.code,
+            "icon"         : unit.icon,
+            "status"       : room.status.name,
+            "next_session" : next_session.start_timestamp,
         })
     return Response({'rooms':rooms})
 

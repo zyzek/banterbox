@@ -140,8 +140,8 @@ class UserUnitEnrolment(models.Model):
 class ScheduledRoom(models.Model):
     day = models.PositiveIntegerField()
     unit = models.ForeignKey(Unit, models.CASCADE)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    start_timestamp = models.DateTimeField(auto_now_add=False, default=None)
+    end_timestamp   = models.DateTimeField(auto_now_add=False, default=None)
 
     def __str__(self):
         return "{}: {}, [{} - {}]".format(self.unit.code, self.day, self.start_time, self.end_time)
