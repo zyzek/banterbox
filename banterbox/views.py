@@ -7,7 +7,7 @@ from random import random
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
-from banterbox.models import UserRole, UserUnitRole, UserRoomBlacklist, RoomStatus
+from banterbox.models import *
 from banterbox.serializers import *
 from django.db import IntegrityError
 from django.utils import timezone
@@ -155,6 +155,35 @@ def get_rooms(request):
         })
     return Response({'rooms':rooms})
 
+
+@api_view(['PUT'])
+def make_comment(request, room_id):
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({"error":"room does not exist."})
+
+    try:
+        content = request.data['content']
+    except:
+        return Response({"error":"missing argument <content>."})
+
+    user = request.user
+    rooms = []
+    for userEnrolement in UserUnitEnrolment.objects.filter(user_id = user.id):
+        if room == Room.objects.get(unit_id=userEnrolement.unit_id):
+            comment = Comment()
+            comment.room = room
+            comment.user = user
+            comment.content = content
+            comment.save()
+            return Response({"success":"comment posted."})
+    return Response({"error":"unable to post comment."})
+
+
+
+    
+    
 
 # Custom API view/responses etc
 @api_view(['GET'])
