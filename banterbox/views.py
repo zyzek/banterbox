@@ -15,7 +15,7 @@ from datetime import timedelta
 
 
 #blacklist a user/users from room
-@api_view(['PUT'])
+@api_view(['POST'])
 def blacklist_users(request, room_id):
     user = request.user
 
@@ -106,7 +106,7 @@ def get_update(request, room_id):
     return Response(result)
 
 
-@api_view(['PUT'])
+@api_view(['POST'])
 def pause_room(request, room_id):
     user = request.user
     if user.is_staff != 1:
@@ -165,7 +165,7 @@ def get_rooms(request):
     return Response({'rooms':rooms})
 
 
-@api_view(['PUT'])
+@api_view(['POST'])
 def make_comment(request, room_id):
     try:
         room = Room.objects.get(id=room_id)
@@ -184,8 +184,8 @@ def make_comment(request, room_id):
     for userEnrolement in UserUnitEnrolment.objects.filter(user_id = user.id):
         if room == Room.objects.get(unit_id=userEnrolement.unit_id):
 
-            if room.status.name != "active":
-                return Response({"error" : "room is not active."})
+            if room.status.name != "running":
+                return Response({"error" : "room is not running."})
 
             comment = Comment()
             comment.room = room
