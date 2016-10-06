@@ -508,18 +508,27 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"../app":1,"../auth":2,"../store":12,"sweetalert2":68,"vue":72,"vue-hot-reload-api":69,"vueify/lib/insert-css":73}],9:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _store = require('../store');
+
+var _store2 = _interopRequireDefault(_store);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 exports.default = {
     data: function data() {
-        return {};
+        return {
+            store: _store2.default
+        };
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n    <div class=\"col-xs-12\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ room. }}\"> </i> {{ room.name }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">Automated executive Local Area\n                Network</h3></div>\n        </div>\n        <canvas id=\"canvas\" style=\"width:100%; height:350px;\">\n        </canvas>\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-green\" id=\"upvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-up\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-red\" id=\"downvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-down\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n                    <div class=\"comments-panel\">\n                        <div class=\"comment\">\n                            <span class=\"comment-username\">Jimmy Bob</span>\n                            <div class=\"comment-text\">Lorem ipsum dolor sit amet, consectetur adipisicing elit.\n                                Consequuntur, cumque excepturi explicabo maiores modi nam quisquam soluta! Autem\n                            </div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n    <div class=\"col-xs-12\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ room. }}\"> </i> {{ room.name }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">Automated executive Local Area\n                Network</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas id=\"canvas\" style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>\n            <div id=\"worm-comments\">\n\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-green\" id=\"upvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-up\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-red\" id=\"downvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-down\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n                    <div class=\"comments-panel\">\n                        <div class=\"comment\">\n                            <span class=\"comment-username\">Jimmy Bob</span>\n                            <div class=\"comment-text\">Lorem ipsum dolor sit amet, consectetur adipisicing elit.\n                                Consequuntur, cumque excepturi explicabo maiores modi nam quisquam soluta! Autem\n                            </div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -530,7 +539,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-1f13dcde", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":72,"vue-hot-reload-api":69}],10:[function(require,module,exports){
+},{"../store":12,"vue":72,"vue-hot-reload-api":69}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -563,9 +572,9 @@ exports.default = {
             this.store.ui.main_centered = true;
 
             if (_store.store.units.units.length === 0) {
-                this.$http.get('/api/user/rooms').then(function (response) {
+                this.$http.get('/api/rooms').then(function (response) {
                     var _store$units$units;
-                    
+
                     console.log({ response: response });
                     (_store$units$units = _store.store.units.units).push.apply(_store$units$units, (0, _toConsumableArray3.default)(response.data.rooms));
                 }, function (reject) {});
