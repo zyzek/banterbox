@@ -165,14 +165,19 @@ def get_rooms(request):
         rooms.append(result)
     return Response({'rooms':rooms})
 
-
-@api_view(['POST'])
-def make_comment(request, room_id):
+@api_view()
+def comment(request, room_id):
     try:
-        room = Room.objects.get(id=room_id)
+        room = Room.objects.get(id=room_id.replace("-",""))
     except Room.DoesNotExist:
         return Response({"error":"room does not exist."})
 
+    if request.method == "POST":
+        comment_get(request, room)
+    elif request.method == "GET":
+        comment_post(request, room)
+
+def comment_get(request, room):
     try:
         content = request.data['content']
     except:
@@ -195,16 +200,7 @@ def make_comment(request, room_id):
     return Response({"error":"unable to post comment."})
 
 
-# Custom API view/responses etc
-@api_view(['GET'])
-def get_comments(request):
-    
-    #get the room
-    try:
-        room = Room.objects.get(id=room_id)
-    except Room.DoesNotExist:
-        return Response({"error":"room does not exist."})
-
+def comment_post(request, room_id):
     #get timestamp
     try:
         timestamp = request.GET['timestamp']
