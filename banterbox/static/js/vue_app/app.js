@@ -3,7 +3,10 @@ import Router from 'vue-router'
 import Resource from 'vue-resource'
 import NotFound from './components/NotFound.vue'
 import Home from './components/Home.vue'
-import Rooms from './components/Rooms.vue'
+
+import RoomSelection from './components/RoomPage.vue'
+import Room from './components/Room.vue'
+
 import App from './components/App.vue'
 import Login from './components/Login.vue'
 import {store} from './store'
@@ -30,7 +33,10 @@ router.map({
         component: Login
     },
     '/rooms': {
-        component: Rooms
+        component: RoomSelection,
+    },
+    '/rooms/:id': {
+        component: Room,
     },
     '/404': {
         component: NotFound
@@ -64,3 +70,5 @@ router.beforeEach(function (transition) {
 
 // Start the app!
 router.start(App, '#app')
+
+console.log("%c😂", "background-color:red;font-size:10rem;color:white;;border-radius:1000px;padding:0 1rem")

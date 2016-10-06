@@ -2,12 +2,12 @@
     <div>
         <div>
             <div class="row">
-                <h3 v-if="store.state.units.length === 0">
+                <h3 v-if="store.units.units.length === 0">
                     <i class="fa fa-pulse fa-5x fa-spinner"></i> Loading units...
                 </h3>
                 <unit-panel :class="{blur: [null,unit.public_id].indexOf(store.rooms.hovered) < 0}"
-                            v-for="unit in store.state.units"
-                            :unit="unit" transition="expand" stagger="125"></unit-panel>
+                            v-for="unit in store.units.units"
+                            :unit="unit" ></unit-panel>
             </div>
         </div>
 
@@ -26,7 +26,6 @@
 <script>
     import {store} from '../store'
     import UnitPanel from './UnitPanel.vue'
-    import units from '../units'
 
     export default {
         components: {
@@ -37,19 +36,22 @@
                 store
             }
         },
-        ready: function () {
-            if (store.state.units.length === 0) {
-                let [u1,u2,u3,u4] = units
-                // We are emulating an ajax call here until the API is ready.
-                setTimeout(() => store.state.units.push(u1, u2, u3, u4), 1000)
-            }
-        },
         route: {
             activate: function () {
-                this.store.state.main_centered = true;
+                this.store.ui.main_centered = true;
+
+                if (store.units.units.length === 0) {
+                    this.$http.get('/api/rooms').then(response => {
+                        console.log({response})
+                        store.units.units.push(...response.data.rooms)
+                    }, reject => {
+
+                    })
+                }
             },
             deactivate: function () {
-                this.store.state.main_centered = false;
+                this.store.ui.main_centered = false;
+
             }
         }
     }

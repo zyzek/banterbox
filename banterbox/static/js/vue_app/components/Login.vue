@@ -126,10 +126,10 @@
         },
         route: {
             activate: function () {
-                this.store.state.main_centered = true;
+                this.store.ui.main_centered = true;
             },
             deactivate: function () {
-                this.store.state.main_centered = false;
+                this.store.ui.main_centered = false;
             }
         }
     }
