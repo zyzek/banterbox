@@ -10,7 +10,7 @@ canvas.height = height;
 var worm = [];
 var mouse_x = 0;
 
-var max_values = 200;
+var max_values = 500;
 
 var data = [
     {
@@ -237,4 +237,3 @@ function animate() {
     render()
     requestAnimationFrame(animate)
 }
-

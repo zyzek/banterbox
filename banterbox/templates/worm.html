@@ -26,5 +26,23 @@
 
 
     <script type="text/javascript" src="../static/js/worm.js"></script>
+    <script>
 
+
+
+    function getComments(last_timestamp){
+    $.ajax({
+      type: 'GET',
+      url: '/harambe/dicks/out',
+      data:{timestamp:last_timestamp},
+      success: function(response){
+        dicks_out(response.data)
+      },
+      error: function(xhr, type, exception) {
+        // if ajax fails display error alert
+        console.log("ajax error response type "+type);
+      }
+    });
+  }
+    </script>
 </html>
