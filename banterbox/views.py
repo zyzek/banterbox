@@ -165,7 +165,7 @@ def get_rooms(request):
         rooms.append(result)
     return Response({'rooms':rooms})
 
-@api_view()
+@api_view(['GET','POST'])
 def comment(request, room_id):
     try:
         room = Room.objects.get(id=room_id.replace("-",""))
@@ -173,9 +173,9 @@ def comment(request, room_id):
         return Response({"error":"room does not exist."})
 
     if request.method == "POST":
-        comment_get(request, room)
+        return comment_get(request, room)
     elif request.method == "GET":
-        comment_post(request, room)
+        return comment_post(request, room)
 
 def comment_get(request, room):
     try:
@@ -200,7 +200,7 @@ def comment_get(request, room):
     return Response({"error":"unable to post comment."})
 
 
-def comment_post(request, room_id):
+def comment_post(request, room):
     #get timestamp
     try:
         timestamp = request.GET['timestamp']
@@ -209,10 +209,10 @@ def comment_post(request, room_id):
 
     #get query set
     try:
-        queryset = Comment.objects.filter(room_id = requested_room, timestamp__gt = timestamp)
+        queryset = Comment.objects.filter(room_id = room.id, timestamp__gt = timestamp)
     except:
         #server error
-        HttpResponse(500)
+        return HttpResponse(500), 500
 
     result = {'values' : [{'id'        : comment.id,
                            'timestamp' : comment.timestamp,
