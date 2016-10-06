@@ -104,6 +104,59 @@ def rooms(request):
         })
     return Response({'rooms':rooms})
 
+'''
+include lecutrer object with name and email
+
+'''
+
+# Custom API view/responses etc
+@api_view(['GET'])
+def get_comments(request):
+
+    #check whether room id exists in the request, if not return 400 response
+    if 'room_id' not in request.GET:
+        #THere is a better way to do this
+        return HttpResponse(400)
+
+    #check if there is no timestamp parameter
+    time_filter = False
+    if 'timestamp' in request.GET:
+        time_filter = True
+
+    #a request will always include the room id
+    requested_room = request.GET['room_id']
+
+    #A list to store all of the comment objects
+    queryset = []
+
+    #if there was a time specified, get tiems within a range, else get all of the comments
+    if time_filter:
+        query_time = requested_room = request.GET['timestamp']
+        queryset = Comment.objects.filter(room_id=requested_room, timestamp__gt=query_time)
+    else:
+        queryset = Comment.objects.filter(room_id=requested_room)
+
+
+    #outer_dict is an object to hold the list, so it's jsonable
+    outer_dict = {}
+    response = []
+
+    #loop throughh every comment object and serialise it
+    for comment in queryset:
+        output = {
+            'id'        : comment.id,
+            'timestamp' : comment.timestamp,
+            'content'   : comment.content,
+            'private'   : comment.private,
+            'room_id'   : comment.room_id,
+            'user_id'   : comment.user_id,
+        }
+        response.append(output)
+
+    outer_dict['values'] = response
+
+    return Response(outer_dict)
+
 
 def index(request):
     return render(request, 'index.html')
