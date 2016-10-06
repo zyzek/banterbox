@@ -177,8 +177,6 @@ def make_comment(request, room_id):
     except:
         return Response({"error":"missing argument <content>."})
 
-
-
     user = request.user
     rooms = []
     for userEnrolement in UserUnitEnrolment.objects.filter(user_id = user.id):

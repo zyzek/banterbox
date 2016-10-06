@@ -13,9 +13,8 @@ urlpatterns = [
     url(r'^api/user/current',               		views.current_user),
     url(r'^api/user/rooms',                 		views.get_rooms),
 
-    url(r'^api/room/'+roomPattern+r'/comment',        views.make_comment), 
+    url(r'^api/room/'+roomPattern+r'/comment',      views.make_comment), 
     
-
     url(r'^api/room/'+roomPattern+r'/pause',        views.pause_room), #pauses the room for 5 minutes
     url(r'^api/room/'+roomPattern+r'/comments',     views.get_comments),
     url(r'^api/room/'+roomPattern+r'/update',       views.get_update),
