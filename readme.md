@@ -4,7 +4,7 @@
 
 2. Install latest version of pip.
 
-3. pip install -r requirements.txt
+3. pip3 install -r requirements.txt
 
 
 ##### Remember
