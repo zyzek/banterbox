@@ -52,6 +52,18 @@ class Room(models.Model):
     
     def __str__(self):
         return self.name
+'''
+    UserRoomBlackList Model
+    description: TODO
+'''
+class UserRoomBLackList(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    room = models.ForeignKey(Room, models.CASCADE)
+    user = models.ForeignKey(User, models.SET_NULL, null=True)
+
+    def __str__(self):
+        return "{} blacklisted from {}.".format(self.user.username, self.room.id)
+
 
 '''
     Comment model

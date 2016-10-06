@@ -12,22 +12,29 @@ from banterbox.serializers import *
 from django.db import IntegrityError
 from django.utils import timezone
 from datetime import timedelta
-
-
-#blacklist a user/users from room
-@api_view(['POST'])
-def blacklist_users(request, room_id):
-    user = request.user
-
-    #check if admin
-    if user.is_staff != 1:
-        return Responce({"error":"permission denied."})
-
-    #get the room
+'''
+---------------------------------------------------- /api/room/blacklist ------------------------------------------
+'''
+@api_view(['GET', 'POST'])
+def blacklist(request, room_id):
+    # get the room 
     try:
-        room = Room.objects.get(id = room_id)
+        room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
         return Response({"error":"room does not exist."})
+    # perform GET or POST request
+    if request.method == "GET":
+        return blacklist_GET(request, room)
+    elif request.method == "POST":
+        return blacklist_POST(request, room)
+
+def blacklist_GET(request, room):
+    return {'blacklisted_users' : 'TBI'}#return {'blacklisted_users' : [User.objects.get(id = UserRoomBlacklist.user_id).id for UserRoomBlacklist in UserRoomBlacklist.objects.filter(room_id=room.id)]}
+
+def blacklist_POST(request, room):
+     #check if admin
+    if user.is_staff != 1:
+        return Response({"error":"permission denied."})
 
     #get the userids
     try:
@@ -45,6 +52,11 @@ def blacklist_users(request, room_id):
         except IntegrityError:
             continue
     return HttpResponse(200)
+
+#blacklist a user/users from room
+@api_view(['POST'])
+def blacklist_users(request, room_id):
+    user = request.user
 
 
 # Custom API view/responses etc
@@ -73,7 +85,9 @@ def room_settings(request, room_id):
               }
 
     return Response(result)
-
+'''
+    ----------------------------------------- /api/current -----------------------------------------------------------
+'''
 
 # Custom API view/responses etc
 @api_view(['GET'])
@@ -89,6 +103,22 @@ def current_user(request):
         'username'  : profile.user.username,
     }
     return Response(output)
+'''
+    ----------------------------------------- /api/room/<room id>/run -----------------------------------------------------------
+'''
+#temp endpoint for testing
+@api_view(['POST'])
+def run(request, room_id):
+    user = request.user
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({"error":"room does not exist."})
+    status = RoomStatus.objects.get(name="running")
+    room.status = status
+    room.save()
+    return Response({"success" : "room running."})
+
 
 @api_view(['GET'])
 def get_update(request, room_id):
@@ -119,7 +149,6 @@ def pause_room(request, room_id):
         #pause the room
         room.pause_date_time = timezone.now()
         status = RoomStatus.objects.get(name="paused")
-        print(status)
         room.status = status
         room.save()
         return Response({"success" : "room paused, will unpause at "+str(timezone.now()+timedelta(minutes = 5))+"." })
@@ -164,20 +193,22 @@ def get_rooms(request):
 
         rooms.append(result)
     return Response({'rooms':rooms})
-
+'''
+    ----------------------------------------- COMMENTS -----------------------------------------------------------
+'''
 @api_view(['GET','POST'])
 def comment(request, room_id):
     try:
-        room = Room.objects.get(id=room_id.replace("-",""))
+        room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
         return Response({"error":"room does not exist."})
 
     if request.method == "POST":
-        return comment_get(request, room)
-    elif request.method == "GET":
         return comment_post(request, room)
+    elif request.method == "GET":
+        return comment_get(request, room)
 
-def comment_get(request, room):
+def comment_post(request, room):
     try:
         content = request.data['content']
     except:
@@ -200,7 +231,7 @@ def comment_get(request, room):
     return Response({"error":"unable to post comment."})
 
 
-def comment_post(request, room):
+def comment_get(request, room):
     #get timestamp
     try:
         timestamp = request.GET['timestamp']
@@ -209,10 +240,10 @@ def comment_post(request, room):
 
     #get query set
     try:
-        queryset = Comment.objects.filter(room_id = room.id, timestamp__gt = timestamp)
+        queryset = Comment.objects.filter(room_id = room.id)#, timestamp__gt = timestamp)
     except:
         #server error
-        return HttpResponse(500), 500
+        return HttpResponse(500)
 
     result = {'values' : [{'id'        : comment.id,
                            'timestamp' : comment.timestamp,
