@@ -13,9 +13,21 @@ application = get_wsgi_application()
 from faker import Factory
 from random import choice, randint, sample
 from datetime import date, datetime, timedelta, time
+from django.utils import timezone
 
 import manage
 from banterbox import models
+from django.db import models as djangoModels
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 UNITS = 10
 LECTURES_PER_UNIT = 5
@@ -64,7 +76,7 @@ def add_roles():
         m = models.UserRole()
         m.name = role
         m.save()
-    
+
 def make_superuser():
     admin = models.User()
     admin.username = "admin"
@@ -110,7 +122,7 @@ def make_units(num):
         lecturer.password = user_password
         lecturer.email = eu_fake.email()
         lecturer.save()
-        
+
         # Make the unit itself.
         unit = models.Unit()
         unit.name = fake.catch_phrase()
@@ -118,8 +130,8 @@ def make_units(num):
         unit.lecturer = lecturer
         unit.icon = get_icon()
         unit.save()
-        
-        # Attack the lecturer to the unit
+
+        # Attach the lecturer to the unit
         role = models.UserUnitRole()
         role.user = lecturer
         role.unit = unit
@@ -144,13 +156,12 @@ def make_units(num):
 
 def make_schedules(lecs_per_unit):
     for unit in models.Unit.objects.all():
-        for _ in range(lecs_per_unit):
+        for i in range(lecs_per_unit):
             room = models.ScheduledRoom()
             room.day = randint(0, 6)
             room.unit = unit
-            room.start_time = time(hour=randint(0, 20), minute=15*randint(0,3))
-            room.end_time = (datetime.combine(date.today(), room.start_time) \
-                             + timedelta(minutes=15*randint(1, 12))).time()
+            room.start_timestamp = ((timezone.now() + timedelta(minutes = (60 *  i     ))))
+            room.end_timestamp   = ((timezone.now() + timedelta(minutes = (60 * (i + 1)))))
             room.save()
 
 def make_rooms(comments_per_room):
@@ -161,7 +172,7 @@ def make_rooms(comments_per_room):
         room.name = cur_unit.code + " Lecture"
         room.lecturer = cur_unit.lecturer
         room.unit = cur_unit
-        room.status = choice(statuses)
+        room.status = models.RoomStatus.objects.get(name="commencing")
         room.private = choice([True, False])
         room.password_protected = choice([True, False])
         if room.password_protected:
@@ -186,13 +197,13 @@ def run_step(func, args, pre_string=None, fail_string=None):
     else:
         print(pre_string, end=" ")
     sys.stdout.flush()
-   
+
     try:
         func(*args)
-        print("OK")
+        print(bcolors.OKGREEN+"OK"+bcolors.ENDC)
     except Exception as e:
         if fail_string is None:
-            print("Failed")
+            print(bcolors.FAIL+"Failed"+bcolors.ENDC+" <"+str(e)+">")
         else:
             print("\n" + fail_string)
 

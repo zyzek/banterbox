@@ -563,9 +563,9 @@ exports.default = {
             this.store.ui.main_centered = true;
 
             if (_store.store.units.units.length === 0) {
-                this.$http.get('/api/rooms').then(function (response) {
+                this.$http.get('/api/user/rooms').then(function (response) {
                     var _store$units$units;
-
+                    
                     console.log({ response: response });
                     (_store$units$units = _store.store.units.units).push.apply(_store$units$units, (0, _toConsumableArray3.default)(response.data.rooms));
                 }, function (reject) {});

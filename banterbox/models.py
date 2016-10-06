@@ -32,6 +32,7 @@ class RoomStatus(models.Model):
     def __str__(self):
         return self.name
 
+
 '''
     Room model
     description: TODO
@@ -45,13 +46,24 @@ class Room(models.Model):
     private = models.BooleanField(default=False)
     password_protected = models.BooleanField(default=False)
     password = models.CharField(max_length=255, null=True)
+    pause_date_time = models.DateTimeField(null=True, default = None)
     created_at = models.DateTimeField(auto_now_add=True)
     commenced_at = models.DateTimeField(auto_now_add=True)
     concluded_at = models.DateTimeField(null=True)
     closed_at = models.DateTimeField(null=True)
-    
     def __str__(self):
         return self.name
+
+'''
+    User Room Blacklist Model
+    description: TODO
+'''
+class UserRoomBlacklist(models.Model):
+    user = models.ForeignKey(User, models.CASCADE)
+    room = models.ForeignKey('Room', models.CASCADE)
+    
+    class Meta:
+        unique_together = ('user', 'room')
 
 '''
     Comment model
@@ -107,7 +119,8 @@ class Unit(models.Model):
     lecturer = models.ForeignKey(User, models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     icon = models.CharField(max_length=255, default="pencil")
-    
+    description = models.CharField(max_length=1023, default="")
+
     def __str__(self):
         return "{}: {}".format(self.code, self.name)
 
@@ -129,8 +142,8 @@ class UserUnitEnrolment(models.Model):
 class ScheduledRoom(models.Model):
     day = models.PositiveIntegerField()
     unit = models.ForeignKey(Unit, models.CASCADE)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
+    start_timestamp = models.DateTimeField(auto_now_add=False, default=None)
+    end_timestamp   = models.DateTimeField(auto_now_add=False, default=None)
 
     def __str__(self):
         return "{}: {}, [{} - {}]".format(self.unit.code, self.day, self.start_time, self.end_time)
