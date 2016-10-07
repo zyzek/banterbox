@@ -61,12 +61,6 @@ def blacklist_POST(request, room):
     return HttpResponse(200)
 
 
-# blacklist a user/users from room
-@api_view(['POST'])
-def blacklist_users(request, room_id):
-    user = request.user
-
-
 # Custom API view/responses etc
 @api_view(['GET'])
 def room_settings(request, room_id):
