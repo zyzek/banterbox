@@ -71,4 +71,4 @@ router.beforeEach(function (transition) {
 // Start the app!
 router.start(App, '#app')
 
-console.log("%c😂", "background-color:red;font-size:10rem;color:white;;border-radius:1000px;padding:0 1rem")
+console.log("%c🍆", "background-color:yellow;border:5px solid black;font-size:5rem;color:white;;border-radius:1000px;padding:10px")
