@@ -161,7 +161,7 @@ exports.default = {
         }
     },
     retrieveProfile: function retrieveProfile() {
-        _vue2.default.http.get('/api/user/current').then(function (response) {
+        _vue2.default.http.get('/api/user').then(function (response) {
             _store.store.user.profile_loaded = true;
             Object.assign(_store.store.user, response.data);
         }, function (err) {

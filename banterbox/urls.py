@@ -10,8 +10,8 @@ urlpatterns = [
 	
     url(r'^api/auth/',                      		auth_views.obtain_auth_token),
     
-    url(r'^api/user/current',               		views.current_user),
-    url(r'^api/user/rooms',                 		views.get_rooms),
+    url(r'^api/user',               		views.current_user),
+    url(r'^api/rooms',                 		views.get_rooms),
 
     url(r'^api/room/'+roomPattern+r'/comment',        views.make_comment), 
     
