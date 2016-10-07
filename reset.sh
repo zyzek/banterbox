@@ -1,3 +1,3 @@
 #!/bin/bash
-python seeder.py —-purge
-python seeder.py --populate
+python3 seeder.py —-purge
+python3 seeder.py --populate
