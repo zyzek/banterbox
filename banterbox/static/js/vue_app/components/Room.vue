@@ -1,10 +1,14 @@
 <template>
     <div class="row">
+
+        <h3>TODO: Check if user has access, if not then inform them that they have no access(banned/not signed in)</h3>
+        <h3>Otherwise, pull in room data from API and render the following</h3>
+
+
         <div class="col-xs-12">
             <div class="col-xs-12">
-                <div><h1><i class="unit-icon fa  fa-{{ room. }}"> </i> {{ room.name }}</h1></div>
-                <div style="color:dimgray;"><h3 style="font-weight: 200;">Automated executive Local Area
-                    Network</h3></div>
+                <div><h1><i class="unit-icon fa  fa-{{ room.icon }}"> </i> {{ room.unit_code }}</h1></div>
+                <div style="color:dimgray;"><h3 style="font-weight: 200;">{{ room.unit_name }}</h3></div>
             </div>
 
             <div class="col-xs-12" style="margin-bottom:20px;">
@@ -30,12 +34,12 @@
                         </div>
                     </div>
                     <div class="col-xs-8">
-                        <div class="comments-panel">
+
+                        <div class="comments-panel" v-for="comment in comments">
+
                             <div class="comment">
-                                <span class="comment-username">Jimmy Bob</span>
-                                <div class="comment-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                                    Consequuntur, cumque excepturi explicabo maiores modi nam quisquam soluta! Autem
-                                </div>
+                                <span class="comment-username">{{ comment.username }}</span>
+                                <div class="comment-text">{{ comment.text }}</div>
                             </div>
 
                         </div>
@@ -53,11 +57,13 @@
 
 
 <script>
-    import store from '../store'
+    import {store} from '../store'
     export default {
         data: () => {
             return {
-                store
+                store,
+                comments :[],
+                room : {}
             }
         }
     }
