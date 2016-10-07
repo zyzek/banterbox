@@ -146,7 +146,7 @@ def make_schedules(lecs_per_unit):
     for unit in models.Unit.objects.all():
         for _ in range(lecs_per_unit):
             room = models.ScheduledRoom()
-            room.day = randint(0, 6)
+            room.day = randint(0, 4) # Python considers 0 to be monday and 6 to be sunday
             room.unit = unit
             room.start_time = time(hour=randint(0, 20), minute=15*randint(0,3))
             room.end_time = (datetime.combine(date.today(), room.start_time) \

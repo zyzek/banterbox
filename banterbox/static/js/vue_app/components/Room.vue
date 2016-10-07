@@ -6,8 +6,15 @@
                 <div style="color:dimgray;"><h3 style="font-weight: 200;">Automated executive Local Area
                     Network</h3></div>
             </div>
-            <canvas id="canvas" style="width:100%; height:350px;">
-            </canvas>
+
+            <div class="col-xs-12" style="margin-bottom:20px;">
+                <canvas id="canvas" style="width:100%; height:350px; background-color: darkslategray"></canvas>
+                <div id="worm-comments">
+
+                </div>
+            </div>
+
+
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-xs-4">
@@ -46,9 +53,12 @@
 
 
 <script>
+    import store from '../store'
     export default {
         data: () => {
-            return {}
+            return {
+                store
+            }
         }
     }
 </script>
