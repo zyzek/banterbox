@@ -1,5 +1,10 @@
 <template>
     <div class="row">
+
+        <h3>TODO: Check if user has access, if not then inform them that they have no access(banned/not signed in)</h3>
+        <h3>Otherwise, pull in room data from API and render the following</h3>
+
+
         <div class="col-xs-12">
             <div class="col-xs-12">
                 <div><h1><i class="unit-icon fa  fa-{{ room. }}"> </i> {{ room.name }}</h1></div>
