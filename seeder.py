@@ -54,15 +54,15 @@ def sample_with_dupes(population, num_items):
     return out_list
 
 def add_statuses():
-    for status in ["commencing", "running", "paused", "concluding", "closed"]:
+    for status in models.Statuses:
         m = models.RoomStatus()
-        m.name = status
+        m.name = status.value
         m.save()
 
 def add_roles():
-    for role in ["participant", "owner", "moderator"]:
+    for role in models.Roles:
         m = models.UserRole()
-        m.name = role
+        m.name = role.value
         m.save()
     
 def make_superuser():
@@ -97,8 +97,8 @@ def make_users(num):
 
 def make_units(num):
     all_users = list(models.User.objects.all())
-    student_role = models.UserRole.objects.get(name="participant")
-    tutor_role = models.UserRole.objects.get(name="moderator")
+    student_role = models.UserRole.objects.get(name=models.Roles.participant.value)
+    tutor_role = models.UserRole.objects.get(name=models.Roles.moderator.value)
 
     for _ in range(num):
         # Generate a pretentious european professor
@@ -119,11 +119,11 @@ def make_units(num):
         unit.icon = get_icon()
         unit.save()
         
-        # Attack the lecturer to the unit
+        # Attach the lecturer to the unit
         role = models.UserUnitRole()
         role.user = lecturer
         role.unit = unit
-        role.role = models.UserRole.objects.get(name="owner")
+        role.role = models.UserRole.objects.get(name=models.Roles.owner.value)
         role.save()
 
         # Select a bunch of users to be students of this unit.
