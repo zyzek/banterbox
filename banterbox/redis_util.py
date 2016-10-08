@@ -62,6 +62,7 @@ def open_room(room_id):
   store.set(room.id, RoomDBManager.get_room_db(room.id))
 
   room.status = m.RoomStatus.objects.get(name=m.Statuses.commencing.value)
+  room.save()
 
   # tell the node server that the room is open
   store.publish(UPDATE_CHANNEL, redis_pub_msg(room.id, "open"))
@@ -78,6 +79,7 @@ def close_room(room_id):
   RoomDBManager.clear_room_db(room.id)
 
   room.status = m.RoomStatus.objects.get(name=m.Statuses.concluding.value)
+  room.save()
 
   # tell the node server to close the room.
   store.publish(UPDATE_CHANNEL, redis_pub_msg(room.id, "close"))
