@@ -106,7 +106,7 @@ router.beforeEach(function (transition) {
 // Start the app!
 router.start(_App2.default, '#app');
 
-console.log("%c😂", "background-color:red;font-size:10rem;color:white;;border-radius:1000px;padding:0 1rem");
+console.log("%c🍆", "background-color:yellow;border:5px solid black;font-size:5rem;color:white;;border-radius:1000px;padding:10px");
 
 },{"./auth":2,"./components/App.vue":4,"./components/Home.vue":5,"./components/Login.vue":6,"./components/NotFound.vue":7,"./components/Room.vue":9,"./components/RoomPage.vue":10,"./store":12,"vue":72,"vue-resource":70,"vue-router":71}],2:[function(require,module,exports){
 'use strict';
@@ -161,7 +161,7 @@ exports.default = {
         }
     },
     retrieveProfile: function retrieveProfile() {
-        _vue2.default.http.get('/api/user/current').then(function (response) {
+        _vue2.default.http.get('/api/user').then(function (response) {
             _store.store.user.profile_loaded = true;
             Object.assign(_store.store.user, response.data);
         }, function (err) {
@@ -508,18 +508,25 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"../app":1,"../auth":2,"../store":12,"sweetalert2":68,"vue":72,"vue-hot-reload-api":69,"vueify/lib/insert-css":73}],9:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _store = require('../store');
+
 exports.default = {
     data: function data() {
-        return {};
+        return {
+            store: _store.store,
+            comments: [],
+            room: {}
+        };
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n    <div class=\"col-xs-12\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ room. }}\"> </i> {{ room.name }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">Automated executive Local Area\n                Network</h3></div>\n        </div>\n        <canvas id=\"canvas\" style=\"width:100%; height:350px;\">\n        </canvas>\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-green\" id=\"upvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-up\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-red\" id=\"downvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-down\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n                    <div class=\"comments-panel\">\n                        <div class=\"comment\">\n                            <span class=\"comment-username\">Jimmy Bob</span>\n                            <div class=\"comment-text\">Lorem ipsum dolor sit amet, consectetur adipisicing elit.\n                                Consequuntur, cumque excepturi explicabo maiores modi nam quisquam soluta! Autem\n                            </div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <h3>TODO: Check if user has access, if not then inform them that they have no access(banned/not signed in)</h3>\n    <h3>Otherwise, pull in room data from API and render the following</h3>\n\n\n    <div class=\"col-xs-12\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ room.icon }}\"> </i> {{ room.unit_code }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ room.unit_name }}</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas id=\"canvas\" style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>\n            <div id=\"worm-comments\">\n\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-green\" id=\"upvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-up\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container active-red\" id=\"downvote\">\n                        <i class=\"vote-icon fa fa-5x fa-thumbs-o-down\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n\n                    <div class=\"comments-panel\" v-for=\"comment in comments\">\n\n                        <div class=\"comment\">\n                            <span class=\"comment-username\">{{ comment.username }}</span>\n                            <div class=\"comment-text\">{{ comment.text }}</div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -530,7 +537,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-1f13dcde", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":72,"vue-hot-reload-api":69}],10:[function(require,module,exports){
+},{"../store":12,"vue":72,"vue-hot-reload-api":69}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -627,7 +634,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div @click=\"changeStatus\" class=\"unit-component col-xs-12 col-md-6 col-lg-3 \" :class=\"{'status-open' : unit.status === 'running'}\" :id=\"unit.id\" style=\"border-radius:3px; padding:5px;display:flex\">\n    <div class=\"unit-content-container flex flex-direction-column\" :class=\"{'full-height' : unit.status === 'running' ? true : false}\">\n        <div class=\"unit-next-day flex flex-children-center\" :class=\"{'move-up' : hovered}\" v-if=\"unit.status !== 'running'\">\n            <span style=\"font-size:1.15rem\">NEXT SESSION:</span>\n            <span style=\"text-align: center\">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>\n        </div>\n        <div class=\"unit-content\" @mouseenter=\"onMouseEnter\" @mouseleave=\"onMouseLeave\">\n            <a v-link=\"{ path : '/rooms/' +  unit.public_id }\">\n                <div>\n                    <div class=\"unit-icon-container\" style=\"text-align: center; margin:15px 0;\">\n                        <i :class=\"'fa fa-5x fa-' + unit.icon\" class=\"unit-icon\"></i>\n                    </div>\n                    <p class=\"unit-code\">{{ unit.code }}</p>\n                    <p class=\"unit-name\">{{ unit.name }}</p>\n                </div>\n\n                <div class=\"flex flex-direction-column flex-children-center\">\n                    <span style=\"font-size:0.75rem;margin-bottom:10px\">STATUS : {{ unit.status.toUpperCase() }}</span>\n                    <div class=\"unit-button-border\" style=\"margin-bottom: 15px;\">\n                        <button class=\"unit-button\">ENTER ROOM</button>\n                    </div>\n                </div>\n            </a>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div @click=\"changeStatus\" class=\"unit-component col-xs-12 col-md-6 col-lg-3 \" :class=\"{'status-open' : unit.status === 'running'}\" :id=\"unit.id\" style=\"border-radius:3px; padding:5px;display:flex\">\n    <div class=\"unit-content-container flex flex-direction-column\" :class=\"{'full-height' : unit.status === 'running' ? true : false}\">\n        <div class=\"unit-next-day flex flex-children-center\" :class=\"{'move-up' : hovered}\" v-if=\"unit.status !== 'running'\">\n            <span style=\"font-size:1.15rem\">NEXT SESSION:</span>\n            <span style=\"text-align: center\">{{ unit.next_session.day }} {{ unit.next_session.time }}</span>\n        </div>\n        <div class=\"unit-content\" @mouseenter=\"onMouseEnter\" @mouseleave=\"onMouseLeave\">\n            <a v-link=\"{ path : '/rooms/' +  unit.id }\">\n                <div>\n                    <div class=\"unit-icon-container\" style=\"text-align: center; margin:15px 0;\">\n                        <i :class=\"'fa fa-5x fa-' + unit.icon\" class=\"unit-icon\"></i>\n                    </div>\n                    <p class=\"unit-code\">{{ unit.code }}</p>\n                    <p class=\"unit-name\">{{ unit.name }}</p>\n                </div>\n\n                <div class=\"flex flex-direction-column flex-children-center\">\n                    <span style=\"font-size:0.75rem;margin-bottom:10px\">STATUS : {{ unit.status.toUpperCase() }}</span>\n                    <div class=\"unit-button-border\" style=\"margin-bottom: 15px;\">\n                        <button class=\"unit-button\">ENTER ROOM</button>\n                    </div>\n                </div>\n            </a>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

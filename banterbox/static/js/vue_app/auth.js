@@ -39,7 +39,7 @@ export default {
     },
 
     retrieveProfile(){
-        Vue.http.get('/api/user/current').then(response => {
+        Vue.http.get('/api/user').then(response => {
             store.user.profile_loaded = true
             Object.assign(store.user, response.data)
         }, err => console.log({err_2: err}))

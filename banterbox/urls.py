@@ -1,32 +1,25 @@
+from rest_framework.authtoken import views as auth_views
 from django.conf.urls import url, include
-from django.conf.urls import url
 from rest_framework import routers
 from . import views
-from rest_framework.authtoken import views as auth_views
 
-
+roomPattern = "(?P<room_id>[0-9a-f]{32})"
 router = routers.DefaultRouter()
-#router.register(r'profile', views.ProfileViewSet)
-#router.register(r'room-status', views.RoomStatusViewSet)
-#router.register(r'rooms', views.RoomViewSet)
-#router.register(r'comment', views.CommentViewSet)
-#router.register(r'user', views.UserViewSet)
-#router.register(r'user-role', views.UserRoleViewSet)
-#router.register(r'user-unit-role', views.UserUnitRoleViewSet)
-#router.register(r'unit', views.UnitViewSet)
-#router.register(r'user-unit-enrolment', views.UserUnitEnrolmentViewSet)
-#router.register(r'scheduled-room', views.ScheduledRoomViewSet)
-
-
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
 
 urlpatterns = [
-    url(r'^api/auth/', auth_views.obtain_auth_token),
-    url(r'^api/user/current', views.current_user),
-    url(r'^api/rooms/', views.rooms),
-    url(r'^api/comments', views.get_comments),
-    url(r'^api/', include(router.urls)),
+
+    url(r'^api/auth/?$', auth_views.obtain_auth_token),
+    url(r'^api/user/?$', views.current_user),
+    url(r'^api/rooms/?$', views.get_rooms),
+
+    url(r'^api/room/' + roomPattern + r'/pause/?$', views.pause_room),  # pauses the room for 5 minutes
+    url(r'^api/room/' + roomPattern + r'/comment/?$', views.comment),
+    url(r'^api/room/' + roomPattern + r'/update/?$', views.get_update),
+    url(r'^api/room/' + roomPattern + r'/blacklist/?$', views.blacklist),
+    url(r'^api/room/' + roomPattern + r'/settings/?$', views.room_settings),
+    url(r'^api/room/' + roomPattern + r'/run/?$', views.run),
+
     url(r'^$', views.index, name='index'),
+    url(r'^api/', include(router.urls)),
     url(r'^docs/', include('rest_framework_docs.urls')),
 ]
