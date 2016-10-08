@@ -322,18 +322,14 @@ def enter_room(request, room_id):
         comments.append({
             'id' : com.id,
             'author' : com.user.username,
+            'icon' : com.user.profile.icon,
             'timestamp' : com.timestamp.timestamp(),
             'content' : com.content
         })
 
-    output = {
-        'code'  :room.unit.code,
-        'name' : room.unit.name,
-        'icon' : room.unit.icon,
+    return Response({
+        'unit_code': room.unit.code,
+        'unit_name': room.unit.name,
+        'unit_icon': room.unit.icon,
         'comments' : comments
-    }
-
-
-
-
-    return Response({'room' : output})
+    })

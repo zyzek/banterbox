@@ -4,7 +4,7 @@ import Resource from 'vue-resource'
 import NotFound from './components/NotFound.vue'
 import Home from './components/Home.vue'
 
-import RoomSelection from './components/RoomPage.vue'
+import RoomSelection from './components/RoomListing.vue'
 import Room from './components/Room.vue'
 
 import App from './components/App.vue'
