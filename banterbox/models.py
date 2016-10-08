@@ -57,7 +57,6 @@ class Room(models.Model):
     description: TODO
 '''
 class UserRoomBLackList(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid4)
     room = models.ForeignKey(Room, models.CASCADE)
     user = models.ForeignKey(User, models.SET_NULL, null=True)
 
