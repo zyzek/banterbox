@@ -1,0 +1,8 @@
+{
+  "name": "worm_server",
+  "version": "0.0.1",
+  "description": "A server designed to handle and communicate the current status of all rooms between clients",
+  "dependencies": {
+    "socket.io": "^1.5.0"
+  }
+}
