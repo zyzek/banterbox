@@ -147,10 +147,28 @@ class ScheduledRoom(models.Model):
         return "{}: {}, [{} - {}]".format(self.unit.code, self.day, self.start_time, self.end_time)
 
 
+import random
+
+student_icons = [
+    'university',
+    'american-sign-language-interpreting',
+    'automobile',
+    'blind',
+    'bicycle',
+    'camera',
+    'child',
+    'cutlery',
+    'user',
+    'mortar-board',
+    'signing',
+    'trash'
+
+]
+
 
 # Signal for auth tokens to create a token on save
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_user_extras(sender, instance=None, created=False, **kwargs):
     if created:
-        Profile.objects.create(user_id=instance.id, icon='university')
+        Profile.objects.create(user_id=instance.id, icon=random.choice(student_icons))
         Token.objects.create(user=instance)
