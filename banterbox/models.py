@@ -8,6 +8,22 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
+from enum import Enum
+
+# Room Statuses
+class Statuses(Enum):
+  commencing = "commencing"
+  running = "running"
+  paused = "paused"
+  concluding = "concluding"
+  closed = "closed"
+
+# User Roles
+class Roles(Enum):
+  participant = "participant"
+  owner = "owner"
+  moderator = "moderator"
+
 
 '''
     Profile Model
