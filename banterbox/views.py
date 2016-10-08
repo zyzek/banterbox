@@ -1,4 +1,3 @@
-from functools import wraps
 
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
@@ -13,6 +12,14 @@ from django.db import IntegrityError
 from django.utils import timezone
 from datetime import timedelta, datetime
 import calendar
+
+
+
+
+
+
+
+
 
 '''
 ---------------------------------------------------- /api/room/blacklist ------------------------------------------
@@ -91,11 +98,9 @@ def room_settings(request, room_id):
 
 
 '''
-    ----------------------------------------- /api/current -----------------------------------------------------------
+    ----------------------------------------- /api/user -----------------------------------------------------------
 '''
 
-
-# Custom API view/responses etc
 @api_view(['GET'])
 def current_user(request):
     profile = request.user.profile
@@ -150,7 +155,7 @@ def get_update(request, room_id):
 def pause_room(request, room_id):
     user = request.user
     if user.is_staff != 1:
-        return Response({"error": "permission denied."})
+        return Response({"error": "permission denied."},status=403)
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
@@ -271,7 +276,7 @@ def comment_get(request, room):
         queryset = Comment.objects.filter(room_id=room.id)  # , timestamp__gt = timestamp)
     except:
         # server error
-        return HttpResponse(500)
+        return Response(status=500)
 
     result = {'values': [{'id'       : comment.id,
                           'timestamp': comment.timestamp,
@@ -286,19 +291,49 @@ def comment_get(request, room):
 def index(request):
     return render(request, 'index.html')
 
-# def updateCheckRoomStatus(room, next_session):
-#     #check the room status, update if required
 
-#     roomCommenced = timezone.now() > next_session.start_timestamp
-#     roomClosed = timezone.now() > next_session.end_timestamp
 
-#     if roomClosed:
-#         _name = "closed"
-#     elif roomCommenced:
-#         _name = "running"
-#     else:
-#         _name = "commencing"
-#     status = RoomStatus.objects.get(name=_name)
-#     room.status = status
-#     room.save()
-#     return room
+
+@api_view(['GET'])
+def enter_room(request, room_id):
+    """
+    Collects initial data for the display of a room.
+    """
+    # First, check the existence of the room
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({'message': 'The room you are trying to access does not exist'}, status=404)
+
+
+    # TODO: Turn this into a decorator
+    # Check authorization, if they're not allowed to enter we let them know they're unauthorized
+    room_blacklist = room.userroomblacklist_set.all()
+    for entry in room_blacklist:
+        if entry.user_id == request.user.id:
+            return Response({'message' : 'Unauthorized'}, status=403)
+
+    # Then , we will need the following things to start them off in a room:
+    #   1. The Room's unit info : name,code
+    #   2. The comments for the room up until this point in time
+
+    comments = []
+    for com in room.comment_set.all().order_by('-timestamp'):
+        comments.append({
+            'id' : com.id,
+            'author' : com.user.username,
+            'timestamp' : com.timestamp.timestamp(),
+            'content' : com.content
+        })
+
+    output = {
+        'code'  :room.unit.code,
+        'name' : room.unit.name,
+        'icon' : room.unit.icon,
+        'comments' : comments
+    }
+
+
+
+
+    return Response({'room' : output})
