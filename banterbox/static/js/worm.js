@@ -14,13 +14,15 @@ var max_worm_val = 2000;
 var users = 50;
 var max_worm_length = 200;
 var test_scaling_height = 1;
-var worm = [users*Math.random()];
+var worm = [{y: users*Math.random(), ts: Date.now()}];
 var man_trend = 0.5;
 
 // Time delta info for rendering
 let old_time = Date.now();
 let delta = 0;
-vote_trend_frequency = 3;
+var vote_trend_duration = 3;
+var update_timer = 0;
+var update_elapsed = 0.1;
 
 
 var comment_data = [
@@ -53,7 +55,6 @@ var key_codes = {
 
 
 // Init
-worm.push(height / 2);
 angleSliderPosition = height / 2;
 setNormalFill();
 animate()
@@ -84,7 +85,7 @@ function parse_vote_data(data) {
  */
 function restart(e) {
     if (e.which === key_codes.ENTER) {
-        worm = [height / 2];
+        worm = [{y: height / 2, ts: Date.now()}];
     }
 }
 
@@ -222,11 +223,11 @@ function draw_worm(worm, zoom = 100) {
 
     if (worm.length < zoom) {
         // Worm should grow from left to right
-        context.moveTo(0, worm[0]);
+        context.moveTo(0, worm[0].y);
 
         for (let i = 1; i < worm.length - 1; i++) {
             let x = i * stepWidth;
-            let y = scale_worm_height(worm[i]);
+            let y = scale_worm_height(worm[i].y);
             if (!mouseFound && x > mouse_x) {
                 mouseFound = true;
                 _x = x;
@@ -236,10 +237,10 @@ function draw_worm(worm, zoom = 100) {
 
         }
     } else {
-        context.moveTo(0, scale_worm_height(worm[worm.length - zoom - 1]));
+        context.moveTo(0, scale_worm_height(worm[worm.length - zoom - 1].y));
         for (let i = 1; i < zoom; i++) {
             let x = (i) * ((width - 30) / (zoom - 1));
-            let y = scale_worm_height(worm[worm.length - zoom + i - 1]);
+            let y = scale_worm_height(worm[worm.length - zoom + i - 1].y);
             if (!mouseFound && x > mouse_x) {
                 mouseFound = true;
                 _x = x;
@@ -269,13 +270,20 @@ function linear_interpolate(weight, x_1, x_2) {
  * TODO : Add comments to explain what's being updated here
  */
 function update() {
-    trend = Math.cos(Date.now() / (vote_trend_frequency * 1000));
-    let vote_total = worm[worm.length - 1] + users * linear_interpolate(0.85, 2*Math.random() - 1, trend);
-    if (Math.abs(vote_total) > max_worm_val) {
-        max_worm_val = Math.abs(vote_total);
-    }
 
-    worm.push(vote_total);
+    update_timer += delta;
+
+    if (update_timer > update_elapsed) {
+        update_timer = 0;
+
+        trend = Math.cos(Date.now() / (vote_trend_duration * 1000));
+        let vote_total = worm[worm.length - 1].y + users * linear_interpolate(0.85, 2*Math.random() - 1, trend);
+        if (Math.abs(vote_total) > max_worm_val) {
+            max_worm_val = Math.abs(vote_total);
+        }
+
+        worm.push({y: vote_total, ts: Date.now()});
+    }
 }
 
 /**
