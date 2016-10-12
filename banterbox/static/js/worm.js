@@ -7,18 +7,19 @@ var height = window.innerHeight;
 canvas.width = width;
 canvas.height = height;
 
-var worm = [];
 var buffer = [];
 var time = 0;
 var mouse_x = 0;
-var max_worm_val = 1;
+var max_worm_val = 2000;
 var users = 50;
 var max_worm_length = 200;
 var test_scaling_height = 1;
+var worm = [users*Math.random()];
 
 // Time delta info for rendering
 let old_time = Date.now();
 let delta = 0;
+vote_trend_frequency = 3;
 
 
 var comment_data = [
@@ -253,16 +254,21 @@ function draw_worm(worm, zoom = 100) {
     }
 }
 
+function linear_interpolate(weight, x_1, x_2) {
+    // weight should be in the range [0, 1]
+    return (weight * x_1) + ((1 - weight) * x_2);
+}
+
 
 /**
  * Update loop, all calculations go in here.
  * TODO : Add comments to explain what's being updated here
  */
 function update() {
-  //zoom = document.getElementById("myRange").value;
 
-  //test_scaling_height *= 1.01
-    let vote_total = (Math.random()*users*test_scaling_height) * (Math.random() > 0.5 ? 1 : -1)
+    //let vote_total = (Math.random()*users*test_scaling_height) * (Math.random() > 0.5 ? 1 : -1)
+    trend = Math.cos(Date.now() / (vote_trend_frequency * 1000));
+    let vote_total = worm[worm.length - 1] + users * linear_interpolate(0.9, 2*Math.random() - 1, trend);
     if (Math.abs(vote_total) > max_worm_val)
       max_worm_val = Math.abs(vote_total)
 
