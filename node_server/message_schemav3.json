@@ -1,0 +1,112 @@
+VOTE API revision 3
+
+
+redis db layout v2:
+
+
+Redis store: db <- designated for every banterbox room
+
+note, redis stores key value pairs
+
+
+Key : Value
+"connected"  : [$USR1, $USR2, ..., $USRX]    // store the list of user id's with a currently connected websocket (so we know who's connected)
+$USRN_VTime  : UNIXTIME                      // stores when the user last sent in a vote (used to sort laggy connections)
+$USRN        : {"yes", "no"}                 // store the user's current vote (overriding when receiving a new user's websocket vote) [one of these options, yes vs no]
+"history"    : [$TS1, $TS2, ..., $TSX]       // every N time (typically 1s granularity), sum all current user votes, and create a timestep for the current time (with ts entry for that)
+$TSX         : json"{"time": unix_timestamp, "yes_count": 69, "no_count": 81, "connected_users": [...]}"  //storing the timestep, with associated votes for this room @ timestep
+
+
+we may possibly need to combine $USRN_VTime & $USRN into one key with a tuple as a value
+
+--------------------------
+
+websocket communication api:
+
+URL of the form: ws://IP:PORT/api/vote_ws/
+
+
+On_open:
+
+client sends:
+{
+  auth: {
+      token: ...,
+      room: ...
+  }
+}
+
+server sends the state of the room data so far after receiving, also updates flag on server to send future updates to that socket:
+{ 
+  vote_hist: [
+      {
+        ts: UNIX_TS,
+        votes: {
+                  yes: 50,
+                  no: 12
+        }
+      },
+      {
+        ts: UNIX_TS2,
+        votes: {
+                  yes: 48,
+                  no: 10
+        }
+      },
+      ...
+  ],
+  cmt_hist: [
+    {
+      username: "alex5671"
+      value: "i'm a lameo"
+      ts: 31203123
+    },
+    ...
+  ]
+}
+
+(if no data polled, will send back '{ data: [] }'
+
+
+voting msg:
+
+{
+  vote: {
+    value: "yes" (or no)
+    ts: unix_timestamp (used to store whichever was the most recent vote)
+  }
+}
+
+
+periodically (every N time), the server will send back the votes:
+{ 
+  vote_step: {
+      ts: UNIX_TS,
+      votes: {
+          yes: 50,
+          no: 12
+      }
+  }
+}
+
+
+
+-----------------------
+comments:
+
+user sends out
+{
+  comment: {
+    value: "alex likes to save 1 byte",
+    ts: unix_timestamp
+  }
+}
+
+server spits out when it receives a cmt (broadcast to everyone in room):
+{
+  cmt_data: {
+    username: "alex5671",
+    value: "alex likes to save 1 byte",
+    ts: unix_timestamp
+  }
+}

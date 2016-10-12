@@ -1,0 +1,128 @@
+VOTE API revision 1
+
+
+redis db layout v2:
+
+
+Redis store: db <- designated for every banterbox room
+
+note, redis stores key value pairs
+
+
+Key : Value
+"connected"  : [$USR1, $USR2, ..., $USRX]    // store the list of user id's with a currently connected websocket (so we know who's connected)
+$USRN_VTime  : UNIXTIME                      // stores when the user last sent in a vote (used to sort laggy connections)
+$USRN        : {"yes", "no"}                 // store the user's current vote (overriding when receiving a new user's websocket vote) [one of these options, yes vs no]
+"history"    : [$TS1, $TS2, ..., $TSX]       // every N time (typically 1s granularity), sum all current user votes, and create a timestep for the current time (with ts entry for that)
+$TSX         : json"{"time": unix_timestamp, "yes_count": 69, "no_count": 81, "connected_users": [...]}"  //storing the timestep, with associated votes for this room @ timestep
+
+
+we may possibly need to combine $USRN_VTime & $USRN into one key with a tuple as a value
+
+--------------------------
+
+websocket communication api:
+
+URL of the form: ws://IP:PORT/api/vote_ws/
+
+
+On_open:
+
+client sends: [possibly cookie is automatically sent over websocket]
+{
+  auth: {
+      user_id: ...,
+      token: ...,
+      room: ...
+  }
+}
+
+server sends the state of the room data so far after receiving, also updates flag on server to send future updates to that socket:
+{ 
+  data: [
+      {
+        ts: UNIX_TS,
+        votes: {
+                  yes: 50,
+                  no: 12
+        }
+      },
+      {
+        ts: UNIX_TS2,
+        votes: {
+                  yes: 48,
+                  no: 10
+        }
+      },
+      ...
+  ]
+}
+
+(if no data polled, will send back '{ data: [] }'
+
+
+voting msg:
+
+{
+  vote: {
+    value: "yes" (or no)
+    ts: unix_timestamp (used to store whichever was the most recent vote)
+  }
+}
+
+
+periodically (every N time), the server will send back the votes:
+{ 
+  data: [
+      {
+        ts: UNIX_TS,
+        votes: {
+                  yes: 50,
+                  no: 12
+        }
+      }
+  ]
+}
+which is the same as before, but will (typically) only have one entry in the data list
+
+
+--------------------------------
+
+Server handling:
+
+on receive of user auth message:
+  - if the user is valid (correct user id / token / room tuple)
+    - send message to user that just connected of the previous data states
+    - add user socket to socket pool (so that we can send future votes to them)
+    - add user to connected user list in redis
+  - if not valid, disconnect the socket
+
+on rcv of user vote message:
+  - if socket is in socket pool (aka previously authorised)
+    - check vote is well formed
+      - add user to redis user list, if not already existing
+      - add user vote to redis
+
+on new data output tick:
+  - grab user list from redis
+  - for each user in list
+    - add the value to the vote tally (if user vote exists)
+  - broadcast data chunk to all auth'd clients
+  - save this tick to the historic redis store
+
+on user socket close:
+  - if auth'd socket
+    - remove them from the auth active pool (if exist)
+      - remove them from the redis user list
+      - remove their user vote
+
+
+Client handling:
+
+
+display loading indicator on worm/graph/data
+connect ws to server & authorise
+
+on receive data, update graph
+
+    
