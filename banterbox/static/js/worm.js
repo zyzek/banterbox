@@ -15,6 +15,7 @@ var users = 50;
 var max_worm_length = 200;
 var test_scaling_height = 1;
 var worm = [users*Math.random()];
+var man_trend = 0.5;
 
 // Time delta info for rendering
 let old_time = Date.now();
@@ -195,6 +196,10 @@ function draw_comments(left_bound, right_bound, mouse_x_point) {
 
 }
 
+function scale_worm_height(val) {
+    return val * height / (max_worm_val*2) + (height/2);
+}
+
 
 function draw_worm(worm, zoom = 100) {
     let mouseFound = false;
@@ -207,9 +212,9 @@ function draw_worm(worm, zoom = 100) {
 
     // Set up colours for the gradient
     grad.addColorStop(0, "rgb(255,0,0)");
-    grad.addColorStop(0.33, "rgb(255,255,0)");
-    grad.addColorStop(0.66, "rgb(0,255,0)");
-    grad.addColorStop(1, "rgb(0,0,255)");
+    //grad.addColorStop(0.33, "rgb(255,255,0)");
+    //grad.addColorStop(0.66, "rgb(0,255,0)");
+    //grad.addColorStop(1, "rgb(0,0,255)");
 
     context.beginPath();
     context.strokeStyle = grad;
@@ -221,7 +226,7 @@ function draw_worm(worm, zoom = 100) {
 
         for (let i = 1; i < worm.length - 1; i++) {
             let x = i * stepWidth;
-            let y = worm[i]*height/(max_worm_val*2)+(height/2)
+            let y = scale_worm_height(worm[i]);
             if (!mouseFound && x > mouse_x) {
                 mouseFound = true;
                 _x = x;
@@ -231,10 +236,10 @@ function draw_worm(worm, zoom = 100) {
 
         }
     } else {
-        context.moveTo(0, worm[worm.length - zoom - 1]);
+        context.moveTo(0, scale_worm_height(worm[worm.length - zoom - 1]));
         for (let i = 1; i < zoom; i++) {
             let x = (i) * ((width - 30) / (zoom - 1));
-            let y = worm[worm.length - zoom + i - 1]*height/(max_worm_val*2)+(height/2)
+            let y = scale_worm_height(worm[worm.length - zoom + i - 1]);
             if (!mouseFound && x > mouse_x) {
                 mouseFound = true;
                 _x = x;
@@ -259,18 +264,16 @@ function linear_interpolate(weight, x_1, x_2) {
     return (weight * x_1) + ((1 - weight) * x_2);
 }
 
-
 /**
  * Update loop, all calculations go in here.
  * TODO : Add comments to explain what's being updated here
  */
 function update() {
-
-    //let vote_total = (Math.random()*users*test_scaling_height) * (Math.random() > 0.5 ? 1 : -1)
     trend = Math.cos(Date.now() / (vote_trend_frequency * 1000));
-    let vote_total = worm[worm.length - 1] + users * linear_interpolate(0.9, 2*Math.random() - 1, trend);
-    if (Math.abs(vote_total) > max_worm_val)
-      max_worm_val = Math.abs(vote_total)
+    let vote_total = worm[worm.length - 1] + users * linear_interpolate(0.85, 2*Math.random() - 1, trend);
+    if (Math.abs(vote_total) > max_worm_val) {
+        max_worm_val = Math.abs(vote_total);
+    }
 
     worm.push(vote_total);
 }
@@ -293,6 +296,7 @@ function animate() {
     delta = (new_time - old_time) / 1000;
     old_time = new_time;
     update()
+
     render()
     requestAnimationFrame(animate)
 }
