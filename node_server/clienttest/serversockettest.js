@@ -10,6 +10,31 @@ var socketio = require('socket.io');
 Promise.promisifyAll(socketio);
 var io = socketio();
 
+//send all the past votes from the room to the client
+function historicalVotes(room_id, client) {
+
+	//TODO: connect to the db for the room id
+
+
+	//grab each timestep
+	rclient.lrangeAsync("history", 0, -1).map(function(reply) {
+		return rclient.getAsync(reply);
+	}).map(function(history) {
+
+		if (!history) return;
+		
+		//convert each history string into json
+		var hisJ = JSON.parse(history);
+
+		//remove the connected users string
+		delete hisJ.connected;
+		return hisJ;
+	}).then(function(completeHist) {
+		//send as array to client
+		return client.emit("data", completeHist);
+	});
+}
+
 function sendVotes(room_id) {
 
 	//TODO: connect to the db for the room_id
@@ -36,7 +61,7 @@ function sendVotes(room_id) {
 		voteStr = JSON.stringify(votes);
 
 		//broadcast the votes
-		io.to(room_id).emit('data', voteStr);
+		io.to(room_id).emit('step', voteStr);
 
 		votes["connected"] = connectedUsers;
 		histStr = JSON.stringify(votes);
@@ -58,6 +83,7 @@ io.on('connection', function(client) {
 
 	//rclient.lpush("connected", "usr1");
 	client.join("roomy");
+	historicalVotes("roomy", client);
 	//console.log(client);
 
 
