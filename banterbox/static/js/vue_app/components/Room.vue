@@ -37,12 +37,14 @@
                     <div class="col-xs-4">
                         <div class="text-xs-center">
                         <span class="vote-icon-container" id="upvote">
-                            <i @click="changeVote(1)" class="vote-icon fa fa-5x fa-thumbs-o-up" :class="{green : vote_direction === 1}"></i>
+                            <i @click="changeVote(1)" class="vote-icon fa fa-5x fa-thumbs-o-up"
+                               :class="{green : vote_direction === 1}"></i>
                         </span>
                         </div>
                         <div class="text-xs-center">
                         <span class="vote-icon-container" id="downvote">
-                            <i @click="changeVote(-1)" class="vote-icon fa fa-5x fa-thumbs-o-down" :class="{red: vote_direction === -1}"></i>
+                            <i @click="changeVote(-1)" class="vote-icon fa fa-5x fa-thumbs-o-down"
+                               :class="{red: vote_direction === -1}"></i>
                         </span>
                         </div>
                     </div>
@@ -81,27 +83,26 @@
             border-radius: 1000px;
             width: 100px;
             height: 100px;
-            border:2px solid #b4b4b4;
-            margin:10px;
+            border: 2px solid #b4b4b4;
+            margin: 10px;
 
             transition: all 0.25s ease;
 
             box-shadow: 0px 2px 0 0 #3b3b3b;
 
-            &:hover{
-                box-shadow:0px 6px 0 0 #3b3b3b;
-                transform:translateY(-3px);
+            &:hover {
+                box-shadow: 0px 6px 0 0 #3b3b3b;
+                transform: translateY(-3px);
             }
 
-
-            &.red{
+            &.red {
                 background-color: red;
-                border:2px solid transparent;
+                border: 2px solid transparent;
             }
 
-            &.green{
+            &.green {
                 background-color: #23cd23;
-                border:2px solid transparent;
+                border: 2px solid transparent;
             }
 
         }
@@ -140,14 +141,16 @@
 <script>
     import {store} from '../store'
     import moment from 'moment'
+    import io from 'socket.io-client'
     export default {
         data: () => {
             return {
                 store,
-
+                socket: null,
                 canvas_running: false,
                 mute_background: false,
                 comments: [],
+                vote_data : [],
                 vote_direction: 0,
                 unit_code: null,
                 unit_icon: null,
@@ -158,11 +161,34 @@
                 }
             }
         },
-        methods:{
+        methods: {
+
+
+            initSocket(){
+                const room_id = "roomy";
+                const socket = io('http://localhost:3002');
+                socket.on('message', console.log);
+
+
+                socket.on('data', data => {
+                    data.sort((x,y) => {
+                        return x.ts - y.ts
+                    })
+
+                    this.vote_data.push(...data)
+                });
+
+                // Step is a broadcast
+                socket.on('step', (data) => this.vote_data.push(data));
+
+                this.socket = socket;
+            },
+
+
             changeVote(value){
-                if(this.vote_direction === value){
+                if (this.vote_direction === value) {
                     this.vote_direction = 0
-                }else{
+                } else {
                     this.vote_direction = value
                 }
             }
@@ -298,7 +324,7 @@
 
             const uguus = []
 
-            Array.from({length: 0}).map(unused => {
+            Array.from({length: 333}).map(unused => {
                 let a = Object.assign({}, uguu)
                 a.render = renderUguu
                 a.x = Math.random() * canvas.width
@@ -307,7 +333,6 @@
                 a.speed = Math.random() * 25
                 a.rotation = Math.random() * 360 * (Math.PI / 180)
                 a.texture = textures[Math.floor(Math.random() * textures.length)]
-
                 uguus.push(a)
             })
 
@@ -329,6 +354,7 @@
 
             run()
 
+            this.initSocket()
         }
     }
 </script>

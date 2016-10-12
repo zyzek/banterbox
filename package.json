@@ -19,7 +19,8 @@
     "sweetalert2": "^4.3.3",
     "vue": "^1.0.26",
     "vue-resource": "^1.0.2",
-    "vue-router": "^0.7.13"
+    "vue-router": "^0.7.13",
+    "socket.io-client": "latest"
   },
   "devDependencies": {
     "gulp-autoprefixer": "^3.1.1",

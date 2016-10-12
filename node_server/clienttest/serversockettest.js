@@ -35,6 +35,11 @@ function historicalVotes(room_id, client) {
 	});
 }
 
+let student_count = 50
+let fake_yes = parseInt(Math.random() * student_count)
+let fake_no = student_count - fake_yes
+
+
 function sendVotes(room_id) {
 
 	//TODO: connect to the db for the room_id
@@ -46,22 +51,21 @@ function sendVotes(room_id) {
 		connectedUsers = reply;
 		return rclient.getAsync(reply);
 	}).then(function (res) {
-		//tally up the votes
-		votes = {"yes": 0, "no": 0};
-		for (vote of res) {
-			if (vote === "yes") {
-				votes["yes"] += 1;
-			} else if (vote === "no") {
-				votes["no"] += 1;
-			}
+
+		fake_yes = parseInt(Math.random() * student_count)
+		fake_no = student_count - fake_yes
+
+		let now = Date.now()
+
+		let votes = {
+			yes : fake_yes,
+			no :  fake_no,
+			ts : now
 		}
 
-		var now = Date.now();
-		votes["ts"] = now;
-		voteStr = JSON.stringify(votes);
 
 		//broadcast the votes
-		io.to(room_id).emit('step', voteStr);
+		io.to(room_id).emit('step', votes);
 
 		votes["connected"] = connectedUsers;
 		histStr = JSON.stringify(votes);
