@@ -94,7 +94,7 @@ function allowedStatus(stat) {
 }
 
 function allowedVote(vote) {
-	return vote === "yes" || vote === "no";
+	return vote === "yes" || vote === "no" || vote=="cancel";
 }
 
 function postAuthFn(socket, data) {
@@ -281,9 +281,9 @@ function closeRoom(room_id) {
 	}).then(function(histories) {
 
 		//send to reldb
-		var sendMsg = {"value": JSON.stringify(histories)};
-		var stmt = db.prepare("SELECT u.id, a.key FROM authtoken_token a INNER JOIN auth_user u ON u.id = a.user_id WHERE a.key = ?");
-		var dbProm = stmt.runAsync([vals]);
+		var sendMsg = JSON.stringify({"value": histories});
+		var stmt = db.prepare("UPDATE banterbox_room SET history=? WHERE id=?");
+		var dbProm = stmt.runAsync([sendMsg, room_id]);
 
 		//purge the redis for that room/db num
 		var redisProm = rclient.flushdbAsync();
