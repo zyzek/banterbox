@@ -22,7 +22,7 @@ let old_time = Date.now();
 let delta = 0;
 var vote_trend_duration = 3;
 var update_timer = 0;
-var update_elapsed = 0.1;
+var update_rate = 0.016;
 
 
 var comment_data = [
@@ -221,7 +221,7 @@ function draw_worm(worm, zoom = 100) {
     context.strokeStyle = grad;
     context.lineWidth = 4;
 
-    if (worm.length < zoom) {
+    if (worm.length <= zoom) {
         // Worm should grow from left to right
         context.moveTo(0, worm[0].y);
 
@@ -273,7 +273,7 @@ function update() {
 
     update_timer += delta;
 
-    if (update_timer > update_elapsed) {
+    if (update_timer > update_rate) {
         update_timer = 0;
 
         trend = Math.cos(Date.now() / (vote_trend_duration * 1000));
