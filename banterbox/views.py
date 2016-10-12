@@ -287,6 +287,8 @@ def comment_get(request, room):
                           } for comment in queryset]}
     return Response(result)
 
+def worm(request):
+    return render(request, 'worm.html')
 
 def index(request):
     return render(request, 'index.html')

@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^api/', include(router.urls)),
     url(r'^docs/', include('rest_framework_docs.urls')),
+    url(r'^worm', views.worm),
 ]
