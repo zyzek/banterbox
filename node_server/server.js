@@ -4,17 +4,14 @@
 	// This will be the case until we decide how we're actually going to be determining which redis inst we should use
 
 //Functions that need implementing for interaction with client:
-	//registerRoutes: vote callback
-	//openRoom
-	//closeRoom
-	//replace redis connected list with set
+	// nothing here woo
 
 //Things that will need changing for final release:
 	// redis db location/instance code
 	// testing lol
 
 //Things that probably should be done
-	// promisify auth code
+	// promisify auth code (db)
 	// double check setup code (on 'connect')
 	// consolidate magic numbers
 	// remove express serving pages
@@ -34,7 +31,9 @@ Promise.promisifyAll(socketio);
 var io = socketio();
 
 //TODO: on release, replace sqlite with production db (e.g. postgres)
-var sqlite3 = require('sqlite3').verbose();
+var _sq3 = require('sqlite3')
+Promise.promisifyAll(_sq3);
+var sqlite3 = _sq3.verbose();
 var db = new sqlite3.Database('../db.sqlite3');
 
 //TODO: replace this with something else - perhaps this is the best solution
@@ -91,7 +90,11 @@ function authFn(socket, data, next) {
 
 //helper fn to return whether the room status determines if the room can be joined
 function allowedStatus(stat) {
-	return stat == "open";
+	return stat === "open";
+}
+
+function allowedVote(vote) {
+	return vote === "yes" || vote === "no" || vote=="cancel";
 }
 
 function postAuthFn(socket, data) {
@@ -117,8 +120,11 @@ function registerRoutes(socket) {
 	});
 
 	socket.on('vote', function(client, msg) {
-		//TODO: received client's vote
+		//received client's vote
 
+		//TODO: check vote's ts to see if it's more recent, etc
+
+		acceptVote(client.user_id, client.room_id, msg["vote"]["value"])
 	});
 
 	socket.on('disconnect', function(client) {
@@ -161,14 +167,18 @@ function acceptVote(user_id, room_id, vote_value) {
 	//check whether the room is still accepting votes
 	if (room_id in room_states && allowedStatus(room_states[room_id]["status"])) {
 
-		//TODO: check if usr's latest vote time
-
 		//check vote value
+		if (!allowedVote(vote_value)) return;
 
 		//set usr1 = vote value
+		var userSet = rclient.setAsync(user_id, vote_value);
 
 		//add usr1 to connected usrs if not already in
+		var connectedAdd = rclient.saddAsync("connected", user_id);
 
+		Promise.join(userSet, connectedAdd).then(function() {
+			console.log("added user" + user_id);
+		});
 	}	
 }
 
@@ -238,30 +248,54 @@ function sendVotes(room_id) {
 		console.log(err);
 	});	
 	//call this fn again
-	setTimeout(function() { sendVotes(room_id); }, updateDelay);
+	if (allowedStatus(room_states[room_id])) {
+		setTimeout(function() { sendVotes(room_id); }, updateDelay);
+	}
 }
 
 function openRoom(room_id) {
 	//TODO: grab the dbnum for the room_id from redis
 
-	//insert empty redis vals
+	//insert empty redis vals (TODO: is this even necessary?)
 
 	//update the room_states dict to reflect the room state
+	room_states[room_id]["status"] = "open";
 
-	//update the relational db to reflect the open status
+	//TODO: update the relational db to reflect the open status
 
 	//set up the N time interval timer (to broadcast votes out)
 	setTimeout(function() { sendVotes(room_id); }, updateDelay);
 }
 
 function closeRoom(room_id) {
+	//that room in the global object must be set to closed
+	room_states[room_id]["status"] = "closed";
+
 	//close all owned sockets in this room
+	//does this even work?
+	io.to(room_id).disconnect();	
 
 	//bundle all the data from redis into the relational db
+	rclient.lrangeAsync("history", 0, -1).map(function(ts) {
+		return rclient.getASync(ts);
+	}).then(function(histories) {
 
-	//purge the redis for that room/db num
+		//send to reldb
+		var sendMsg = JSON.stringify({"value": histories});
+		var stmt = db.prepare("UPDATE banterbox_room SET history=? WHERE id=?");
+		var dbProm = stmt.runAsync([sendMsg, room_id]);
 
-	//remove that entry for that room in the global object
+		//purge the redis for that room/db num
+		var redisProm = rclient.flushdbAsync();
+
+		//del the global obj for this room
+		delete room_states[room_id];
+
+		return Promise.join(dbProm, redisProm);
+
+	}).then(function() {
+		console.log("finished closing");
+	});
 }
 
 function updateRoom(message) {
