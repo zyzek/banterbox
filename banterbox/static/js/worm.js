@@ -13,8 +13,13 @@ var time = 0;
 var mouse_x = 0;
 var max_worm_val = 1;
 var users = 50;
-var worm_length = 200;
+var max_worm_length = 200;
 var test_scaling_height = 1;
+
+// Time delta info for rendering
+let old_time = Date.now();
+let delta = 0;
+
 
 var comment_data = [
     {
@@ -190,12 +195,11 @@ function draw_comments(left_bound, right_bound, mouse_x_point) {
 }
 
 
-
 function draw_worm(worm, zoom = 100) {
     let mouseFound = false;
     let _x;
     let _y;
-
+    const stepWidth = canvas.width / zoom;
 
     // Create a gradient starting in top left corner and ending in top right corner
     var grad = context.createLinearGradient(0, 0, canvas.width, 0);
@@ -206,17 +210,16 @@ function draw_worm(worm, zoom = 100) {
     grad.addColorStop(0.66, "rgb(0,255,0)");
     grad.addColorStop(1, "rgb(0,0,255)");
 
-
     context.beginPath();
     context.strokeStyle = grad;
     context.lineWidth = 4;
 
     if (worm.length < zoom) {
-
+        // Worm should grow from left to right
         context.moveTo(0, worm[0]);
 
-        for (let i = 1; i < worm.length; i++) {
-            let x = i * ((width - 30) / (worm.length - 1));
+        for (let i = 1; i < worm.length - 1; i++) {
+            let x = i * stepWidth;
             let y = worm[i]*height/(max_worm_val*2)+(height/2)
             if (!mouseFound && x > mouse_x) {
                 mouseFound = true;
@@ -226,7 +229,6 @@ function draw_worm(worm, zoom = 100) {
             context.lineTo(x, y);
 
         }
-
     } else {
         context.moveTo(0, worm[worm.length - zoom - 1]);
         for (let i = 1; i < zoom; i++) {
@@ -272,7 +274,7 @@ function update() {
  */
 function render(){
     context.clearRect(0, 0, width, height);
-    draw_worm(worm, worm_length);
+    draw_worm(worm, max_worm_length);
 }
 
 
@@ -281,6 +283,9 @@ function render(){
  * Will run at 60fps, but if the window has no focus it won't run at all.
  */
 function animate() {
+    let new_time = Date.now();
+    delta = (new_time - old_time) / 1000;
+    old_time = new_time;
     update()
     render()
     requestAnimationFrame(animate)
