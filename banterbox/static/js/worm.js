@@ -1,8 +1,12 @@
+function Worm(container) {
+
 // Prepare canvas
-var canvas = document.getElementById('canvas')
+
+var canvas = document.createElement('canvas')
 var context = canvas.getContext('2d')
 var width = window.innerWidth;
 var height = window.innerHeight;
+    container.appendChild(canvas)
 
 canvas.width = width;
 canvas.height = height;
@@ -58,6 +62,7 @@ var key_codes = {
 angleSliderPosition = height / 2;
 setNormalFill();
 animate()
+
 
 
 // Event bindings
@@ -307,4 +312,13 @@ function animate() {
 
     render()
     requestAnimationFrame(animate)
+}
+
+function addVote(data) {
+    worm.push(data)
+}
+
+    return {
+        addVote
+    }
 }
