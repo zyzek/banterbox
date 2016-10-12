@@ -21,62 +21,12 @@
     <body>
         <button onclick="toggleComments()">Show Comments</button>
 
-        <div id="canvas-container">
-
-        </div>
+    <canvas id="canvas"></canvas>
 
     </body>
 
 
     <script>
-
-  // 
-  //
-  //   function getComments(last_timestamp){
-  //   $.ajax({
-  //     type: 'GET',
-  //     url: '/harambe',
-  //     data:{timestamp:last_timestamp},
-  //     headers: {"Authorization": window.localStorage.getItem("token_id")}
-  //     success: function(response){
-  //       parse_comment_data(response.data.values)
-  //     },
-  //     error: function(xhr, type, exception) {
-  //       // if ajax fails display error alert
-  //       console.log("ajax error response type "+type);
-  //     }
-  //   });
-  // }
-  //
-  //
-  // var ws = new WebSocket("ws://localhost:8888/api/vote_ws/");
-  // ws.onopen = function() {
-  // //ws.send("Hello, world");
-  // var sendval = {
-  //     "Authorization": {
-  //       "token": window.localStorage.getItem("token_id")
-  //     }
-  //   }
-  //   ws.send(JSON.stringify(sendval));
-  // };
-  // ws.onmessage = function (event) {
-  //   console.log(event.data)
-  // };
-  //
-  // ws.onclose = function() {
-  //   console.log("we got closed on!")
-  // }
-  //
-  // function vote(votetype) {
-  //
-  // var sendVal = {
-  //     "vote": {
-  //       "value": votetype,
-  //       "ts": Math.floor(Date.now() / 1000)
-  //     }
-  //   }
-  //
-  //   ws.send(JSON.stringify(sendVal))
-  // }
+        new Worm(document.getElementById('canvas'))
     </script>
 </html>
