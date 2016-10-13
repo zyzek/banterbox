@@ -1,6 +1,6 @@
 // TODO: Better vertical scaling
-// TODO: Comments and class organisation
-// TODO: Dynamically handle varying update delays
+// TODO: Dynamically handle varying update delays, convert to temporal rather than ordinal logic.
+// TODO: Quadratic curves for worm smoothing.
 
 class Worm {
     constructor(container) {
@@ -16,7 +16,7 @@ class Worm {
         })
 
         // The actual worm data itself.
-        this.data = [{y: 0, ts: Date.now()}, {y: 0, ts: Date.now()}];
+        this.data = [{y: 0, ts: Date.now()}];
 
         // Maximum number of worm segments to draw.
         this.max_worm_length = 100;
@@ -28,19 +28,21 @@ class Worm {
         this.old_time = Date.now();
         this.delta = 0;
         this.update_timer = 0;
-        this.update_delay = 100;
+        this.update_delay = 150;
 
         // Used for vertical scaling.
         this.max_worm_val = 150;
 
         // Used for fake data generation (but could be handy at some point)
-        this.users = 50;
+        this.users = 10;
 
         // Render settings and parameters.
         this.worm_grad = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
-        this.worm_grad.addColorStop(0, "rgb(0,255,0)");
+        this.worm_grad.addColorStop(0, "rgb(0,255,100)");
+        this.worm_grad.addColorStop(0.2, "rgb(0,255,0)");
         this.worm_grad.addColorStop(0.5, "rgb(200,200,0)");
-        this.worm_grad.addColorStop(1, "rgb(255,0,0)");
+        this.worm_grad.addColorStop(0.8, "rgb(255,0,0)");
+        this.worm_grad.addColorStop(1, "rgb(180,0,0)");
 
         this.setNormalFill();
 
@@ -60,11 +62,14 @@ class Worm {
         requestAnimationFrame(this.run)
     }
 
+
     /* Draw a frame */
     render() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.draw_zero_line();
         this.draw_worm_end(this.max_worm_length, this.worm_right_pad);
     }
+
 
     /* Update the state of the worm by a tick. */
     update() {
@@ -85,11 +90,13 @@ class Worm {
         }
     }
 
+
     setNormalFill() {
         this.context.fillStyle = "rgb(239, 5, 239)";
         this.context.strokeStyle = "rgb(239, 5, 239)";
         this.context.lineWidth = 10;
     }
+
 
     /* Given an absolute worm value, return the vertical position it would be rendered at. */
     scale_worm_height(val) {
@@ -101,6 +108,7 @@ class Worm {
         return x1 + t*(x2 - x1);
     }
 
+
     /* The proportion of the last update step that has been rendered.
      *  E.g. If the time between the last two updates was 100 milliseconds,
      *  and 50 milliseconds has passed since the last update, return 0.5. */
@@ -108,37 +116,52 @@ class Worm {
         return this.update_timer / this.update_delay;
     }
 
-    /* Draw the last num_points points of the worm, padding with end_pad_size
-     * imaginary points on the right hand side.
+
+    /* Draw a horizontal rule denoting the 0 vote level. */
+    draw_zero_line() {
+        this.context.beginPath();
+        this.context.lineWidth = 1;
+        this.context.strokeStyle = "#777777";
+        let zero_height = this.scale_worm_height(0);
+        this.context.moveTo(0, zero_height);
+        this.context.lineTo(this.canvas.width, zero_height);
+        this.context.stroke();
+    }
+
+
+    /* Draw the last num_points points of the worm, padding with space for
+     * end_pad_size imaginary points on the right hand side.
      * If num_points exceeds the available data, the worm should draw from left
-     * to right until it reaches the padding, and then it should scroll. */
+     * to right until it reaches the right border, minus padding,
+     * and then it should scroll. */
     draw_worm_end(num_points, end_pad_size) {
-        // Draw the laast
         let start = Math.max(0, (this.data.length - 1) - num_points);
         let end = Math.max(num_points + end_pad_size, this.data.length - 1 + end_pad_size);
         let offset = num_points > this.data.length - 1 ? 0 : (this.canvas.width / (start - end - 1)) * this.update_fraction_elapsed();
         this.draw_worm_slice(start, end, offset);
     }
 
+
     /* Draw a slice of the worm between x_start and x_end, to fill up the canvas
      * horizontally.
      * x_offset_pixels will displace the drawing of the worm, which is used for
-     * smooth scrolling .
-     * If x_end exceeds the end of the worm data, empty space will be rendered
-     * past the end of the worm. */
+     * smooth scrolling.
+     * If x_end exceeds the length of the worm data, empty space will be
+     * rendered past the end. */
     draw_worm_slice(x_start, x_end, x_offset_pixels = 0) {
         // Set up the styles.
         this.context.beginPath();
         this.context.strokeStyle = this.worm_grad;
         this.context.lineWidth = 4;
+        this.context.lineCap = 'round';
+        // Change lineJoin to "round" for rounder corners.
+        this.context.lineJoin = 'bevel';
 
-        // The total width of the slice being rendered
-        let slice_width = x_end - x_start;
         // The distance between individual worm segments.
-        let segment_width = this.canvas.width / slice_width;
+        let segment_width = this.canvas.width / (x_end - x_start);
         let update_fraction = this.update_fraction_elapsed();
 
-        // Initialise the first point to the first available datum or else 0.
+        // Initialise the first point to the first datum in range or else 0.
         let initial = (x_start < this.data.length) ? this.data[x_start] : 0;
         this.context.moveTo(x_offset_pixels, initial);
 
