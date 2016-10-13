@@ -14,7 +14,7 @@ function Worm(container) {
 
     var time = 0;
     var mouse_x = 0;
-    var max_worm_val = 30;
+    var max_worm_val = 150;
     var users = 50;
     var max_worm_length = 20;
     var worm = [{y: 0, ts: Date.now()}, {y: 0, ts: Date.now()}];
@@ -23,7 +23,7 @@ function Worm(container) {
 // Time delta info for rendering
     let old_time = Date.now();
     let delta = 0;
-    var vote_trend_duration = 3;
+    var vote_trend_duration = 3000;
     var update_timer = 0;
     var update_rate = 250;
 
@@ -225,13 +225,12 @@ function Worm(container) {
         const stepWidth = canvas.width / zoom;
 
         // Create a gradient starting in top left corner and ending in top right corner
-        var grad = context.createLinearGradient(0, 0, canvas.width, 0);
+        var grad = context.createLinearGradient(0, 0, 0, canvas.height);
 
         // Set up colours for the gradient
-        grad.addColorStop(0, "rgb(255,0,0)");
-        grad.addColorStop(0.33, "rgb(255,255,0)");
-        grad.addColorStop(0.66, "rgb(0,255,0)");
-        grad.addColorStop(1, "rgb(0,0,255)");
+        grad.addColorStop(0, "rgb(0,255,0)");
+        grad.addColorStop(0.5, "rgb(200,200,0)");
+        grad.addColorStop(1, "rgb(255,0,0)");
 
         context.beginPath();
         context.strokeStyle = grad;
@@ -325,17 +324,17 @@ function Worm(container) {
             console.log(update_timer)
             update_timer = 0;
 
-            //trend = Math.cos(Date.now() / (vote_trend_duration * 1000));
-            //let vote_total = users * linear_interpolate(0.85, 2 * Math.random() - 1, trend);
-            vote_change = Math.random() < 0.5 ? -1 : 1
+            trend = Math.cos(Date.now() / (vote_trend_duration));
+            let vote_total = worm[worm.length - 1].y + (users * linear_interpolate(2 * Math.random() - 1, trend, 0.15));
+            //vote_change = Math.random() < 0.5 ? -1 : 1
 
-            vote_total += vote_change
+            /*vote_total += vote_change
             if (vote_total > users) {
               vote_total = users;
             }
             if (vote_total < -users) {
               vote_total = -users;
-            }
+            }*/
 
             if (Math.abs(vote_total) > max_worm_val) {
                 max_worm_val = Math.abs(vote_total);
