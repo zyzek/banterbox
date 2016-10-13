@@ -168,11 +168,14 @@
                 });
 
                 socket.on('connect',  () => {
-                console.log({
-                    room: this.room,id: this.room.id
-                })
-                    socket.emit('authentication', {token_id: auth.getToken() , room_id: this.room.id });
-                    socket.on('authenticated',  () => {
+                console.log({room: this.room,id: this.room.id})
+                    socket.on('authenticated',  (e) => {
+
+                        console.log('authenticated', {e})
+
+                        socket.on('message', data => {
+                            console.log({data})
+                        })
 
                         socket.on('data', data => {
                             data.sort((x, y) => {
@@ -190,6 +193,9 @@
                         });
                         this.socket = socket;
                     });
+
+                    socket.emit('authentication', {token_id: auth.getToken() , room_id: this.room.id });
+
                 });
             },
 
@@ -200,6 +206,8 @@
                 } else {
                     this.vote_direction = value
                 }
+
+                this.socket.emit('vote', {value:this.vote_direction, timestamp:Date.now()})
             }
         },
         route: {

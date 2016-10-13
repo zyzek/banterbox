@@ -571,11 +571,14 @@ exports.default = {
             });
 
             socket.on('connect', function () {
-                console.log({
-                    room: _this.room, id: _this.room.id
-                });
-                socket.emit('authentication', { token_id: _auth2.default.getToken(), room_id: _this.room.id });
-                socket.on('authenticated', function () {
+                console.log({ room: _this.room, id: _this.room.id });
+                socket.on('authenticated', function (e) {
+
+                    console.log('authenticated', { e: e });
+
+                    socket.on('message', function (data) {
+                        console.log({ data: data });
+                    });
 
                     socket.on('data', function (data) {
                         var _vote_data;
@@ -595,6 +598,8 @@ exports.default = {
                     });
                     _this.socket = socket;
                 });
+
+                socket.emit('authentication', { token_id: _auth2.default.getToken(), room_id: _this.room.id });
             });
         },
         changeVote: function changeVote(value) {
@@ -603,6 +608,8 @@ exports.default = {
             } else {
                 this.vote_direction = value;
             }
+
+            this.socket.emit('vote', { value: this.vote_direction, timestamp: Date.now() });
         }
     },
     route: {

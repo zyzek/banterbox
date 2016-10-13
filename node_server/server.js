@@ -1,33 +1,35 @@
-//Notes about the current state of the program:
+/*
+ * Notes about the current state of the program:
+ *
+ * Redis is currently ONLY operating on db0, which means that concurrent rooms will overwrite each others data
+ *  - This will be the case until we decide how we're actually going to be determining which redis inst we should use
+ *
+ * Functions that need implementing for interaction with client:
+ *  - nothing here woo
+ *
+ * Things that will need changing for final release:
+ *  - redis db location/instance code
+ *  - testing lol
+ *
+ * Things that probably should be done
+ *  - promisify auth code (db)
+ *  - double check setup code (on 'connect')
+ *  - consolidate magic numbers
+ *  - remove express serving pages
+ *  - do we need to check if the server accepted their vote?
+ *  - handling most recent vote by including timestep info
+ */
 
-//Redis is currently ONLY operating on db0, which means that concurrent rooms will overwrite each others data
-// This will be the case until we decide how we're actually going to be determining which redis inst we should use
-
-//Functions that need implementing for interaction with client:
-// nothing here woo
-
-//Things that will need changing for final release:
-// redis db location/instance code
-// testing lol
-
-//Things that probably should be done
-// promisify auth code (db)
-// double check setup code (on 'connect')
-// consolidate magic numbers
-// remove express serving pages
-// do we need to check if the server accepted their vote?
-// handling most recent vote by including timestep info
 
 var Promise = require('bluebird');
-
 var redis = require('redis');
+
 Promise.promisifyAll(redis.RedisClient.prototype);
 Promise.promisifyAll(redis.Multi.prototype);
 //TODO, move this into the room_states obj, to ensure each room operates in its own db/instance
 var rclient = redis.createClient();
 
 var io = require('socket.io').listen(3000)
-//force socket auth
 require('socketio-auth')(io, {
   authenticate    : authFn,
   postAuthenticate: postAuthFn,
@@ -82,7 +84,8 @@ function authFn(socket, data, next) {
 
 
     //check if room_id is actually a room in the global state (and is able to be connected to)
-    if (room_id in room_states && allowedStatus(room_states[room_id]["status"])) {
+//     if (room_id in room_states && allowedStatus(room_states[room_id]["status"])) {
+      if(true){
       //check that this room is in one of the rooms that this user can view
       var stmt2 = db.prepare(
         "SELECT r.id FROM banterbox_userunitenrolment uue INNER JOIN banterbox_room r ON uue.unit_id = r.unit_id WHERE uue.user_id = ?;");
@@ -93,7 +96,8 @@ function authFn(socket, data, next) {
         }
 
         //return whether the room is in the user's list of rooms they can access
-        return next(null, room_id in rows);
+        let found = rows.find(x => x.id === room_id)
+        return next(null, !!found);
       });
     }
     return next(new Error("invalid room auth"));
@@ -130,31 +134,28 @@ function postAuthFn(socket, data) {
 }
 
 /**
- * Set up event listeners to the socket
+ * Set up event listeners to the client socket
  * @param socket
  */
 function setupEventListeners(socket) {
-  socket.on('connect', function (client) {
-    //TODO: setup client code (double check)
+
+
+  let client = socket.client
 
     //add user to redis db
     rclient.saddAsync("connected", client.user_id);
-
     //send current vote data
-    historicalVotes(client.room, client);
+    historicalVotes(client.room, socket);
+
+  socket.on('vote', function (data) {
+    console.log({data})
+    socket.emit('message', {message:'vote recieved', vote: data.value, timestamp: data.timestamp, diff : Date.now() - data.timestamp})
   });
 
-  socket.on('vote', function (client, msg) {
-    //received client's vote
-
-    //TODO: check vote's ts to see if it's more recent, etc
-
-    acceptVote(client.user_id, client.room_id, msg["vote"]["value"])
-  });
-
-  socket.on('disconnect', function (client) {
+  socket.on('disconnect', function () {
     //kick em from the room just in case
-    client.leave(client.room);
+    let client = this.client
+
 
     //remove redis entry for this user in connected_users
     var remCon = rclient.sremAsync("connected", client.user_id);
@@ -224,7 +225,7 @@ function acceptVote(user_id, room_id, vote_value) {
  * @param room_id
  * @param client
  */
-function historicalVotes(room_id, client) {
+function historicalVotes(room_id, socket) {
 
   //TODO: connect to the db for the room id
 
@@ -241,7 +242,7 @@ function historicalVotes(room_id, client) {
     return hisJ;
   }).then(function (completeHist) {
     //send as array to client
-    return client.emit("data", completeHist);
+    return socket.emit("data", completeHist);
   }).catch(function (e) {
     console.log(e);
   });
@@ -378,3 +379,4 @@ function updateRoom(message) {
     closeRoom(message["room_id"]);
   }
 }
+
