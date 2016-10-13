@@ -131,6 +131,7 @@
 
 
 <script>
+    import auth from '../auth'
     import {store} from '../store'
     import moment from 'moment'
     import io from 'socket.io-client'
@@ -140,9 +141,9 @@
                 store,
                 socket: null,
                 canvas_running: false,
-                worm : null,
+                worm: null,
                 comments: [],
-                vote_data : [],
+                vote_data: [],
                 vote_direction: 0,
                 unit_code: null,
                 unit_icon: null,
@@ -156,29 +157,40 @@
         methods: {
 
 
-
             initSocket(){
                 const room_id = "roomy";
-                const socket = io('http://localhost:3002');
-                socket.on('message', console.log);
+                const socket = io('http://localhost:3000');
 
 
-                socket.on('data', data => {
-                    data.sort((x,y) => {
-                        return x.ts - y.ts
-                    })
 
-                    this.vote_data.push(...data)
+                socket.on('unauthorized', function (err) {
+                    console.log("There was an error with the authentication:", err.message);
                 });
 
-                // Step is a broadcast
-                socket.on('step', (data) => {
-                    console.log(data)
-                    this.vote_data.push(data)
-                    this.worm.addVote(data)
-                });
+                socket.on('connect',  () => {
+                console.log({
+                    room: this.room,id: this.room.id
+                })
+                    socket.emit('authentication', {token_id: auth.getToken() , room_id: this.room.id });
+                    socket.on('authenticated',  () => {
 
-                this.socket = socket;
+                        socket.on('data', data => {
+                            data.sort((x, y) => {
+                                return x.ts - y.ts
+                            })
+
+                            this.vote_data.push(...data)
+                        });
+
+                        // Step is a broadcast
+                        socket.on('step', (data) => {
+                            console.log(data)
+                            this.vote_data.push(data)
+                            this.worm.addVote(data)
+                        });
+                        this.socket = socket;
+                    });
+                });
             },
 
 

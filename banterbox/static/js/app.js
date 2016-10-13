@@ -524,6 +524,10 @@ var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
 
+var _auth = require('../auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 var _store = require('../store');
 
 var _moment = require('moment');
@@ -560,27 +564,38 @@ exports.default = {
             var _this = this;
 
             var room_id = "roomy";
-            var socket = (0, _socket2.default)('http://localhost:3002');
-            socket.on('message', console.log);
+            var socket = (0, _socket2.default)('http://localhost:3000');
 
-            socket.on('data', function (data) {
-                var _vote_data;
+            socket.on('unauthorized', function (err) {
+                console.log("There was an error with the authentication:", err.message);
+            });
 
-                data.sort(function (x, y) {
-                    return x.ts - y.ts;
+            socket.on('connect', function () {
+                console.log({
+                    room: _this.room, id: _this.room.id
                 });
+                socket.emit('authentication', { token_id: _auth2.default.getToken(), room_id: _this.room.id });
+                socket.on('authenticated', function () {
 
-                (_vote_data = _this.vote_data).push.apply(_vote_data, (0, _toConsumableArray3.default)(data));
+                    socket.on('data', function (data) {
+                        var _vote_data;
+
+                        data.sort(function (x, y) {
+                            return x.ts - y.ts;
+                        });
+
+                        (_vote_data = _this.vote_data).push.apply(_vote_data, (0, _toConsumableArray3.default)(data));
+                    });
+
+                    // Step is a broadcast
+                    socket.on('step', function (data) {
+                        console.log(data);
+                        _this.vote_data.push(data);
+                        _this.worm.addVote(data);
+                    });
+                    _this.socket = socket;
+                });
             });
-
-            // Step is a broadcast
-            socket.on('step', function (data) {
-                //                    console.log(data)
-                _this.vote_data.push(data);
-                //                    this.worm.addVote(data)
-            });
-
-            this.socket = socket;
         },
         changeVote: function changeVote(value) {
             if (this.vote_direction === value) {
@@ -645,7 +660,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-1f13dcde", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":12,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":101,"socket.io-client":107,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],10:[function(require,module,exports){
+},{"../auth":2,"../store":12,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":101,"socket.io-client":107,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
