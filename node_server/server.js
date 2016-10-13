@@ -21,6 +21,7 @@
  */
 
 
+var dotenv = require('dotenv')
 var Promise = require('bluebird');
 var redis = require('redis');
 
