@@ -16,7 +16,7 @@ function Worm(container) {
     var mouse_x = 0;
     var max_worm_val = 2000;
     var users = 50;
-    var max_worm_length = 200;
+    var max_worm_length = 600;
     var test_scaling_height = 1;
     var worm = [{y: users * Math.random(), ts: Date.now()}];
     var man_trend = 0.5;
@@ -95,7 +95,7 @@ function Worm(container) {
     }
 
     function handleMouseMove(e) {
-        mouse_x = e.clientX;
+        mouse_x = e.offsetX;
     }
 
     function setNormalFill() {
@@ -281,6 +281,8 @@ function Worm(container) {
         if (update_timer > update_rate) {
             update_timer = 0;
 
+            // console.log({worm})
+
             trend = Math.cos(Date.now() / (vote_trend_duration * 1000));
             let vote_total = worm[worm.length - 1].y + users * linear_interpolate(0.85, 2 * Math.random() - 1, trend);
             if (Math.abs(vote_total) > max_worm_val) {
@@ -314,8 +316,12 @@ function Worm(container) {
         requestAnimationFrame(animate)
     }
 
+    function addVote(data) {
+        worm.push(data)
+    }
+
     return {
-        addVote: {}
+        addVote,
     }
 
 }

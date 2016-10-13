@@ -18,18 +18,8 @@
             <div class="col-xs-12" style="margin-bottom:20px;">
                 <canvas v-show="!mute_background" id="canvas"
                         style="width:100%; height:350px; background-color: darkslategray"></canvas>
-                <!--<canvas v-show="mute_background" id="muted-canvas"-->
-                        <!--style="width:100%; height:350px; background-color: darkslategray"></canvas>-->
-                <!---->
-                <!---->
                 <div id="worm-comments">
 
-                </div>
-                <div>
-                    <h5 style="display:inline-block">Background: </h5>
-                    <label><input type="radio" v-model="mute_background" :value="false">Play</label>
-                    <label><input type="radio" v-model="mute_background" :value="true">Mute </label>
-                    <span style="padding-left:15px;font-size:0.7rem"><i>Note: This option won't be in the final product, unless there's a good reason to add it</i></span>
                 </div>
             </div>
 
@@ -150,7 +140,7 @@
                 store,
                 socket: null,
                 canvas_running: false,
-                mute_background: false,
+                worm : null,
                 comments: [],
                 vote_data : [],
                 vote_direction: 0,
@@ -164,6 +154,7 @@
             }
         },
         methods: {
+
 
 
             initSocket(){
@@ -181,7 +172,11 @@
                 });
 
                 // Step is a broadcast
-                socket.on('step', (data) => this.vote_data.push(data));
+                socket.on('step', (data) => {
+                    console.log(data)
+                    this.vote_data.push(data)
+                    this.worm.addVote(data)
+                });
 
                 this.socket = socket;
             },
@@ -228,140 +223,11 @@
 
         ready(){
 
-
-            const worm = new Worm(document.getElementById('canvas'))
-
-            // Uhhhhh I got a bit distracted.
-            // ...Just a bit
-
-
-            // Demo an animating canvas.
-            // Making sure it cleans up after itself when  page unloads since its technically still in memory
-
-
-            if(false) {
-                const canvas = document.getElementById('canvas')
-                const context = canvas.getContext('2d')
-
-                let delta = 0
-                let old_time = Date.now()
-
-
-                window.addEventListener('resize', (e) => {
-                    canvas.width = canvas.parentElement.clientWidth
-                })
-
-                canvas.height = 350
-                canvas.width = 800
-
-
-                // Cache that shit
-                const textures = (() => {
-
-                    const out = [];
-
-
-                    ['💋 ', '💄', '💪', '😂', '👁', '👅', '🍌', '🍆', '🌽', '🍗', '🎷', '💉', '💊', '💣', '🔮', '🕎', '☪', '✝️', '🐍', '🌚',
-                        '⌚️', '📱', '📲', '💻', '⌨', '🖥', '🖨', '🖱', '🖲', '🕹', '🗜', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽', '🎞', '📞', '☎️', '📟', '📠', '📺', '📻', '🎙', '🎚', '🎛', '⏱', '⏲', '⏰', '🕰', '⏳', '⌛️', '📡', '🔋', '🔌', '💡', '🔦', '🕯', '🗑', '🛢', '💸', '💵', '💴', '💶', '💷', '💰', '💳', '💎', '⚖', '🔧', '🔨', '⚒', '🛠', '⛏', '🔩', '⚙', '⛓', '🔫', '💣', '🔪', '🗡', '⚔', '🛡', '🚬', '☠', '⚰', '⚱', '🏺', '🔮', '📿', '💈', '⚗', '🔭', '🔬', '🕳', '💊', '💉', '🌡', '🏷', '🔖', '🚽', '🚿', '🛁', '🔑', '🗝', '🛋', '🛌', '🛏', '🚪', '🛎', '🖼', '🗺', '⛱', '🗿', '🛍', '🎈', '🎏', '🎀', '🎁', '🎊', '🎉', '🎎', '🎐',
-                        '🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🍍', '🍅', '🍆', '🌶', '🌽', '🍠', '🍯', '🍞', '🧀', '🍗', '🍖', '🍤', '🍳', '🍔', '🍟', '🌭', '🍕', '🍝', '🌮', '🌯', '🍜', '🍲', '🍥', '🍣', '🍱', '🍛', '🍙', '🍚', '🍘', '🍢', '🍡', '🍧', '🍨', '🍦', '🍰', '🎂', '🍮', '🍬', '🍭', '🍫', '🍿', '🍩', '🍪', '🍺', '🍻', '🍷', '🍸', '🍹', '🍾', '🍶', '🍵', '☕️', '🍼', '🍴', '🍽',
-                        '🐶', '🐱', '🐭', '🐹', '🐰', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐽', '🐸', '🐙', '🐵', '🙈', '🙉', '🙊', '🐒', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🐌', '🐞', '🐜', '🕷', '🦂', '🦀', '🐍', '🐢', '🐠', '🐟', '🐡', '🐬', '🐳', '🐋', '🐊', '🐆', '🐅', '🐃', '🐂', '🐄', '🐪', '🐫', '🐘', '🐐', '🐏', '🐑', '🐎', '🐖', '🐀', '🐁', '🐓', '🦃', '🕊', '🐕', '🐩', '🐈', '🐇', '🐿', '🐾', '🐉', '🐲', '🌵', '🎄', '🌲', '🌳', '🌴', '🌱', '🌿', '☘', '🍀', '🎍', '🎋', '🍃', '🍂', '🍁', '🌾', '🌺', '🌻', '🌹', '🌷', '🌼', '🌸', '💐', '🍄', '🌰', '🎃', '🐚', '🕸', '🌎', '🌍', '🌏', '🌕', '🌖', '🌗', '🌘', '🌑', '🌒', '🌓', '🌔', '🌚', '🌝', '🌛', '🌜', '🌞', '🌙', '⭐️', '🌟', '💫', '✨', '☄', '☀️', '🌤', '⛅️', '🌥', '🌦', '☁️', '🌧', '⛈', '🌩', '⚡️', '🔥', '💥', '❄️', '🌨', '🔥', '💥', '❄️', '🌨', '☃️', '⛄️', '🌬', '💨', '🌪', '🌫', '☂️', '☔️', '💧', '💦', '🌊'].map(em => {
-
-
-                        let can = document.createElement('canvas')
-                        let ctx = can.getContext('2d')
-                        can.width = can.height = 100
-                        ctx.font = '100px Arial'
-                        ctx.textBaseline = 'top'
-                        ctx.fillText(em, 0, 0)
-                        out.push(can)
-                    })
-
-                    return out
-
-                })()
-
-                const uguu = {
-                    x: 0,
-                    y: 0,
-                    speed: 15,
-                    size: 100,
-                    is_growing: true,
-                    rotation: 0,
-                    texture: null
-
-                }
-
-                function renderUguu() {
-
-                    if (this.is_growing) {
-                        this.size++
-                        if (this.size > 120) {
-                            this.is_growing = false
-                        }
-                    } else {
-                        this.size--
-                        if (this.size < 80) {
-                            this.is_growing = true
-                        }
-                    }
-
-                    this.x += this.speed * delta
-                    this.y += this.speed * delta
-
-                    if (this.y > canvas.height + 5) {
-                        this.y = 0 - this.size
-                    }
-
-                    if (this.x > canvas.width + 5) {
-                        this.x = 0 - this.size
-                    }
-
-
-                    this.rotation += (this.speed * delta) * (Math.PI / 180)
-
-                    context.save()
-                    context.textBaseline = 'top'
-                    context.translate(this.x + this.size / 2, this.y + this.size / 2)
-                    context.scale(this.size / 100, this.size / 100)
-                    context.rotate(this.rotation)
-                    context.drawImage(this.texture, 0, 0)
-                    context.restore()
-                }
-
-                const uguus = []
-
-                Array.from({length: 333}).map(unused => {
-                    let a = Object.assign({}, uguu)
-                    a.render = renderUguu
-                    a.x = Math.random() * canvas.width
-                    a.y = Math.random() * canvas.height
-                    a.size = (Math.random() * 100) + 50
-                    a.speed = Math.random() * 25
-                    a.rotation = Math.random() * 360 * (Math.PI / 180)
-                    a.texture = textures[Math.floor(Math.random() * textures.length)]
-                    uguus.push(a)
-                })
-
-                const run = () => {
-                    let new_time = Date.now()
-                    delta = (new_time - old_time) / 100
-                    old_time = new_time
-
-                    // Don't play if muted
-                    if (!this.mute_background) {
-                        uguus.map(x => x.render())
-                    }
-
-                    // Stop running
-                    if (this.canvas_running) {
-                        requestAnimationFrame(run)
-                    }
-                }
-            run()
-            }
-
-
             this.initSocket()
+
+            // Dependency on Worm.js to be loaded in the header. When we get closer to launch I will turn this
+            // into an ES6 module
+            this.worm = new Worm(document.getElementById('canvas'))
         }
     }
 </script>

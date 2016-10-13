@@ -516,10 +516,6 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _from = require('babel-runtime/core-js/array/from');
-
-var _from2 = _interopRequireDefault(_from);
-
 var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
@@ -546,7 +542,7 @@ exports.default = {
             store: _store.store,
             socket: null,
             canvas_running: false,
-            mute_background: false,
+            worm: null,
             comments: [],
             vote_data: [],
             vote_direction: 0,
@@ -579,7 +575,9 @@ exports.default = {
 
             // Step is a broadcast
             socket.on('step', function (data) {
-                return _this.vote_data.push(data);
+                //                    console.log(data)
+                _this.vote_data.push(data);
+                //                    this.worm.addVote(data)
             });
 
             this.socket = socket;
@@ -623,139 +621,16 @@ exports.default = {
     },
 
     ready: function ready() {
-        var _this3 = this;
-
-        var worm = new Worm(document.getElementById('canvas'));
-
-        // Uhhhhh I got a bit distracted.
-        // ...Just a bit
-
-
-        // Demo an animating canvas.
-        // Making sure it cleans up after itself when  page unloads since its technically still in memory
-
-
-        if (false) {
-            (function () {
-                var renderUguu = function renderUguu() {
-
-                    if (this.is_growing) {
-                        this.size++;
-                        if (this.size > 120) {
-                            this.is_growing = false;
-                        }
-                    } else {
-                        this.size--;
-                        if (this.size < 80) {
-                            this.is_growing = true;
-                        }
-                    }
-
-                    this.x += this.speed * delta;
-                    this.y += this.speed * delta;
-
-                    if (this.y > canvas.height + 5) {
-                        this.y = 0 - this.size;
-                    }
-
-                    if (this.x > canvas.width + 5) {
-                        this.x = 0 - this.size;
-                    }
-
-                    this.rotation += this.speed * delta * (Math.PI / 180);
-
-                    context.save();
-                    context.textBaseline = 'top';
-                    context.translate(this.x + this.size / 2, this.y + this.size / 2);
-                    context.scale(this.size / 100, this.size / 100);
-                    context.rotate(this.rotation);
-                    context.drawImage(this.texture, 0, 0);
-                    context.restore();
-                };
-
-                var canvas = document.getElementById('canvas');
-                var context = canvas.getContext('2d');
-
-                var delta = 0;
-                var old_time = Date.now();
-
-                window.addEventListener('resize', function (e) {
-                    canvas.width = canvas.parentElement.clientWidth;
-                });
-
-                canvas.height = 350;
-                canvas.width = 800;
-
-                // Cache that shit
-                var textures = function () {
-
-                    var out = [];
-
-                    ['💋 ', '💄', '💪', '😂', '👁', '👅', '🍌', '🍆', '🌽', '🍗', '🎷', '💉', '💊', '💣', '🔮', '🕎', '☪', '✝️', '🐍', '🌚', '⌚️', '📱', '📲', '💻', '⌨', '🖥', '🖨', '🖱', '🖲', '🕹', '🗜', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽', '🎞', '📞', '☎️', '📟', '📠', '📺', '📻', '🎙', '🎚', '🎛', '⏱', '⏲', '⏰', '🕰', '⏳', '⌛️', '📡', '🔋', '🔌', '💡', '🔦', '🕯', '🗑', '🛢', '💸', '💵', '💴', '💶', '💷', '💰', '💳', '💎', '⚖', '🔧', '🔨', '⚒', '🛠', '⛏', '🔩', '⚙', '⛓', '🔫', '💣', '🔪', '🗡', '⚔', '🛡', '🚬', '☠', '⚰', '⚱', '🏺', '🔮', '📿', '💈', '⚗', '🔭', '🔬', '🕳', '💊', '💉', '🌡', '🏷', '🔖', '🚽', '🚿', '🛁', '🔑', '🗝', '🛋', '🛌', '🛏', '🚪', '🛎', '🖼', '🗺', '⛱', '🗿', '🛍', '🎈', '🎏', '🎀', '🎁', '🎊', '🎉', '🎎', '🎐', '🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🍍', '🍅', '🍆', '🌶', '🌽', '🍠', '🍯', '🍞', '🧀', '🍗', '🍖', '🍤', '🍳', '🍔', '🍟', '🌭', '🍕', '🍝', '🌮', '🌯', '🍜', '🍲', '🍥', '🍣', '🍱', '🍛', '🍙', '🍚', '🍘', '🍢', '🍡', '🍧', '🍨', '🍦', '🍰', '🎂', '🍮', '🍬', '🍭', '🍫', '🍿', '🍩', '🍪', '🍺', '🍻', '🍷', '🍸', '🍹', '🍾', '🍶', '🍵', '☕️', '🍼', '🍴', '🍽', '🐶', '🐱', '🐭', '🐹', '🐰', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐽', '🐸', '🐙', '🐵', '🙈', '🙉', '🙊', '🐒', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🐌', '🐞', '🐜', '🕷', '🦂', '🦀', '🐍', '🐢', '🐠', '🐟', '🐡', '🐬', '🐳', '🐋', '🐊', '🐆', '🐅', '🐃', '🐂', '🐄', '🐪', '🐫', '🐘', '🐐', '🐏', '🐑', '🐎', '🐖', '🐀', '🐁', '🐓', '🦃', '🕊', '🐕', '🐩', '🐈', '🐇', '🐿', '🐾', '🐉', '🐲', '🌵', '🎄', '🌲', '🌳', '🌴', '🌱', '🌿', '☘', '🍀', '🎍', '🎋', '🍃', '🍂', '🍁', '🌾', '🌺', '🌻', '🌹', '🌷', '🌼', '🌸', '💐', '🍄', '🌰', '🎃', '🐚', '🕸', '🌎', '🌍', '🌏', '🌕', '🌖', '🌗', '🌘', '🌑', '🌒', '🌓', '🌔', '🌚', '🌝', '🌛', '🌜', '🌞', '🌙', '⭐️', '🌟', '💫', '✨', '☄', '☀️', '🌤', '⛅️', '🌥', '🌦', '☁️', '🌧', '⛈', '🌩', '⚡️', '🔥', '💥', '❄️', '🌨', '🔥', '💥', '❄️', '🌨', '☃️', '⛄️', '🌬', '💨', '🌪', '🌫', '☂️', '☔️', '💧', '💦', '🌊'].map(function (em) {
-
-                        var can = document.createElement('canvas');
-                        var ctx = can.getContext('2d');
-                        can.width = can.height = 100;
-                        ctx.font = '100px Arial';
-                        ctx.textBaseline = 'top';
-                        ctx.fillText(em, 0, 0);
-                        out.push(can);
-                    });
-
-                    return out;
-                }();
-
-                var uguu = {
-                    x: 0,
-                    y: 0,
-                    speed: 15,
-                    size: 100,
-                    is_growing: true,
-                    rotation: 0,
-                    texture: null
-
-                };
-
-                var uguus = [];
-
-                (0, _from2.default)({ length: 333 }).map(function (unused) {
-                    var a = (0, _assign2.default)({}, uguu);
-                    a.render = renderUguu;
-                    a.x = Math.random() * canvas.width;
-                    a.y = Math.random() * canvas.height;
-                    a.size = Math.random() * 100 + 50;
-                    a.speed = Math.random() * 25;
-                    a.rotation = Math.random() * 360 * (Math.PI / 180);
-                    a.texture = textures[Math.floor(Math.random() * textures.length)];
-                    uguus.push(a);
-                });
-
-                var run = function run() {
-                    var new_time = Date.now();
-                    delta = (new_time - old_time) / 100;
-                    old_time = new_time;
-
-                    // Don't play if muted
-                    if (!_this3.mute_background) {
-                        uguus.map(function (x) {
-                            return x.render();
-                        });
-                    }
-
-                    // Stop running
-                    if (_this3.canvas_running) {
-                        requestAnimationFrame(run);
-                    }
-                };
-                run();
-            })();
-        }
 
         this.initSocket();
+
+        // Dependency on Worm.js to be loaded in the header. When we get closer to launch I will turn this
+        // into an ES6 module
+        this.worm = new Worm(document.getElementById('canvas'));
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <div v-if=\"!room.is_loaded\">\n        <h5>\n            If you are seeing this, the room's data has not loaded or auth fail, or some other crap.\n\n            Check console and see if something shit itself\n        </h5>\n    </div>\n\n    <div class=\"col-xs-12\" v-show=\"room.is_loaded\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas v-show=\"!mute_background\" id=\"canvas\" style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>\n            <!--<canvas v-show=\"mute_background\" id=\"muted-canvas\"-->\n                    <!--style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>-->\n            <!---->\n            <!---->\n            <div id=\"worm-comments\">\n\n            </div>\n            <div>\n                <h5 style=\"display:inline-block\">Background: </h5>\n                <label><input type=\"radio\" v-model=\"mute_background\" :value=\"false\">Play</label>\n                <label><input type=\"radio\" v-model=\"mute_background\" :value=\"true\">Mute </label>\n                <span style=\"padding-left:15px;font-size:0.7rem\"><i>Note: This option won't be in the final product, unless there's a good reason to add it</i></span>\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote(1)\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 1}\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote(-1)\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === -1}\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n\n                    <div id=\"comments-panel\">\n\n                        <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                            <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                            <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                            <div class=\"comment-text\">{{ comment.content }}</div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <div v-if=\"!room.is_loaded\">\n        <h5>\n            If you are seeing this, the room's data has not loaded or auth fail, or some other crap.\n\n            Check console and see if something shit itself\n        </h5>\n    </div>\n\n    <div class=\"col-xs-12\" v-show=\"room.is_loaded\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas v-show=\"!mute_background\" id=\"canvas\" style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>\n            <div id=\"worm-comments\">\n\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote(1)\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 1}\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote(-1)\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === -1}\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n\n                    <div id=\"comments-panel\">\n\n                        <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                            <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                            <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                            <div class=\"comment-text\">{{ comment.content }}</div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -770,7 +645,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-1f13dcde", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":12,"babel-runtime/core-js/array/from":15,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":101,"socket.io-client":107,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],10:[function(require,module,exports){
+},{"../store":12,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":101,"socket.io-client":107,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

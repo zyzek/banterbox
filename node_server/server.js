@@ -52,7 +52,17 @@ require('socketio-auth')(io, {
 var subscriber = redis.createClient();
 subscriber.on("message", redisMsg);
 
+
+
 //TODO: convert into promises
+
+/**
+ * Checks if user is allowed to access resource, and authenticates them if so.
+ * @param socket
+ * @param data
+ * @param next
+ * @returns {*}
+ */
 function authFn(socket, data, next) {
 	var token_id = data.token_id;
 	var room_id = data.room_id;
@@ -88,15 +98,24 @@ function authFn(socket, data, next) {
 	});
 }
 
-//helper fn to return whether the room status determines if the room can be joined
+/**
+ * Helper function to return whether the room status determines if the room can be joined
+ */
 function allowedStatus(stat) {
 	return stat === "open";
 }
+
 
 function allowedVote(vote) {
 	return vote === "yes" || vote === "no" || vote=="cancel";
 }
 
+/**
+ * Sets up variables for the socket to join correct room
+ * Gets called after authentication succeeds
+ * @param socket
+ * @param data
+ */
 function postAuthFn(socket, data) {
 	var room = data.room_id;
 	socket.client.room = room;
@@ -105,10 +124,14 @@ function postAuthFn(socket, data) {
 	socket.join(room);
 
 	//TODO: check - perhaps define socket code here?
-	registerRoutes(socket);
+	setupEventListeners(socket);
 }
 
-function registerRoutes(socket) {
+/**
+ * Set up event listeners to the socket
+ * @param socket
+ */
+function setupEventListeners(socket) {
 	socket.on('connect', function(client) {
 		//TODO: setup client code (double check)
 
@@ -159,15 +182,24 @@ function redisMsg(channel, message) {
 	}
 }
 
+/**
+ * Updates a user's vote status.
+ * If vote status is not allowed, it is ignored.
+ * @param user_id
+ * @param room_id
+ * @param vote_value
+ */
 function acceptVote(user_id, room_id, vote_value) {
 
 	//TODO: connect to the db for the room id
+
 
 
 	//check whether the room is still accepting votes
 	if (room_id in room_states && allowedStatus(room_states[room_id]["status"])) {
 
 		//check vote value
+		// TODO: Cancel the vote if it's not allowed
 		if (!allowedVote(vote_value)) return;
 
 		//set usr1 = vote value
@@ -183,6 +215,12 @@ function acceptVote(user_id, room_id, vote_value) {
 }
 
 //send all the past votes from the room to the client
+
+/**
+ * Sends all the votes up until the current time to the user
+ * @param room_id
+ * @param client
+ */
 function historicalVotes(room_id, client) {
 
 	//TODO: connect to the db for the room id
@@ -206,7 +244,11 @@ function historicalVotes(room_id, client) {
 	});
 }
 
-//broadcast the current timestep vote to everyone in this room
+
+/**
+ * Counts and broadcast the votes to all users in the room
+ * @param room_id
+ */
 function sendVotes(room_id) {
 	//TODO: connect to the db for the room_id
 	var connectedUsers = [];
@@ -217,7 +259,7 @@ function sendVotes(room_id) {
 		return rclient.getAsync(reply);
 	}).then(function (res) {
 		//tally up the votes
-		votes = {"votes":{"yes": 0, "no": 0}};
+		let votes = {"votes":{"yes": 0, "no": 0}};
 		for (vote of res) {
 			if (vote === "yes") {
 				votes["votes"]["yes"] += 1;
@@ -235,7 +277,7 @@ function sendVotes(room_id) {
 		io.to(room_id).emit('step', votes);
 
 		votes["connected"] = connectedUsers;
-		histStr = JSON.stringify(votes);
+		let histStr = JSON.stringify(votes);
 
 		//glob the data of this timestep into the redis historical field
 		return rclient.lpushAsync("history", now).then(function() {
@@ -253,6 +295,11 @@ function sendVotes(room_id) {
 	}
 }
 
+
+/**
+ * Opens room and initialises the interval for pushing out votes.
+ * @param room_id
+ */
 function openRoom(room_id) {
 	//TODO: grab the dbnum for the room_id from redis
 
@@ -267,6 +314,11 @@ function openRoom(room_id) {
 	setTimeout(function() { sendVotes(room_id); }, updateDelay);
 }
 
+
+/**
+ * Closes the room and updates history for room
+ * @param room_id
+ */
 function closeRoom(room_id) {
 	//that room in the global object must be set to closed
 	room_states[room_id]["status"] = "closed";
@@ -298,6 +350,11 @@ function closeRoom(room_id) {
 	});
 }
 
+
+/**
+ * Handles room status
+ * @param message
+ */
 function updateRoom(message) {
 	//make room valid to join.. etc
 	if (!("room_id" in message) || !("action" in message)) {
@@ -313,6 +370,8 @@ function updateRoom(message) {
 		closeRoom(message["room_id"]);
 	}
 }
+
+
 
 io.listen(3000);
 
