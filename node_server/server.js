@@ -21,9 +21,26 @@
  */
 
 
-var dotenv = require('dotenv')
 var Promise = require('bluebird');
 var redis = require('redis');
+var DB = require('./database')
+
+
+// TODO: Remove this test
+DB.connection().any({
+  name : 'usernames-start-with',
+  text: "SELECT * FROM auth_user WHERE username ILIKE $1;",
+  values : ['a%']})
+  .then(data => {
+    console.log({data, length: data.length})
+    data.map(a => console.log([a.id, a.username, a.email]))
+  })
+  .catch(error => {
+    console.log("ERROR:", error.message || error); // print error;
+  })
+
+
+
 
 Promise.promisifyAll(redis.RedisClient.prototype);
 Promise.promisifyAll(redis.Multi.prototype);
@@ -32,7 +49,7 @@ var rclient = redis.createClient();
 
 var io = require('socket.io').listen(3000)
 require('socketio-auth')(io, {
-  authenticate    : authFn,
+  authenticate    : authenticate,
   postAuthenticate: postAuthFn,
   timeout         : 1000
 });
@@ -64,7 +81,7 @@ subscriber.on("message", redisMsg);
  * @param next
  * @returns {*}
  */
-function authFn(socket, data, next) {
+function authenticate(socket, data, next) {
   var token_id = data.token_id;
   var room_id  = data.room_id;
 
