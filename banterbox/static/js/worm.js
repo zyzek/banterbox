@@ -118,11 +118,14 @@ class Worm {
         return x1 + t*(x2 - x1);
     }
 
+
     /* Interpolate between x1 and x2 with a sinusoidal ease-in and ease-out. */
     ease_interp(x1, x2, t) {
         return this.lerp(x1, x2, Math.sin(t * Math.PI / 2));
     }
 
+
+    /* Initiate a rescale of the worm to target_range over duration milliseconds. */
     rescale_worm_to(target_range, duration) {
         this.rescale_start_time = Date.now();
         this.rescale_start_range = this.worm_range;
@@ -131,6 +134,8 @@ class Worm {
         this.rescaling = true;
     }
 
+    /* Smoothly perform one step of an active rescale, and disable scaling once
+       the interpolation is complete. */
     smooth_rescale_worm() {
         const now = Date.now();
 
