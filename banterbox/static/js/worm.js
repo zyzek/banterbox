@@ -17,14 +17,13 @@ class Worm {
         // The actual worm data itself.
         this.data = [{y: 0, ts: Date.now()}, {y: 0, ts: Date.now()}];
 
-        // Maximum number of worm segments to draw.
-        this.worm_render_duration = 10000;
-
+        // Render the last render_duration milliseconds.
+        this.render_duration = 10000;
         // Defines the size of empty space on the right side of the worm.
-        this.worm_pad_duration = 2000;
+        this.pad_duration = 2000;
 
         // Timer information
-        this.old_time = Date.now();
+        this.prev_tick = Date.now();
         this.delta = 0;
         this.update_timer = 0;
         this.update_delay = 150;
@@ -38,6 +37,13 @@ class Worm {
         this.rescaling = false;
         this.y_offset_pixels = 0;
         this.auto_rescale = true;
+
+        // Camera
+        this.draw_time_slice = {start: 0,
+                                end:10,
+                                pixels_per_millisecond: () => { return this.canvas.width / (this.draw_time_slice.end - this.draw_time_slice.start)}
+                               }
+        this.interp_point = {ts: 0, y: 0};
 
         // Used for fake data generation (but could be handy at some point)
         this.users = 50;
@@ -63,8 +69,8 @@ class Worm {
     /* The main loop.
      * This runs only when the window has focus. */
     run() {
-        this.delta = Date.now() - this.old_time
-        this.old_time += this.delta
+        this.delta = Date.now() - this.prev_tick
+        this.prev_tick += this.delta
         this.update()
         this.render()
         requestAnimationFrame(this.run)
@@ -75,7 +81,7 @@ class Worm {
     render() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.draw_zero_line();
-        this.draw_worm_end(this.worm_render_duration, this.worm_pad_duration);
+        this.draw_worm_end(this.render_duration, this.pad_duration);
         this.smooth_rescale_worm()
     }
 
@@ -96,7 +102,7 @@ class Worm {
                 this.rescale_worm_to(this.worm_range * 1.2, 500/overshoot_ratio);
             }
 
-            this.push_data(vote_total, Date.now());
+            this.push_data(vote_total, Date.now() + (Math.random() - 0.5) * this.update_delay);
         }
     }
 
@@ -157,7 +163,7 @@ class Worm {
      *  and 50 milliseconds has passed since the last update, return 0.5. */
     update_fraction_elapsed() {
         const update_delay = this.data[this.data.length - 1].ts - this.data[this.data.length - 2].ts
-        return this.update_timer / update_delay;
+        return Math.max(0, Math.min(this.update_timer / update_delay, 1));
     }
 
 
@@ -183,12 +189,11 @@ class Worm {
     draw_worm_end(milliseconds, pad_milliseconds) {
         const worm_start_time = this.data[0].ts;
         const worm_end_time = this.data[this.data.length - 1].ts;
-        const start = Math.max(worm_start_time, worm_end_time - milliseconds)
-        const end = Math.max(worm_start_time + milliseconds, worm_end_time) + pad_milliseconds;
+        const start = Math.max(worm_start_time, this.interp_point.ts - milliseconds)
+        const end = Math.max(worm_start_time + milliseconds, this.interp_point.ts) + pad_milliseconds;
 
-        //const x_offset = num_points > this.data.length - 1 ? 0 : (this.canvas.width / (start - end - 1)) * this.update_fraction_elapsed();
-        //const x_offset = (start - end) * this.update_fraction_elapsed()
-        //const x_offset = 0;
+        this.draw_time_slice.start = start;
+        this.draw_time_slice.end = end;
 
         this.draw_worm_slice(start, end, this.worm_range, this.y_offset_pixels);
     }
@@ -207,45 +212,44 @@ class Worm {
         // Change lineJoin to "round" for rounder corners.
         this.context.lineJoin = 'bevel';
 
-        // The distance between individual worm segments.
-        //let segment_width = this.canvas.width / (x_end - x_start);
-        const pixels_per_millisecond = this.canvas.width / (time_end - time_start);
-        const update_fraction = this.update_fraction_elapsed();
+        // Draw the part of the worm that fits in the camera.
+        let start_index = Math.max(0, _.findLastIndex(this.data, (t) => {return t.ts < time_start}));
+        let end_index = _.findIndex(this.data, (t) => {return t.ts > time_end});
+        end_index = (end_index < 0) ? this.data.length : end_index;
+        const slice = this.data.slice(start_index, end_index);
 
-        // Grab the slice of the array between the start and end times
-        const slice = _.takeWhile(_.dropWhile(this.data, (t) => {return t.ts < time_start}), (t) => {return t.ts < time_end});
-
-        // Smoothly scroll the worm if there is enough data and the window doesn't include the beginning.
-        let x_offset_milliseconds = 0;
-        if (slice.length >= 2 && slice[0].ts != this.data[0].ts) {
-            x_offset_milliseconds = (slice[slice.length - 2].ts - slice[slice.length - 1].ts) * update_fraction;
-        }
-
-        // Initialise the first point to the first datum in range or else 0.
-        let initial = (slice.length > 0) ? slice[0] : 0;
-        this.context.moveTo(x_offset_milliseconds * pixels_per_millisecond, initial);
-
-        let x;
-        let y;
+        // Initialise the first point to the first datum in the range or else 0.
+        let x = (slice.length > 0) ? slice[0].ts : 0;
+        let y = (slice.length > 0) ? this.scale_worm_height(slice[0].y) : 0;
+        this.context.moveTo(x, y);
 
         // Draw the actual body of the worm.
         for (let i = 0; i < slice.length - 1; ++i) {
             const point = slice[i];
-            x = (point.ts - time_start + x_offset_milliseconds) * pixels_per_millisecond;
+            x = this.timestep_to_screen_space(point.ts);
             y = this.scale_worm_height(point.y, y_range, y_offset_pixels);
             this.context.lineTo(x, y);
         }
 
         // The last worm segment interpolates smoothly between data updates.
         if (slice[slice.length - 1].ts >= this.data[this.data.length - 1].ts){
-            let last_x = (slice[slice.length - 1].ts - time_start + x_offset_milliseconds) * pixels_per_millisecond;
-            let last_y = this.scale_worm_height(slice[slice.length - 1].y, y_range, y_offset_pixels);
-            x = this.lerp(x, last_x, update_fraction);
-            y = this.lerp(y, last_y, update_fraction);
-            this.context.lineTo(x, y);
+            const update_fraction = this.update_fraction_elapsed();
+            const ult = slice[slice.length - 1];
+            const penult = slice[slice.length - 2];
+            this.interp_point.ts = this.lerp(penult.ts, ult.ts, update_fraction);
+            this.interp_point.y = this.lerp(penult.y, ult.y, update_fraction);
+            this.context.lineTo(this.timestep_to_screen_space(this.interp_point.ts),
+                                this.scale_worm_height(this.interp_point.y, y_range, y_offset_pixels));
         }
 
         this.context.stroke();
         this.context.closePath();
+    }
+
+
+    timestep_to_screen_space(t) {
+        const width = this.draw_time_slice.end - this.draw_time_slice.start;
+        const screen_x = (t - this.draw_time_slice.start) / width;
+        return screen_x * this.canvas.width;
     }
 }
