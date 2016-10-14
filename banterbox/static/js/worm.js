@@ -97,8 +97,13 @@ class Worm {
                 this.rescale_worm_to(this.worm_range * 1.2, 500/overshoot_ratio);
             }
 
-            this.data.push({y: vote_total, ts: Date.now()});
+            this.push_data(vote_total, Date.now());
         }
+    }
+
+    /* Push a new data point to the end of the worm. */
+    push_data(val, timestamp) {
+        this.data.push({y: val, ts: timestamp});
     }
 
 
