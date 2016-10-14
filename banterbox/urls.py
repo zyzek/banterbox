@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from rest_framework import routers
 from . import views
 
-room_pattern = "(?P<room_id>[0-9a-f]{32})"
+room_pattern = "(?P<room_id>[0-9a-f-]{36})"
 router = routers.DefaultRouter()
 
 urlpatterns = [

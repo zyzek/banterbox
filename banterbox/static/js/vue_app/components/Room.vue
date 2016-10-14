@@ -29,14 +29,14 @@
                     <div class="col-xs-4">
                         <div class="text-xs-center">
                         <span class="vote-icon-container" id="upvote">
-                            <i @click="changeVote(1)" class="vote-icon fa fa-5x fa-thumbs-o-up"
-                               :class="{green : vote_direction === 1}"></i>
+                            <i @click="changeVote('yes')" class="vote-icon fa fa-5x fa-thumbs-o-up"
+                               :class="{green : vote_direction === 'yes'}"></i>
                         </span>
                         </div>
                         <div class="text-xs-center">
                         <span class="vote-icon-container" id="downvote">
-                            <i @click="changeVote(-1)" class="vote-icon fa fa-5x fa-thumbs-o-down"
-                               :class="{red: vote_direction === -1}"></i>
+                            <i @click="changeVote('no')" class="vote-icon fa fa-5x fa-thumbs-o-down"
+                               :class="{red: vote_direction === 'no'}"></i>
                         </span>
                         </div>
                     </div>
@@ -202,7 +202,7 @@
 
             changeVote(value){
                 if (this.vote_direction === value) {
-                    this.vote_direction = 0
+                    this.vote_direction = 'cancel'
                 } else {
                     this.vote_direction = value
                 }
@@ -212,7 +212,7 @@
         },
         route: {
             activate() {
-                this.room.id = this.$route.params.id.replace(/-/g, '')
+                this.room.id = this.$route.params.id
                 this.$http.get(`/api/room/${this.room.id}`)
                         .then(response => {
                             response.data.comments.map(comment => {
