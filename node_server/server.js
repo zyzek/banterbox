@@ -22,7 +22,7 @@
 
 
 var Promise = require('bluebird');
-var redis = require('redis');
+var redis = require('redis')
 var DB = require('./database')
 var RoomManager = require('./room_manager')
 
@@ -223,6 +223,7 @@ function acceptVote(user_id, room_id, vote_value) {
         //check vote value
         // TODO: Cancel the vote if it's not allowed
         if (!allowedVote(vote_value)) {
+          // TODO : Stop this dumbshittery
             rclient.setAsync(user_id, 'cancel')
             console.log(`cancelled vote for user ${user_id}`)
             return
@@ -245,7 +246,7 @@ function acceptVote(user_id, room_id, vote_value) {
 /**
  * Sends all the votes up until the current time to the user
  * @param room_id
- * @param client
+ * @param socket
  */
 function sendVoteHistory(room_id, socket) {
 
@@ -284,6 +285,9 @@ function sendVotes(room_id) {
         connectedUsers.push(reply);
         return rclient.getAsync(reply);
     }).then(function (res) {
+
+      console.log({res})
+
         //tally up the votes
         let votes = {"votes": {"yes": 0, "no": 0}};
         for (vote of res) {
@@ -300,16 +304,15 @@ function sendVotes(room_id) {
         //voteStr = JSON.stringify(votes);
 
         //broadcast the votes
-        //TODO: test if clients will ever receive who's connected - could be vunerable
+
+
         io.to(room_id).emit('step', votes);
 
         votes["connected"] = connectedUsers;
-        let histStr = JSON.stringify(votes);
 
         //glob the data of this timestep into the redis historical field
-        return rclient.lpushAsync("history", now).then(function () {
-            return rclient.setAsync(now, histStr);
-        });
+        return rclient.lpushAsync("history", now)
+//           .then(function () {return rclient.setAsync(now, histStr)});
 
     }).then(function () {
         console.log("done");

@@ -182,14 +182,16 @@
                                 return x.ts - y.ts
                             })
 
-                            this.vote_data.push(...data)
+                            // TODO : Fix up this to send to worm all proper
+//                            this.vote_data.push(...data)
                         });
 
                         // Step is a broadcast
                         socket.on('step', (data) => {
-                            console.log(data)
-                            this.vote_data.push(data)
-                            this.worm.addVote(data)
+//                            console.log(data)
+//                            this.vote_data.push(data)
+//                            this.worm.addVote(data)
+                            this.worm.push_data(100*(data.votes.yes - data.votes.no) , data.ts)
                         });
                         this.socket = socket;
                     });

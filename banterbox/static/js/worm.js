@@ -84,7 +84,7 @@ class Worm {
     update() {
         // Add a fake data point to the end of the worm every update_delay milliseconds
         this.update_timer += this.delta;
-        if (this.update_timer > this.update_delay) {
+        if (false && this.update_timer > this.update_delay) {
             this.update_timer = 0;
 
             const vote_trend_duration = 3000;

@@ -520,10 +520,6 @@ var _assign = require('babel-runtime/core-js/object/assign');
 
 var _assign2 = _interopRequireDefault(_assign);
 
-var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
-
-var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
-
 var _auth = require('../auth');
 
 var _auth2 = _interopRequireDefault(_auth);
@@ -581,20 +577,20 @@ exports.default = {
                     });
 
                     socket.on('data', function (data) {
-                        var _vote_data;
-
                         data.sort(function (x, y) {
                             return x.ts - y.ts;
                         });
 
-                        (_vote_data = _this.vote_data).push.apply(_vote_data, (0, _toConsumableArray3.default)(data));
+                        // TODO : Fix up this to send to worm all proper
+                        //                            this.vote_data.push(...data)
                     });
 
                     // Step is a broadcast
                     socket.on('step', function (data) {
-                        console.log(data);
-                        _this.vote_data.push(data);
-                        _this.worm.addVote(data);
+                        //                            console.log(data)
+                        //                            this.vote_data.push(data)
+                        //                            this.worm.addVote(data)
+                        _this.worm.push_data(100 * (data.votes.yes - data.votes.no), data.ts);
                     });
                     _this.socket = socket;
                 });
@@ -667,7 +663,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-1f13dcde", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../auth":2,"../store":12,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":101,"socket.io-client":107,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],10:[function(require,module,exports){
+},{"../auth":2,"../store":12,"babel-runtime/core-js/object/assign":16,"moment":101,"socket.io-client":107,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
