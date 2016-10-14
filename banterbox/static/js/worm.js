@@ -1,4 +1,5 @@
 // TODO: Better vertical scaling
+//          - Fix worm gradient when y offset is applied.
 // TODO: Dynamically handle varying update delays, convert to temporal rather than ordinal logic.
 // TODO: Quadratic curves for worm smoothing.
 
@@ -31,7 +32,8 @@ class Worm {
         this.update_delay = 150;
 
         // Used for vertical scaling.
-        this.max_worm_val = 150;
+        this.worm_range = 150;
+        this.y_offset_pixels = 0;
 
         // Used for fake data generation (but could be handy at some point)
         this.users = 10;
@@ -82,8 +84,8 @@ class Worm {
             let trend = Math.cos(Date.now() / vote_trend_duration);
             let vote_total = this.data[this.data.length - 1].y + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
 
-            if (Math.abs(vote_total) > this.max_worm_val) {
-                this.max_worm_val = Math.abs(vote_total);
+            if (Math.abs(vote_total) > this.worm_range) {
+                this.worm_range = Math.abs(vote_total);
             }
 
             this.data.push({y: vote_total, ts: Date.now()});
@@ -98,14 +100,20 @@ class Worm {
     }
 
 
-    /* Given an absolute worm value, return the vertical position it would be rendered at. */
-    scale_worm_height(val) {
-        return (val * this.canvas.height / (this.max_worm_val * 2)) + (this.canvas.height / 2);
+    /* Given an absolute worm value, and the magnitude of the range it should
+     * be rendered in, return the vertical position it would be rendered at. */
+    scale_worm_height(val, range, offset_pixels) {
+        return (val * this.canvas.height / (range * 2)) + (this.canvas.height / 2) + offset_pixels;
     }
 
     /* Map linearly from the range [0,1] to [x1, x2]. */
     lerp(x1, x2, t) {
         return x1 + t*(x2 - x1);
+    }
+
+    /* Interpolate between x1 and x2 with a sinusoidal ease-in and ease-out. */
+    ease_interp(x1, x2, t) {
+        return this.lerp(x1, x2, Math.sin(t * Math.PI / 2));
     }
 
 
@@ -122,7 +130,7 @@ class Worm {
         this.context.beginPath();
         this.context.lineWidth = 1;
         this.context.strokeStyle = "#777777";
-        let zero_height = this.scale_worm_height(0);
+        let zero_height = this.scale_worm_height(0, this.worm_range, this.y_offset_pixels);
         this.context.moveTo(0, zero_height);
         this.context.lineTo(this.canvas.width, zero_height);
         this.context.stroke();
@@ -137,8 +145,8 @@ class Worm {
     draw_worm_end(num_points, end_pad_size) {
         let start = Math.max(0, (this.data.length - 1) - num_points);
         let end = Math.max(num_points + end_pad_size, this.data.length - 1 + end_pad_size);
-        let offset = num_points > this.data.length - 1 ? 0 : (this.canvas.width / (start - end - 1)) * this.update_fraction_elapsed();
-        this.draw_worm_slice(start, end, offset);
+        let x_offset = num_points > this.data.length - 1 ? 0 : (this.canvas.width / (start - end - 1)) * this.update_fraction_elapsed();
+        this.draw_worm_slice(start, end, x_offset, this.worm_range, this.y_offset_pixels);
     }
 
 
@@ -148,7 +156,7 @@ class Worm {
      * smooth scrolling.
      * If x_end exceeds the length of the worm data, empty space will be
      * rendered past the end. */
-    draw_worm_slice(x_start, x_end, x_offset_pixels = 0) {
+    draw_worm_slice(x_start, x_end, x_offset_pixels, y_range, y_offset_pixels) {
         // Set up the styles.
         this.context.beginPath();
         this.context.strokeStyle = this.worm_grad;
@@ -171,7 +179,7 @@ class Worm {
         // Draw the actual body of the worm.
         for (let i = x_start; i < x_end && i < this.data.length - 1; ++i) {
             x = (i - x_start) * segment_width;
-            y = this.scale_worm_height(this.data[i].y);
+            y = this.scale_worm_height(this.data[i].y, y_range, y_offset_pixels);
             this.context.lineTo(x + x_offset_pixels, y);
         }
 
@@ -179,7 +187,7 @@ class Worm {
         if (x_end > this.data.length) {
             let i = this.data.length - 1;
             let last_x = (i - x_start) * segment_width;
-            let last_y = this.scale_worm_height(this.data[i].y);
+            let last_y = this.scale_worm_height(this.data[i].y, y_range, y_offset_pixels);
             x = this.lerp(x, last_x, update_fraction);
             y = this.lerp(y, last_y, update_fraction);
             this.context.lineTo(x + x_offset_pixels, y);
