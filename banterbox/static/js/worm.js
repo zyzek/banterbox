@@ -1,5 +1,4 @@
-// TODO: Better vertical scaling
-//          - Fix worm gradient when y offset is applied.
+// TODO: Fix worm gradient when y offset is applied.
 // TODO: Dynamically handle varying update delays, convert to temporal rather than ordinal logic.
 // TODO: Quadratic curves for worm smoothing.
 
@@ -33,10 +32,16 @@ class Worm {
 
         // Used for vertical scaling.
         this.worm_range = 150;
+        this.rescale_target_range = 150;
+        this.rescale_start_range = 150;
+        this.rescale_start_time = Date.now();
+        this.rescale_duration = 0;
+        this.rescaling = false;
         this.y_offset_pixels = 0;
+        this.auto_rescale = true;
 
         // Used for fake data generation (but could be handy at some point)
-        this.users = 10;
+        this.users = 50;
 
         // Render settings and parameters.
         this.worm_grad = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
@@ -46,7 +51,9 @@ class Worm {
         this.worm_grad.addColorStop(0.8, "rgb(255,0,0)");
         this.worm_grad.addColorStop(1, "rgb(180,0,0)");
 
-        this.setNormalFill();
+        this.context.fillStyle = "rgb(239, 5, 239)";
+        this.context.strokeStyle = "rgb(239, 5, 239)";
+        this.context.lineWidth = 10;
 
         // RELEASE THE WORM
         this.run = this.run.bind(this);
@@ -70,6 +77,7 @@ class Worm {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.draw_zero_line();
         this.draw_worm_end(this.max_worm_length, this.worm_right_pad);
+        this.smooth_rescale_worm()
     }
 
 
@@ -80,23 +88,17 @@ class Worm {
         if (this.update_timer > this.update_delay) {
             this.update_timer = 0;
 
-            let vote_trend_duration = 3000;
-            let trend = Math.cos(Date.now() / vote_trend_duration);
-            let vote_total = this.data[this.data.length - 1].y + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
+            const vote_trend_duration = 3000;
+            const trend = Math.cos(Date.now() / vote_trend_duration);
+            const vote_total = this.data[this.data.length - 1].y + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
 
-            if (Math.abs(vote_total) > this.worm_range) {
-                this.worm_range = Math.abs(vote_total);
+            if (this.auto_rescale && (Math.abs(vote_total) * 1.2 > this.worm_range)) {
+                const overshoot_ratio = Math.abs(vote_total)/this.worm_range;
+                this.rescale_worm_to(this.worm_range * 1.2, 500/overshoot_ratio);
             }
 
             this.data.push({y: vote_total, ts: Date.now()});
         }
-    }
-
-
-    setNormalFill() {
-        this.context.fillStyle = "rgb(239, 5, 239)";
-        this.context.strokeStyle = "rgb(239, 5, 239)";
-        this.context.lineWidth = 10;
     }
 
 
@@ -116,6 +118,26 @@ class Worm {
         return this.lerp(x1, x2, Math.sin(t * Math.PI / 2));
     }
 
+    rescale_worm_to(target_range, duration) {
+        this.rescale_start_time = Date.now();
+        this.rescale_start_range = this.worm_range;
+        this.rescale_target_range = target_range;
+        this.rescale_duration = duration;
+        this.rescaling = true;
+    }
+
+    smooth_rescale_worm() {
+        const now = Date.now();
+
+        if (this.rescale_start_time + this.rescale_duration < now) {
+            this.rescaling = false;
+        }
+
+        if (this.rescaling) {
+            const fraction_elapsed = (now - this.rescale_start_time) / this.rescale_duration;
+            this.worm_range = this.ease_interp(this.rescale_start_range, this.rescale_target_range, fraction_elapsed);
+        }
+    }
 
     /* The proportion of the last update step that has been rendered.
      *  E.g. If the time between the last two updates was 100 milliseconds,
@@ -127,6 +149,7 @@ class Worm {
 
     /* Draw a horizontal rule denoting the 0 vote level. */
     draw_zero_line() {
+        this.context.save();
         this.context.beginPath();
         this.context.lineWidth = 1;
         this.context.strokeStyle = "#777777";
@@ -134,6 +157,7 @@ class Worm {
         this.context.moveTo(0, zero_height);
         this.context.lineTo(this.canvas.width, zero_height);
         this.context.stroke();
+        this.context.restore();
     }
 
 
@@ -143,9 +167,9 @@ class Worm {
      * to right until it reaches the right border, minus padding,
      * and then it should scroll. */
     draw_worm_end(num_points, end_pad_size) {
-        let start = Math.max(0, (this.data.length - 1) - num_points);
-        let end = Math.max(num_points + end_pad_size, this.data.length - 1 + end_pad_size);
-        let x_offset = num_points > this.data.length - 1 ? 0 : (this.canvas.width / (start - end - 1)) * this.update_fraction_elapsed();
+        const start = Math.max(0, (this.data.length - 1) - num_points);
+        const end = Math.max(num_points + end_pad_size, this.data.length - 1 + end_pad_size);
+        const x_offset = num_points > this.data.length - 1 ? 0 : (this.canvas.width / (start - end - 1)) * this.update_fraction_elapsed();
         this.draw_worm_slice(start, end, x_offset, this.worm_range, this.y_offset_pixels);
     }
 
