@@ -24,22 +24,43 @@
 var Promise = require('bluebird');
 var redis = require('redis');
 var DB = require('./database')
+var RoomManager = require('./room_manager')
+
+
+
+
+const updateRooms = () => {
+  RoomManager.updateRooms().then( () => {
+    console.log(RoomManager.room_states)
+  })
+};
+
+
+
+updateRooms()
+let interval_id = setInterval( updateRooms , 1000 * 60)
+
+
 
 
 // TODO: Remove this test
-DB.connection().any({
-  name : 'usernames-start-with',
-  text: "SELECT * FROM auth_user WHERE username ILIKE $1;",
-  values : ['a%']})
-  .then(data => {
-    console.log({data, length: data.length})
-    data.map(a => console.log([a.id, a.username, a.email]))
-  })
+
+DB.connection().one({
+  name:'get-user-from-token',
+  text:'SELECT u.id, a.key FROM authtoken_token a INNER JOIN auth_user u ON u.id = a.user_id WHERE a.key = $1',
+  values:['x']
+}).then(user => {
+  console.log({user})
+  return user
+
+},error => {
+  return Promise.reject('error, user not found')
+}).then(rarar => {
+  console.log({rarar})
+})
   .catch(error => {
-    console.log("ERROR:", error.message || error); // print error;
+    console.log({error})
   })
-
-
 
 
 Promise.promisifyAll(redis.RedisClient.prototype);
@@ -55,11 +76,10 @@ require('socketio-auth')(io, {
 });
 
 
-//TODO: on release, replace sqlite with production db (e.g. postgres)
-var _sq3 = require('sqlite3')
-Promise.promisifyAll(_sq3);
-var sqlite3 = _sq3.verbose();
-var db      = new sqlite3.Database('../db.sqlite3');
+// var _sq3 = require('sqlite3')
+// Promise.promisifyAll(_sq3);
+// var sqlite3 = _sq3.verbose();
+// var db      = new sqlite3.Database('../db.sqlite3');
 
 //TODO: replace this with something else - perhaps this is the best solution
 var room_states = {};
@@ -82,44 +102,39 @@ subscriber.on("message", redisMsg);
  * @returns {*}
  */
 function authenticate(socket, data, next) {
-  var token_id = data.token_id;
-  var room_id  = data.room_id;
+  let token_id = data.token_id;
+  let room_id  = data.room_id;
 
-  //refer to https://github.com/facundoolano/socketio-auth#configuration
-  //grabbing the associated user id to see if token valid
-  var stmt = db.prepare(
-    "SELECT u.id, a.key FROM authtoken_token a INNER JOIN auth_user u ON u.id = a.user_id WHERE a.key = ?");
-  //this perhaps needs a return in front of it, like the other db stmt2
-  return stmt.get([token_id], function (err, row) {
-    if (err || row === undefined || !("id" in row)) {
-      //token does not exist, as user id does not exist for it
-      return next(new Error("token unauthorised"));
-    }
+  DB.connection().one({
+    name:'get-user-from-token',
+    text: `SELECT U.id, A.key 
+           FROM authtoken_token A 
+           INNER JOIN auth_user U 
+            ON U.id = A.user_id 
+           WHERE A.key = $1`,
+    values:[token_id]
+  }).then(user => {
+    socket.client.user_id = user.id
+    return DB.connection().one({
+      name: 'get-room-for-user',
+      text: `SELECT r.id
+             FROM banterbox_userunitenrolment uue 
+             INNER JOIN banterbox_room r 
+              ON uue.unit_id = r.unit_id
+             WHERE uue.user_id = $1
+             AND r.id = $2;`,
+      values: [user.id, room_id]
+    })
 
-    var user_id           = row["id"];
-    socket.client.user_id = user_id;
-
-
-
-    //check if room_id is actually a room in the global state (and is able to be connected to)
-//     if (room_id in room_states && allowedStatus(room_states[room_id]["status"])) {
-      if(true){
-      //check that this room is in one of the rooms that this user can view
-      var stmt2 = db.prepare(
-        "SELECT r.id FROM banterbox_userunitenrolment uue INNER JOIN banterbox_room r ON uue.unit_id = r.unit_id WHERE uue.user_id = ?;");
-
-      return stmt2.all([user_id], function (err, rows) {
-        if (err || rows === undefined || rows.length == 0) {
-          return next(new Error("no rooms found for user"));
-        }
-
-        //return whether the room is in the user's list of rooms they can access
-        let found = rows.find(x => x.id === room_id)
-        return next(null, !!found);
-      });
-    }
-    return next(new Error("invalid room auth"));
-  });
+  }, error => {
+    next(new Error('User not found.'))
+    return Promise.reject()
+  }).then(room => {
+    return next(null,!!room)
+  }, error => {
+    next(new Error('Room not found.'))
+    return Promise.reject()
+  })
 }
 
 /**
@@ -157,7 +172,6 @@ function postAuthFn(socket, data) {
  */
 function setupEventListeners(socket) {
 
-
   let client = socket.client
 
     //add user to redis db
@@ -165,8 +179,11 @@ function setupEventListeners(socket) {
     //send current vote data
     historicalVotes(client.room, socket);
 
-  socket.on('vote', function (data) {
+  socket.on('vote', data => {
+
     console.log({data})
+    acceptVote(client.user_id, client.room_id, msg["vote"]["value"])
+
     socket.emit('message', {message:'vote recieved', vote: data.value, timestamp: data.timestamp, diff : Date.now() - data.timestamp})
   });
 
@@ -216,13 +233,15 @@ function acceptVote(user_id, room_id, vote_value) {
 
   //TODO: connect to the db for the room id
 
-
   //check whether the room is still accepting votes
   if (room_id in room_states && allowedStatus(room_states[room_id]["status"])) {
 
     //check vote value
     // TODO: Cancel the vote if it's not allowed
-    if (!allowedVote(vote_value)) return;
+    if (!allowedVote(vote_value)){
+      // Cancel their vote on redis
+      return;
+    }
 
     //set usr1 = vote value
     var userSet = rclient.setAsync(user_id, vote_value);
