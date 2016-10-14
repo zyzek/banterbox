@@ -69,11 +69,11 @@ class Worm {
     /* The main loop.
      * This runs only when the window has focus. */
     run() {
-        this.delta = Date.now() - this.prev_tick
-        this.prev_tick += this.delta
-        this.update()
-        this.render()
-        requestAnimationFrame(this.run)
+        this.delta = Date.now() - this.prev_tick;
+        this.prev_tick += this.delta;
+        this.update();
+        this.render();
+        requestAnimationFrame(this.run);
     }
 
 
@@ -226,9 +226,21 @@ class Worm {
         // Draw the actual body of the worm.
         for (let i = 0; i < slice.length - 1; ++i) {
             const point = slice[i];
+            const next_point = slice[i+1];
+
+            let prev_x = x;
+            let prev_y = y;
+
             x = this.timestep_to_screen_space(point.ts);
             y = this.scale_worm_height(point.y, y_range, y_offset_pixels);
-            this.context.lineTo(x, y);
+
+            let next_x = this.timestep_to_screen_space(next_point.ts);
+            let next_y = this.scale_worm_height(next_point.y, y_range, y_offset_pixels);
+
+            let mid = {x: (x + next_x)/2, y: (y + next_y)/2};
+
+            //this.context.lineTo(x, y);
+            this.context.quadraticCurveTo(x, y, mid.x, mid.y);
         }
 
         // The last worm segment interpolates smoothly between data updates.
