@@ -48,8 +48,11 @@ function updateRooms() {
     })
     .then(rows => {
       const time_now   = moment(Date.now())
-      const day        = time_now.day() - 1
+      const day        = (((time_now.day()-1) % 7) + 7) % 7; // negative modulo fix
       const statements = []
+
+
+      console.log({day})
 
       rows.map(row => {
         if (row.day === day) {

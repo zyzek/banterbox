@@ -27,8 +27,10 @@
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-xs-12">
-                        <input type="text" v-model="comment" @submit="submitComment()">
-                        <div class="btn btn-primary" @click="submitComment()">SUBMIT</div>
+                        <form @submit.prevent="submitComment()" id="comments-form">
+                            <input type="text" v-model="comment" placeholder="Add a comment">
+                            <button class="btn btn-primary">SUBMIT</button>
+                        </form>
                     </div>
                     <div class="col-xs-4">
                         <div class="text-xs-center">
@@ -64,7 +66,21 @@
 
 
 <style lang="scss" rel="stylesheet/scss">
+    @import "../../../sass/colours";
 
+    #comments-form{
+        display:flex;
+        margin-bottom: 10px;
+        input{
+            padding: 3px 3px 3px 10px;
+            flex:1;
+            margin-right:10px;
+        }
+
+        .btn{
+            background-color: $header-background;
+        }
+    }
 
     .vote-icon-container {
         display: flex;
@@ -146,7 +162,7 @@
                 socket: null,
                 canvas_running: false,
                 worm: null,
-                comment : '',
+                comment: '',
                 comments: [],
                 vote_data: [],
                 vote_direction: 0,
@@ -162,27 +178,32 @@
         methods: {
 
             submitComment(){
-                this.socket.emit('comment', {comment:this.comment})
+                this.socket.emit('comment', {comment: this.comment})
+                this.comment = ''
             },
 
             initSocket(){
                 const socket = io('http://localhost:3000');
 
 
-                socket.on('comment', comment => {
-                    console.log({comment})
-                    this.comments.push(comment)
-                })
-
                 socket.on('unauthorized', function (err) {
                     console.log("There was an error with the authentication:", err.message);
                 });
 
-                socket.on('connect',  () => {
-                console.log({room: this.room,id: this.room.id})
-                    socket.on('authenticated',  (e) => {
+                socket.on('connect', () => {
+                    console.log({room: this.room, id: this.room.id})
+                    socket.on('authenticated', (e) => {
 
                         console.log('authenticated', {e})
+
+                        socket.on('comment_history', comments => {
+                            this.comments = [...comments]
+                        })
+
+                        socket.on('comment', comment => {
+                            console.log({comment})
+                            this.comments.unshift(comment)
+                        })
 
                         socket.on('message', data => {
                             console.log({data})
@@ -199,15 +220,12 @@
 
                         // Step is a broadcast
                         socket.on('step', (data) => {
-//                            console.log(data)
-//                            this.vote_data.push(data)
-//                            this.worm.addVote(data)
-                            this.worm.push_data(100*(data.votes.yes - data.votes.no) , data.timestamp)
+                            this.worm.push_data(100 * (data.votes.yes - data.votes.no), data.timestamp)
                         });
                         this.socket = socket;
                     });
 
-                    socket.emit('authentication', {token_id: auth.getToken() , room_id: this.room.id });
+                    socket.emit('authentication', {token_id: auth.getToken(), room_id: this.room.id});
 
                 });
             },
@@ -220,7 +238,7 @@
                     this.vote_direction = value
                 }
 
-                this.socket.emit('vote', {value:this.vote_direction, timestamp:Date.now()})
+                this.socket.emit('vote', {value: this.vote_direction, timestamp: Date.now()})
             }
         },
         route: {
@@ -228,12 +246,7 @@
                 this.room.id = this.$route.params.id
                 this.$http.get(`/api/room/${this.room.id}`)
                         .then(response => {
-                            response.data.comments.map(comment => {
-                                const _comment = Object.assign({}, comment)
-                                _comment.date = moment(comment.timestamp * 1000).format('DD/MM/YYYY')
-                                _comment.time = moment(comment.timestamp * 1000).format('HH:mm:ss')
-                                this.comments.push(_comment)
-                            })
+                            // TODO : Stop comments sending from API on room load
                             this.unit_code = response.data.unit_code
                             this.unit_icon = response.data.unit_icon
                             this.unit_name = response.data.unit_name

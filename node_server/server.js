@@ -140,8 +140,7 @@ function postAuth(socket, data) {
   let client = socket.client
 
   generateName('pascal').then(alias => {
-    rclient.hsetAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, alias)
-    client.alias = alias
+    rclient.hsetnxAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, alias)
   })
 
   client.room_id = data.room_id
@@ -163,6 +162,7 @@ function setupEventListeners(socket) {
   rclient.saddAsync(`room:${client.room_id}:users`, client.user_id);
   //send current vote data
   sendVoteHistory(client.room_id, socket);
+  sendCommentHistory(client.room_id,socket)
 
   socket.on('vote', data => {
     acceptVote(client.user_id, client.room_id, data.value)
@@ -174,7 +174,6 @@ function setupEventListeners(socket) {
   })
 
   socket.on('comment', data => {
-    console.log({data})
 
     const client = socket.client
     const now    = Date.now()
@@ -209,18 +208,6 @@ function setupEventListeners(socket) {
       .catch(error => {
         console.log({error})
       })
-
-
-    /* TODO : Comment looks like this
-     author: "jgre8297"
-     content: "Saepe voluptate explicabo quos ..." etc (140~ chars)
-     date: "14/10/2016"
-     icon: "cutlery"
-     id: "bffb1c55-7d18-4abf-b28f-a1e32b5825ed"
-     time: "13:31:47"
-     timestamp: 1476412307.978371
-     */
-
   })
 
   socket.on('disconnect', function () {
@@ -325,7 +312,7 @@ function acceptVote(user_id, room_id, vote_value) {
     const add_connected = rclient.saddAsync(`room:${room_id}:users`, user_id);
 
     Promise.join(add_vote, add_connected).then(function () {
-      console.log("added user" + user_id);
+      console.log("added user: " + user_id);
     });
   }
 }
@@ -353,6 +340,66 @@ function sendVoteHistory(room_id, socket) {
   }).catch(function (e) {
     console.log(e);
   });
+}
+
+
+/**
+ * Returns all comments so far back to the future.
+ * Must keep them anonymous, therefore we set aliases
+ * @param room_id
+ * @param socket
+ */
+function sendCommentHistory(room_id, socket) {
+  const client = socket.client
+
+  DB.connection().any({
+    name  : 'grab-comments-for-room',
+    text  : 'SELECT * FROM banterbox_comment WHERE room_id = $1 AND private = FALSE ORDER BY timestamp DESC;',
+    values: [room_id]
+  })
+    .then(rows => {
+      const promises = []
+      for (let r of rows) {
+        promises.push(
+          generateName('pascal')
+            .then(alias => {
+              // Add alias if not exists
+              rclient.hsetnxAsync(`room:${room_id}:alias`, `user:${r.user_id}`, alias)
+            })
+        )
+      }
+
+
+
+      // When all aliases are created, set up alias lookup object
+      return Promise.join(...promises)
+        .then(() => {
+          return rclient.hgetallAsync(`room:${room_id}:alias`).then(aliases => {
+            return {aliases, rows}
+          })
+
+        })
+    })
+    .then(data => {
+      const rows     = data.rows
+      const aliases  = data.aliases
+      const comments = []
+      for (let r of rows) {
+        comments.push({
+          content  : r.content,
+          timestamp: moment(r.timestamp).unix(),
+          date     : moment(r.timestamp).format('DD/MM/YYYY'),
+          time     : moment(r.timestamp).format('HH:mm:ss'),
+          author   : aliases[`user:${r.user_id}`]
+        })
+      }
+
+
+      // Finally broadcast~! Phew!!!
+      socket.emit('comment_history', comments)
+
+    })
+
 }
 
 

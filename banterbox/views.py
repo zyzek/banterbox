@@ -317,21 +317,9 @@ def enter_room(request, room_id):
 
     # Then , we will need the following things to start them off in a room:
     #   1. The Room's unit info : name,code
-    #   2. The comments for the room up until this point in time
-
-    comments = []
-    for com in room.comment_set.all().order_by('-timestamp'):
-        comments.append({
-            'id' : com.id,
-            'author' : com.user.username,
-            'icon' : com.user.profile.icon,
-            'timestamp' : com.timestamp.timestamp(),
-            'content' : com.content
-        })
 
     return Response({
         'unit_code': room.unit.code,
         'unit_name': room.unit.name,
-        'unit_icon': room.unit.icon,
-        'comments' : comments
+        'unit_icon': room.unit.icon
     })
