@@ -1,7 +1,12 @@
 // TODO: Fix worm gradient when y offset is applied.
-// TODO: Quadratic curves for worm smoothing.
+// TODO: Fix worm end segment rendering
+// TODO: Fix worm freezing after tab out
+// TODO: Move worm style stuff into the set_worm_style() function.
+// TODO: Improve draw_worm_end tracking to be more robust to slow worm updates.
 
 class Worm {
+
+
     constructor(container) {
         this.canvas = container
         this.context = this.canvas.getContext('2d')
@@ -49,6 +54,8 @@ class Worm {
         this.users = 50;
 
         // Render settings and parameters.
+        this.set_worm_style({smoothing: "quadratic"});
+
         this.worm_grad = this.context.createLinearGradient(0, 0, 0, this.canvas.height);
         this.worm_grad.addColorStop(0, "rgb(0,255,100)");
         this.worm_grad.addColorStop(0.2, "rgb(0,255,0)");
@@ -163,7 +170,8 @@ class Worm {
      *  and 50 milliseconds has passed since the last update, return 0.5. */
     update_fraction_elapsed() {
         const update_delay = this.data[this.data.length - 1].ts - this.data[this.data.length - 2].ts
-        return Math.max(0, Math.min(this.update_timer / update_delay, 1));
+        //return Math.max(0, Math.min(this.update_timer / update_delay, 1));
+        return this.update_timer / update_delay;
     }
 
 
@@ -189,8 +197,10 @@ class Worm {
     draw_worm_end(milliseconds, pad_milliseconds) {
         const worm_start_time = this.data[0].ts;
         const worm_end_time = this.data[this.data.length - 1].ts;
-        const start = Math.max(worm_start_time, this.interp_point.ts - milliseconds)
-        const end = Math.max(worm_start_time + milliseconds, this.interp_point.ts) + pad_milliseconds;
+
+        // If the worm starts getting out of sync, it's possible to replace Date.now() with this.interp_point.ts
+        const start = Math.max(worm_start_time, Date.now() - milliseconds);
+        const end = Math.max(worm_start_time + milliseconds, Date.now()) + pad_milliseconds;
 
         this.draw_time_slice.start = start;
         this.draw_time_slice.end = end;
@@ -228,19 +238,14 @@ class Worm {
             const point = slice[i];
             const next_point = slice[i+1];
 
-            let prev_x = x;
-            let prev_y = y;
-
             x = this.timestep_to_screen_space(point.ts);
             y = this.scale_worm_height(point.y, y_range, y_offset_pixels);
-
             let next_x = this.timestep_to_screen_space(next_point.ts);
             let next_y = this.scale_worm_height(next_point.y, y_range, y_offset_pixels);
 
             let mid = {x: (x + next_x)/2, y: (y + next_y)/2};
 
-            //this.context.lineTo(x, y);
-            this.context.quadraticCurveTo(x, y, mid.x, mid.y);
+            this.draw_segment(x, y, mid.x, mid.y);
         }
 
         // The last worm segment interpolates smoothly between data updates.
@@ -259,9 +264,25 @@ class Worm {
     }
 
 
+    /* Takes a unix timestep and returns the x position on screen it renders at. */
     timestep_to_screen_space(t) {
         const width = this.draw_time_slice.end - this.draw_time_slice.start;
         const screen_x = (t - this.draw_time_slice.start) / width;
         return screen_x * this.canvas.width;
     }
+
+
+    /* Given an object containing style directives, update the worm render settings. */
+    set_worm_style(style) {
+        if (style.smoothing) {
+            if (style.smoothing == "quadratic") {
+                this.draw_segment = (x, y, mx, my) => {this.context.quadraticCurveTo(x, y, mx, my)}
+            }
+            else {
+                this.draw_segment = (x, y, mx, my) => {this.context.lineTo(x, y)}
+            }
+        }
+    }
+
+
 }
