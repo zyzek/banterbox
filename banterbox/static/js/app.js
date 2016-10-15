@@ -543,6 +543,7 @@ exports.default = {
             socket: null,
             canvas_running: false,
             worm: null,
+            comment: '',
             comments: [],
             vote_data: [],
             vote_direction: 0,
@@ -556,11 +557,19 @@ exports.default = {
         };
     },
     methods: {
+        submitComment: function submitComment() {
+            this.socket.emit('comment', { comment: this.comment });
+        },
         initSocket: function initSocket() {
             var _this = this;
 
             var room_id = "roomy";
             var socket = (0, _socket2.default)('http://localhost:3000');
+
+            socket.on('comment', function (comment) {
+                console.log({ comment: comment });
+                _this.comments.push(comment);
+            });
 
             socket.on('unauthorized', function (err) {
                 console.log("There was an error with the authentication:", err.message);
@@ -576,9 +585,9 @@ exports.default = {
                         console.log({ data: data });
                     });
 
-                    socket.on('data', function (data) {
+                    socket.on('vote_history', function (data) {
                         data.sort(function (x, y) {
-                            return x.ts - y.ts;
+                            return x.timestamp - y.timestamp;
                         });
 
                         // TODO : Fix up this to send to worm all proper
@@ -590,7 +599,7 @@ exports.default = {
                         //                            console.log(data)
                         //                            this.vote_data.push(data)
                         //                            this.worm.addVote(data)
-                        _this.worm.push_data(100 * (data.votes.yes - data.votes.no), data.ts);
+                        _this.worm.push_data(100 * (data.votes.yes - data.votes.no), data.timestamp);
                     });
                     _this.socket = socket;
                 });
@@ -648,7 +657,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <div v-if=\"!room.is_loaded\">\n        <h5>\n            If you are seeing this, the room's data has not loaded or auth fail, or some other crap.\n\n            Check console and see if something shit itself\n        </h5>\n    </div>\n\n    <div class=\"col-xs-12\" v-show=\"room.is_loaded\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas v-show=\"!mute_background\" id=\"canvas\" style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>\n            <div id=\"worm-comments\">\n\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n\n                    <div id=\"comments-panel\">\n\n                        <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                            <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                            <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                            <div class=\"comment-text\">{{ comment.content }}</div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <div v-if=\"!room.is_loaded\">\n        <h5>\n            If you are seeing this, the room's data has not loaded or auth fail, or some other crap.\n\n            Check console and see if something shit itself\n        </h5>\n    </div>\n\n    <div class=\"col-xs-12\" v-show=\"room.is_loaded\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas v-show=\"!mute_background\" id=\"canvas\" style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>\n            <div id=\"worm-comments\">\n\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-12\">\n                    <input type=\"text\" v-model=\"comment\" @submit=\"submitComment()\">\n                    <div class=\"btn btn-primary\" @click=\"submitComment()\">SUBMIT</div>\n                </div>\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n\n                    <div id=\"comments-panel\">\n\n                        <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                            <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                            <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                            <div class=\"comment-text\">{{ comment.content }}</div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

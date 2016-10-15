@@ -21,113 +21,114 @@
  */
 
 
-var Promise = require('bluebird');
-var redis = require('redis')
-var DB = require('./database')
-var RoomManager = require('./room_manager')
+/* Some notes about redis:
+ * http://stackoverflow.com/a/36498590/3315133
+ *
+ * Multiple DBs
+ * ============
+ * Multiple DBs are frowned upon, and what is encouraged is the "Access pattern".
+ * Basically, namespace keys, and keep a list of keys somewhere. That way most of the actions will be O(1)
+ * and O(N) actions won't be too large.
+ *
+ * Naming Convention
+ * =================
+ * http://redis.io/topics/data-types-intro
+ * 'Try to stick with a schema.  For instance "object-type:id" is a good idea, as in "user:1000".
+ *
+ * http://webcache.googleusercontent.com/search?q=cache:ThrFdvthOdIJ:instagram-engineering.tumblr.com/post/12202313862/storing-hundreds-of-millions-of-simple-key-value+&cd=3&hl=en&ct=clnk&gl=au
+ * The most efficient storage we can use will be redis's Hash Maps, which efficiently store the keys we will need with
+ * significantly less space.
+ *
+ * Our Schema
+ * ==========
+ *
+ * Hashmap fields to be namespaced on what they are:
+ * - user:USER-ID
+ * - timestamp:TIMESTAMP
+ *
+ * Each room will have:
+ *  A Hashmap for the values: room:ROOM-ID FIELD VALUE
+ *  - room:ROOM-ID FIELD VALUE
+ *
+ *  A Set of keys for history
+ *  - room:ROOM-ID:history
+ *
+ * A Set of keys for users
+ * - room:ROOM-ID:users
+ *
+ * At the end we will only need to drop 3 items from redis and it will be cleaned of that table.
+ * Also
+ *
+ *
+ */
 
 
-
+const Promise     = require('bluebird');
+const redis       = require('redis')
+const DB          = require('./database')
+const RoomManager = require('./room_manager')
 const room_states = RoomManager.room_states
 
-const updateRooms = () => {
-    RoomManager.updateRooms().then(() => {
-        console.log(RoomManager.room_states)
-    }).then(() => {
 
-      for(let key in room_states){
-        if(room_states[key].status === 'running' && !room_states[key].is_broadcasting){
-          room_states[key].is_broadcasting = true
-          room_states[key].interval_id = startBroadcasting(key)
-        }
-      }
-    })
-};
-
-
-updateRooms()
-let interval_id = setInterval(updateRooms, 1000 * 60)
+const broadcast_interval   = 1000
+const room_update_interval = 1000 * 60
 
 
 Promise.promisifyAll(redis.RedisClient.prototype);
 Promise.promisifyAll(redis.Multi.prototype);
-//TODO, move this into the room_states obj, to ensure each room operates in its own db/instance
-var rclient = redis.createClient();
 
-var io = require('socket.io').listen(3000)
+
+const rclient = redis.createClient();
+const io      = require('socket.io').listen(3000)
+
+
+/*
+ * Authentication
+ * ==============
+ */
 require('socketio-auth')(io, {
-    authenticate: authenticate,
-    postAuthenticate: postAuthFn,
-    timeout: 1000
+  authenticate    : authenticate,
+  postAuthenticate: postAuth,
+  timeout         : 1000
 });
-
-
-
-var updateDelay = 1000;
-
-
-//setup redis subscriber
-var subscriber = redis.createClient();
-subscriber.on("message", redisMsg);
-
-
-//TODO: convert into promises
 
 /**
  * Checks if user is allowed to access resource, and authenticates them if so.
- * @param socket
- * @param data
- * @param next
- * @returns {*}
  */
 function authenticate(socket, data, next) {
-    let token_id = data.token_id;
-    let room_id = data.room_id;
+  let token_id = data.token_id;
+  let room_id  = data.room_id;
 
-    DB.connection().one({
-        name: 'get-user-from-token',
-        text: `SELECT U.id, A.key 
+  DB.connection().one({
+    name  : 'get-user-from-token',
+    text  : `SELECT U.id, A.key 
            FROM authtoken_token A 
            INNER JOIN auth_user U 
             ON U.id = A.user_id 
            WHERE A.key = $1`,
-        values: [token_id]
-    }).then(user => {
-      socket.client.user_id = user.id
-        return DB.connection().one({
-            name: 'get-room-for-user',
-            text: `SELECT r.id
+    values: [token_id]
+  }).then(user => {
+    socket.client.user_id = user.id
+    return DB.connection().one({
+      name  : 'get-room-for-user',
+      text  : `SELECT r.id
              FROM banterbox_userunitenrolment uue 
              INNER JOIN banterbox_room r 
               ON uue.unit_id = r.unit_id
              WHERE uue.user_id = $1
              AND r.id = $2;`,
-            values: [user.id, room_id]
-        })
-
-    }, error => {
-        next(new Error('User not found.'))
-        return Promise.reject()
-    }).then(room => {
-      socket.client.room_id = room_id
-      return next(null, !!room)
-    }, error => {
-        next(new Error('Room not found.'))
-        return Promise.reject()
+      values: [user.id, room_id]
     })
-}
 
-
-/**
- * Helper function to return whether the room status determines if the room can be joined
- */
-function allowedStatus(stat) {
-    return stat === "running";
-}
-
-
-function allowedVote(vote) {
-    return vote === "yes" || vote === "no"
+  }, error => {
+    next(new Error('User not found.'))
+    return Promise.reject()
+  }).then(room => {
+    return next(null, !!room)
+  }, error => {
+    next(new Error('Room not found.'))
+    return Promise.reject()
+  })
 }
 
 /**
@@ -136,16 +137,14 @@ function allowedVote(vote) {
  * @param socket
  * @param data
  */
-function postAuthFn(socket, data) {
-    var room = data.room_id;
-    socket.client.room = room;
+function postAuth(socket, data) {
+  //add them to the room
+  socket.client.room_id = data.room_id
+  socket.join(data.room_id);
 
-    //add them to the room
-    socket.join(room);
-
-    //TODO: check - perhaps define socket code here?
-    setupEventListeners(socket);
+  setupEventListeners(socket);
 }
+
 
 /**
  * Set up event listeners to the client socket
@@ -153,56 +152,113 @@ function postAuthFn(socket, data) {
  */
 function setupEventListeners(socket) {
 
-    let client = socket.client
+  let client = socket.client
 
-    //add user to redis db
-    rclient.saddAsync("connected", client.user_id);
-    //send current vote data
-    sendVoteHistory(client.room, socket);
+  //add user to redis db
+  rclient.saddAsync(`room:${client.room_id}:users`, client.user_id);
+  //send current vote data
+  sendVoteHistory(client.room_id, socket);
 
-    socket.on('vote', data => {
-        console.log({data})
-        acceptVote(client.user_id, client.room_id, data.value)
+  socket.on('vote', data => {
+    acceptVote(client.user_id, client.room_id, data.value)
+  });
 
-        socket.emit('message', {
-            message: 'vote recieved',
-            vote: data.value,
-            timestamp: data.timestamp,
-            diff: Date.now() - data.timestamp
-        })
+  socket.on('close_room', () => {
+    closeRoom(client.room_id)
+  })
+
+  socket.on('comment', comment => {
+    console.log({comment})
+
+    /* TODO : Comment looks like this
+     author: "jgre8297"
+     content: "Saepe voluptate explicabo quos ..." etc (140~ chars)
+     date: "14/10/2016"
+     icon: "cutlery"
+     id: "bffb1c55-7d18-4abf-b28f-a1e32b5825ed"
+     time: "13:31:47"
+     timestamp: 1476412307.978371
+     */
+
+    socket.broadcast.emit('comment', comment);
+  })
+
+  socket.on('disconnect', function () {
+    let client = this.client
+
+    //remove redis entry for this user in connected_users
+    var remove_connection = rclient.sremAsync(`room:${client.room_id}:users`, client.user_id);
+
+    //remove their key-val pair
+    var remove_key = rclient.hdelAsync(`room:${client.room_id}`, `user:${client.user_id}`);
+
+    Promise.join(remove_connection, remove_key).then(function () {
+      console.log("removed " + client.user_id + " from " + client.room_id);
     });
+  });
+}
 
-    socket.on('disconnect', function () {
-        let client = this.client
 
-        //remove redis entry for this user in connected_users
-        var remCon = rclient.sremAsync("connected", client.user_id);
-        //remove their key-val pair
-        var remKey = rclient.delAsync(client.user_id);
+//setup redis subscriber - doesn't seem to be doing anything? It's the only use in the file
+var subscriber = redis.createClient();
+subscriber.on("message", redisMsg);
 
-        Promise.join(remCon, remKey).then(function () {
-            console.log("removed " + client.user_id + " from " + client.room);
-        });
-    });
+
+/**
+ * Updates all the rooms and adjusts their current state accordingly
+ */
+function updateRooms() {
+  RoomManager.updateRooms().then(() => {
+    console.log(RoomManager.room_states)
+  }).then(() => {
+    for (let key in room_states) {
+      const room = room_states[key]
+      if (room.status === 'running' && !room.is_broadcasting) {
+        openRoom(key)
+      }
+      else if (room.status === 'closed' && room.is_broadcasting) {
+        closeRoom(key)
+      }
+    }
+  })
+}
+
+
+// Immediately update the rooms on script load
+updateRooms()
+
+// Once per minute, update the rooms
+setInterval(updateRooms, room_update_interval)
+
+/**
+ * Helper function to return whether the room status determines if the room can be joined
+ */
+function allowedStatus(stat) {
+  return stat === "running";
+}
+
+
+function allowedVote(vote) {
+  return vote === "yes" || vote === "no"
 }
 
 function redisMsg(channel, message) {
-    //parse the message into JSON
-    try {
-        var jmsg = JSON.parse(message);
-    }
-    catch (err) {
-        console.log("error in parsing message");
-        return;
-    }
+  //parse the message into JSON
+  try {
+    var jmsg = JSON.parse(message);
+  }
+  catch (err) {
+    console.log("error in parsing message");
+    return;
+  }
 
-    //depending on the channel, call the appropiate message handler fn
-    if (channel === "room_update") {
-        updateRoom(jmsg);
-    }
-    else {
-        console.log("invalid channel supplied" + channel);
-    }
+  //depending on the channel, call the appropiate message handler fn
+  if (channel === "room_update") {
+    updateRoom(jmsg);
+  }
+  else {
+    console.log("invalid channel supplied" + channel);
+  }
 }
 
 /**
@@ -215,30 +271,23 @@ function redisMsg(channel, message) {
 function acceptVote(user_id, room_id, vote_value) {
 
 
-    //check whether the room is still accepting votes
-    if (room_id in room_states && allowedStatus(room_states[room_id]["status"])) {
+  //check whether the room is still accepting votes
+  if (room_id in room_states && allowedStatus(room_states[room_id]["status"])) {
 
-
-
-        //check vote value
-        // TODO: Cancel the vote if it's not allowed
-        if (!allowedVote(vote_value)) {
-          // TODO : Stop this dumbshittery
-            rclient.setAsync(user_id, 'cancel')
-            console.log(`cancelled vote for user ${user_id}`)
-            return
-        }
-
-        //set usr1 = vote value
-        var userSet = rclient.setAsync(user_id, vote_value);
-
-        //add usr1 to connected usrs if not already in
-        var connectedAdd = rclient.saddAsync("connected", user_id);
-
-        Promise.join(userSet, connectedAdd).then(function () {
-            console.log("added user" + user_id);
-        });
+    //check vote value
+    if (!allowedVote(vote_value)) {
+      rclient.hsetAsync(`room:${room_id}`, `user:${user_id}`, 'cancel')
+      console.log(`cancelled vote for user ${user_id}`)
+      return
     }
+
+    const add_vote      = rclient.hsetAsync(`room:${room_id}`, `user:${user_id}`, vote_value)
+    const add_connected = rclient.saddAsync(`room:${room_id}:users`, user_id);
+
+    Promise.join(add_vote, add_connected).then(function () {
+      console.log("added user" + user_id);
+    });
+  }
 }
 
 //send all the past votes from the room to the client
@@ -250,25 +299,20 @@ function acceptVote(user_id, room_id, vote_value) {
  */
 function sendVoteHistory(room_id, socket) {
 
-    //TODO: connect to the db for the room id
-
-
-    //grab each timestep
-    rclient.lrangeAsync("history", 0, -1).map(function (reply) {
-        return rclient.getAsync(reply);
-    }).map(function (history) {
-        //convert each history string into json
-        var hisJ = JSON.parse(history);
-
-        //remove the connected users string
-        delete hisJ.connected;
-        return hisJ;
-    }).then(function (completeHist) {
-        //send as array to client
-        return socket.emit("data", completeHist);
-    }).catch(function (e) {
-        console.log(e);
-    });
+  // Collect timestamps
+  rclient.lrangeAsync(`room:${room_id}:history`, 0, -1)
+    .map(function (timestamp_key) {
+      return rclient.hgetAsync(`room:${room_id}`, `timestamp:${timestamp_key}`);
+    }).map(function (data) {
+    const history = JSON.parse(data);
+    delete history.connected;
+    return history;
+  }).then(function (history) {
+    //send as array to client
+    return socket.emit("vote_history", history);
+  }).catch(function (e) {
+    console.log(e);
+  });
 }
 
 
@@ -277,69 +321,52 @@ function sendVoteHistory(room_id, socket) {
  * @param room_id
  */
 function sendVotes(room_id) {
-    //TODO: connect to the db for the room_id
-    var connectedUsers = [];
+  //TODO: connect to the db for the room_id
+  var connected_users = [];
 
-    //grab the vote state
-    rclient.smembersAsync("connected").map(function (reply) {
-        connectedUsers.push(reply);
-        return rclient.getAsync(reply);
-    }).then(function (res) {
-
-      console.log({res})
-
-        //tally up the votes
-        let votes = {"votes": {"yes": 0, "no": 0}};
-        for (vote of res) {
-            if (vote === "yes") {
-                votes["votes"]["yes"] += 1;
-            }
-            else if (vote === "no") {
-                votes["votes"]["no"] += 1;
-            }
-        }
-
-        var now = Date.now();
-        votes["ts"] = now;
-        //voteStr = JSON.stringify(votes);
-
-        //broadcast the votes
+  //grab the vote state
+  rclient.smembersAsync(`room:${room_id}:users`).map(function (user_key) {
+    connected_users.push(user_key)
+    return rclient.hgetAsync(`room:${room_id}`, `user:${user_key}`);
+  }).then(function (result) {
 
 
-        io.to(room_id).emit('step', votes);
+    const yes   = result.filter(x => x === 'yes').length
+    const no    = result.filter(x => x === 'no').length
+    const now   = Date.now();
+    const votes = {votes: {yes, no}, timestamp: now};
 
-        votes["connected"] = connectedUsers;
+    //broadcast the votes
+    io.to(room_id).emit('step', votes);
 
-        //glob the data of this timestep into the redis historical field
-        return rclient.lpushAsync("history", now)
-//           .then(function () {return rclient.setAsync(now, histStr)});
+    votes.connected = connected_users;
+    let history     = JSON.stringify(votes);
 
-    }).then(function () {
-        console.log("done");
-    }).catch(function (err) {
-        console.log(err);
-    });
-    //call this fn again
-    if (allowedStatus(room_states[room_id])) {
-        setTimeout(function () {
-          console.log("Imma send shit yall")
-            sendVotes(room_id);
-        }, updateDelay);
-    }
+    //glob the data of this timestep into the redis historical field
+    return rclient.lpushAsync(`room:${room_id}:history`, now)
+      .then(function () {
+        return rclient.hsetAsync(`room:${room_id}`, `timestamp:${now}`, history)
+      });
+
+  }).then(function () {
+    console.log("done");
+  }).catch(function (err) {
+    console.log(err);
+  });
 }
 
 
 /**
- * Starts the interval for broadcasting votes.
+ * Opens a room and starts the interval for broadcasting votes.
+ * Attaches interval object so that the room can be closed later.
  * @param room_id
  */
-function startBroadcasting(room_id) {
-    //TODO: grab the dbnum for the room_id from redis
-
-    //set up the N time interval timer (to broadcast votes out)
-    return setInterval(function () {
-        sendVotes(room_id);
-    }, updateDelay);
+function openRoom(room_id) {
+  console.log(`\n* Starting broadcast for room : ${room_id}\n`)
+  room_states[room_id].is_broadcasting = true
+  room_states[room_id].interval_id     = setInterval(function () {
+    sendVotes(room_id);
+  }, broadcast_interval);
 }
 
 
@@ -348,54 +375,52 @@ function startBroadcasting(room_id) {
  * @param room_id
  */
 function closeRoom(room_id) {
-    //that room in the global object must be set to closed
-    room_states[room_id]["status"] = "closed";
 
-    //close all owned sockets in this room
-    //does this even work?
-    io.to(room_id).disconnect();
+  // Stop the vote broadcast
+  clearInterval(room_states[room_id].interval_id)
 
-    //bundle all the data from redis into the relational db
-    rclient.lrangeAsync("history", 0, -1).map(function (ts) {
-        return rclient.getASync(ts);
-    }).then(function (histories) {
+  // Alter room state
+  room_states[room_id].status          = "closed"
+  room_states[room_id].is_broadcasting = false
 
-        //send to reldb
-        var sendMsg = JSON.stringify({"value": histories});
-        var stmt = db.prepare("UPDATE banterbox_room SET history=? WHERE id=?");
-        var dbProm = stmt.runAsync([sendMsg, room_id]);
+  // Detach all sockets from the room
+  const clients = io.sockets.adapter.rooms[room_id].sockets;
+  for (const id in clients) {
+    const socket = io.sockets.connected[id];
+    socket.leave(room_id);
+  }
 
-        //purge the redis for that room/db num
-        var redisProm = rclient.flushdbAsync();
+  // Bundle all the data from redis into the relational db
+  rclient.lrangeAsync(`room:${room_id}:history`, 0, -1)
+    .map(function (timestamp) {
+      return rclient.hgetAsync(`room:${room_id}`, `timestamp:${timestamp}`);
+    })
+    .then(function (histories) {
+      //send to reldb
+      const json = JSON.stringify({value: histories});
 
-        //del the global obj for this room
-        delete room_states[room_id];
+      return DB.connection().none({
+        name  : 'update-room-history',
+        text  : `UPDATE banterbox_room
+                 SET history = $1
+                 WHERE id = $2`,
+        values: [json, room_id]
+      })
+    })
+    .then(function () {
 
-        return Promise.join(dbProm, redisProm);
+      //purge the redis for that room/db num
+      const remove_room_history = rclient.delAsync(`room:${room_id}:history`)
+      const remove_room_users   = rclient.delAsync(`room:${room_id}:users`)
+      const remove_room         = rclient.delAsync(`room:${room_id}`)
 
-    }).then(function () {
-        console.log("finished closing");
+      //del the global obj for this room
+      delete room_states[room_id];
+
+      return Promise.join(remove_room_history, remove_room_users, remove_room);
+
+    })
+    .then(function () {
+      console.log("finished closing");
     });
 }
-
-/**
- * Handles room status
- * @param message
- */
-function updateRoom(message) {
-    //make room valid to join.. etc
-    if (!("room_id" in message) || !("action" in message)) {
-        //don't do anything, log as error
-        console.log("error, invalid redis msg");
-        console.log(message);
-        return;
-    }
-
-    if (message["action"] === "open") {
-        startBroadcasting(message["room_id"]);
-    }
-    else if (message["action"] === "close") {
-        closeRoom(message["room_id"]);
-    }
-}
-

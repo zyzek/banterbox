@@ -5,11 +5,18 @@ const moment = require('moment')
 const room_states = {}
 
 function updateRoomStatement(room, status, status_verbose) {
-  room_states[room] = {
-    status_id: status,
-    status: status_verbose,
-    is_broadcasting: false,
+  if(!room_states[room]){
+    room_states[room] = {
+      status_id: status,
+      status: status_verbose,
+      is_broadcasting: false,
     interval_id : null
+    }
+  }else{
+    Object.assign(room_states[room], {
+      status_id: status,
+      status: status_verbose,
+    })
   }
   return {text: 'UPDATE banterbox_room SET status_id = $1 WHERE id = $2', values: [status, room]}
 }

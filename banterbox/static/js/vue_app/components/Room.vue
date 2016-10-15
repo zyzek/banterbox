@@ -26,6 +26,10 @@
 
             <div class="col-xs-12">
                 <div class="row">
+                    <div class="col-xs-12">
+                        <input type="text" v-model="comment" @submit="submitComment()">
+                        <div class="btn btn-primary" @click="submitComment()">SUBMIT</div>
+                    </div>
                     <div class="col-xs-4">
                         <div class="text-xs-center">
                         <span class="vote-icon-container" id="upvote">
@@ -142,6 +146,7 @@
                 socket: null,
                 canvas_running: false,
                 worm: null,
+                comment : '',
                 comments: [],
                 vote_data: [],
                 vote_direction: 0,
@@ -156,12 +161,19 @@
         },
         methods: {
 
+            submitComment(){
+                this.socket.emit('comment', {comment:this.comment})
+            },
 
             initSocket(){
                 const room_id = "roomy";
                 const socket = io('http://localhost:3000');
 
 
+                socket.on('comment', comment => {
+                    console.log({comment})
+                    this.comments.push(comment)
+                })
 
                 socket.on('unauthorized', function (err) {
                     console.log("There was an error with the authentication:", err.message);
@@ -177,9 +189,9 @@
                             console.log({data})
                         })
 
-                        socket.on('data', data => {
+                        socket.on('vote_history', data => {
                             data.sort((x, y) => {
-                                return x.ts - y.ts
+                                return x.timestamp - y.timestamp
                             })
 
                             // TODO : Fix up this to send to worm all proper
@@ -191,7 +203,7 @@
 //                            console.log(data)
 //                            this.vote_data.push(data)
 //                            this.worm.addVote(data)
-                            this.worm.push_data(100*(data.votes.yes - data.votes.no) , data.ts)
+                            this.worm.push_data(100*(data.votes.yes - data.votes.no) , data.timestamp)
                         });
                         this.socket = socket;
                     });
