@@ -563,7 +563,6 @@ exports.default = {
         initSocket: function initSocket() {
             var _this = this;
 
-            var room_id = "roomy";
             var socket = (0, _socket2.default)('http://localhost:3000');
 
             socket.on('comment', function (comment) {
@@ -643,6 +642,8 @@ exports.default = {
         },
         deactivate: function deactivate() {
             this.canvas_running = false;
+            //                this.socket.emit('leave_room', this.room.id)
+            this.socket.close();
             console.log('stopping canvas');
         }
     },

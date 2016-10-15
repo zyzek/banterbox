@@ -166,7 +166,6 @@
             },
 
             initSocket(){
-                const room_id = "roomy";
                 const socket = io('http://localhost:3000');
 
 
@@ -251,6 +250,8 @@
             },
             deactivate () {
                 this.canvas_running = false
+//                this.socket.emit('leave_room', this.room.id)
+                this.socket.close()
                 console.log('stopping canvas')
             }
         },

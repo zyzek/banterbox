@@ -63,23 +63,22 @@
  */
 
 
-const Promise     = require('bluebird');
-const redis       = require('redis')
-const DB          = require('./database')
-const RoomManager = require('./room_manager')
-const room_states = RoomManager.room_states
-
-
-const broadcast_interval   = 1000
-const room_update_interval = 1000 * 60
-
+const Promise      = require('bluebird');
+const redis        = require('redis')
+const DB           = require('./database')
+const RoomManager  = require('./room_manager')
+const generateName = require('adjective-adjective-animal')
+const moment       = require('moment-timezone')
+const uuid         = require('uuid')
 
 Promise.promisifyAll(redis.RedisClient.prototype);
 Promise.promisifyAll(redis.Multi.prototype);
 
-
-const rclient = redis.createClient();
-const io      = require('socket.io').listen(3000)
+const io                   = require('socket.io').listen(3000)
+const rclient              = redis.createClient();
+const room_states          = RoomManager.room_states
+const broadcast_interval   = 1000
+const room_update_interval = 1000 * 60
 
 
 /*
@@ -120,7 +119,8 @@ function authenticate(socket, data, next) {
       values: [user.id, room_id]
     })
 
-  }, error => {next(new Error('User not found.'))
+  }, error => {
+    next(new Error('User not found.'))
   }).then(room => {
     return next(null, !!room)
   }, error => {
@@ -136,7 +136,15 @@ function authenticate(socket, data, next) {
  */
 function postAuth(socket, data) {
   //add them to the room
-  socket.client.room_id = data.room_id
+
+  let client = socket.client
+
+  generateName('pascal').then(alias => {
+    rclient.hsetAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, alias)
+    client.alias = alias
+  })
+
+  client.room_id = data.room_id
   socket.join(data.room_id);
 
   setupEventListeners(socket);
@@ -160,12 +168,48 @@ function setupEventListeners(socket) {
     acceptVote(client.user_id, client.room_id, data.value)
   });
 
-  socket.on('close_room', () => {
-    closeRoom(client.room_id)
+  socket.on('leave_room', id => {
+    socket.leave(id)
+    socket.emit('message', 'Room leave success')
   })
 
-  socket.on('comment', comment => {
-    console.log({comment})
+  socket.on('comment', data => {
+    console.log({data})
+
+    const client = socket.client
+    const now    = Date.now()
+
+    // Todo : random icon like aliases
+
+    // Anonymous comment system. Grab the user's room alias
+    rclient.hgetAsync(`room:${client.room_id}:alias`, `user:${client.user_id}`)
+      .then(alias => {
+        const comment = {
+          content  : data.comment,
+          timestamp: Date.now(),
+          date     : moment(now).format('DD/MM/YYYY'),
+          time     : moment(now).format('HH:mm:ss'),
+          author   : alias
+        }
+
+        io.to(client.room_id).emit('comment', comment);
+
+        return comment
+      })
+      .then(comment => {
+
+        const timezone_stamp = moment(comment.timestamp).tz('Australia/Sydney').format()
+
+        return DB.connection().none({
+          name  : 'insert-comment',
+          text  : 'INSERT INTO banterbox_comment (id, timestamp, content, private, room_id, user_id) VALUES ($1, $2, $3, $4, $5, $6);',
+          values: [uuid.v4(), timezone_stamp, comment.content, false, client.room_id, client.user_id]
+        })
+      })
+      .catch(error => {
+        console.log({error})
+      })
+
 
     /* TODO : Comment looks like this
      author: "jgre8297"
@@ -177,7 +221,6 @@ function setupEventListeners(socket) {
      timestamp: 1476412307.978371
      */
 
-    socket.broadcast.emit('comment', comment);
   })
 
   socket.on('disconnect', function () {
@@ -345,8 +388,6 @@ function sendVotes(room_id) {
         return rclient.hsetAsync(`room:${room_id}`, `timestamp:${now}`, history)
       });
 
-  }).then(function () {
-    console.log("done");
   }).catch(function (err) {
     console.log(err);
   });
@@ -406,15 +447,16 @@ function closeRoom(room_id) {
     })
     .then(function () {
 
-      //purge the redis for that room/db num
+      // Purge redis data for the room
       const remove_room_history = rclient.delAsync(`room:${room_id}:history`)
       const remove_room_users   = rclient.delAsync(`room:${room_id}:users`)
+      const remove_alias        = rclient.delAsync(`room:${room_id}:alias`)
       const remove_room         = rclient.delAsync(`room:${room_id}`)
 
-      //del the global obj for this room
+      // Remove the room from the global state
       delete room_states[room_id];
 
-      return Promise.join(remove_room_history, remove_room_users, remove_room);
+      return Promise.join(remove_room_history, remove_room_users, remove_room, remove_alias);
 
     })
     .then(function () {
