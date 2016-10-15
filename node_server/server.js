@@ -120,14 +120,11 @@ function authenticate(socket, data, next) {
       values: [user.id, room_id]
     })
 
-  }, error => {
-    next(new Error('User not found.'))
-    return Promise.reject()
+  }, error => {next(new Error('User not found.'))
   }).then(room => {
     return next(null, !!room)
   }, error => {
     next(new Error('Room not found.'))
-    return Promise.reject()
   })
 }
 
