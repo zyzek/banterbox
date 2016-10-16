@@ -16,8 +16,10 @@
             </div>
 
             <div class="col-xs-12" style="margin-bottom:20px;">
-                <canvas v-show="!mute_background" id="canvas"
-                        style="width:100%; height:350px; background-color: darkslategray"></canvas>
+                <canvas v-show="!mute_background" id="fg_canvas"
+                        style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2"></canvas>
+                <canvas v-show="!mute_background" id="bg_canvas"
+                        style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray"></canvas>
                 <!--<canvas v-show="mute_background" id="muted-canvas"-->
                         <!--style="width:100%; height:350px; background-color: darkslategray"></canvas>-->
                 <!---->
@@ -229,7 +231,7 @@
         ready(){
 
 
-            const worm = new Worm(document.getElementById('canvas'))
+            const worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'))
 
             // Uhhhhh I got a bit distracted.
             // ...Just a bit
@@ -240,7 +242,7 @@
 
 
             if(false) {
-                const canvas = document.getElementById('canvas')
+                const canvas = document.getElementById('fg_canvas')
                 const context = canvas.getContext('2d')
 
                 let delta = 0
