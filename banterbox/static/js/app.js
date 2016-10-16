@@ -551,6 +551,7 @@ exports.default = {
             unit_icon: null,
             unit_name: null,
             room: {
+                authorized: true,
                 id: null,
                 is_loaded: false
             }
@@ -630,8 +631,16 @@ exports.default = {
                 _this2.unit_name = response.data.unit_name;
                 _this2.room.is_loaded = true;
                 console.log(response);
+
+                // Dependency on Worm.js to be loaded in the header. When we get closer to launch I will turn this
+                // into an ES6 module
+                _this2.worm = new Worm(document.getElementById('canvas'));
             }).catch(function (error) {
-                console.log(error);
+                if (error.status === 403) {
+                    // user forbidden
+                    _this2.room.authorized = false;
+                }
+                console.log({ error: error });
             });
 
             this.canvas_running = true;
@@ -640,7 +649,7 @@ exports.default = {
         deactivate: function deactivate() {
             this.canvas_running = false;
             //                this.socket.emit('leave_room', this.room.id)
-            this.socket.close();
+            this.socket && this.socket.close();
             console.log('stopping canvas');
         }
     },
@@ -648,14 +657,10 @@ exports.default = {
     ready: function ready() {
 
         this.initSocket();
-
-        // Dependency on Worm.js to be loaded in the header. When we get closer to launch I will turn this
-        // into an ES6 module
-        this.worm = new Worm(document.getElementById('canvas'));
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <div v-if=\"!room.is_loaded\">\n        <h5>\n            If you are seeing this, the room's data has not loaded or auth fail, or some other crap.\n\n            Check console and see if something shit itself\n        </h5>\n    </div>\n\n    <div class=\"col-xs-12\" v-show=\"room.is_loaded\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas v-show=\"!mute_background\" id=\"canvas\" style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>\n            <div id=\"worm-comments\">\n\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-12\">\n                    <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                        <input type=\"text\" v-model=\"comment\" placeholder=\"Add a comment\">\n                        <button class=\"btn btn-primary\">SUBMIT</button>\n                    </form>\n                </div>\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n\n                    <div id=\"comments-panel\">\n\n                        <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                            <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                            <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                            <div class=\"comment-text\">{{ comment.content }}</div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <div v-if=\"!room.is_loaded &amp;&amp; room.authorized\">\n        <h5>\n            If you are seeing this, the room's data has not loaded or auth fail, or some other crap.\n            Check console and see if something shit itself\n        </h5>\n    </div>\n\n    <div v-if=\"!room.is_loaded &amp;&amp; !room.authorized\">\n        <h5>You have been blacklisted from this room :(</h5>\n        <h5>Sorry sweaty~</h5>\n    </div>\n\n\n\n    <div class=\"col-xs-12\" v-show=\"room.is_loaded\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas v-show=\"!mute_background\" id=\"canvas\" style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>\n            <div id=\"worm-comments\">\n\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-12\">\n                    <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                        <input type=\"text\" v-model=\"comment\" placeholder=\"Add a comment\">\n                        <button class=\"btn btn-primary\">SUBMIT</button>\n                    </form>\n                </div>\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n\n                    <div id=\"comments-panel\">\n\n                        <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                            <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                            <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                            <div class=\"comment-text\">{{ comment.content }}</div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)

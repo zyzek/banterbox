@@ -97,6 +97,7 @@ require('socketio-auth')(io, {
 function authenticate(socket, data, next) {
   let token_id = data.token_id;
   let room_id  = data.room_id;
+  let client = socket.client
 
   DB.connection().one({
     name  : 'get-user-from-token',
@@ -107,21 +108,41 @@ function authenticate(socket, data, next) {
            WHERE A.key = $1`,
     values: [token_id]
   }).then(user => {
-    socket.client.user_id = user.id
+    client.user_id = user.id
+
+    // For some reason this absolutely doesn't work in the post auth function so it must be done here.
     return DB.connection().one({
       name  : 'get-room-for-user',
-      text  : `SELECT r.id
-             FROM banterbox_userunitenrolment uue 
-             INNER JOIN banterbox_room r 
-              ON uue.unit_id = r.unit_id
-             WHERE uue.user_id = $1
-             AND r.id = $2;`,
-      values: [user.id, room_id]
+      text  : `SELECT
+  EN.user_id,
+  ROOM.id,
+  ROLE.name                AS role,
+  BLACKLIST.id IS NOT NULL AS blacklisted
+FROM banterbox_userunitenrolment EN
+  INNER JOIN banterbox_room ROOM
+    ON EN.unit_id = ROOM.unit_id
+  LEFT JOIN banterbox_userunitrole ROOM_ROLE
+    ON EN.unit_id = ROOM_ROLE.unit_id
+       AND ROOM_ROLE.user_id = EN.user_id
+  LEFT JOIN banterbox_userrole ROLE
+    ON ROOM_ROLE.role_id = ROLE.id
+  LEFT JOIN banterbox_userroomblacklist BLACKLIST
+    ON ROOM.id = BLACKLIST.room_id
+       AND BLACKLIST.user_id = EN.user_id
+WHERE EN.user_id = (SELECT user_id FROM authtoken_token WHERE key = $1)
+      AND ROOM.id = $2;`,
+      values: [token_id, room_id]
     })
 
   }, error => {
     next(new Error('User not found.'))
   }).then(room => {
+    client.blacklisted = room.blacklisted
+    client.role = room.role
+    client.room_id = room.id
+    if(client.blacklisted){
+      return next(new Error('You are blacklisted from this room.'))
+    }
     return next(null, !!room)
   }, error => {
     next(new Error('Room not found.'))
@@ -138,6 +159,9 @@ function postAuth(socket, data) {
   //add them to the room
 
   let client = socket.client
+
+
+
 
   generateName('pascal').then(alias => {
     rclient.hsetnxAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, alias)

@@ -1,13 +1,18 @@
 <template>
     <div class="row">
 
-        <div v-if="!room.is_loaded">
+        <div v-if="!room.is_loaded && room.authorized">
             <h5>
                 If you are seeing this, the room's data has not loaded or auth fail, or some other crap.
-
                 Check console and see if something shit itself
             </h5>
         </div>
+
+        <div v-if="!room.is_loaded && !room.authorized">
+            <h5>You have been blacklisted from this room :(</h5>
+            <h5>Sorry sweaty~</h5>
+        </div>
+
 
         <div class="col-xs-12" v-show="room.is_loaded">
             <div class="col-xs-12">
@@ -68,16 +73,16 @@
 <style lang="scss" rel="stylesheet/scss">
     @import "../../../sass/colours";
 
-    #comments-form{
-        display:flex;
+    #comments-form {
+        display: flex;
         margin-bottom: 10px;
-        input{
+        input {
             padding: 3px 3px 3px 10px;
-            flex:1;
-            margin-right:10px;
+            flex: 1;
+            margin-right: 10px;
         }
 
-        .btn{
+        .btn {
             background-color: $header-background;
         }
     }
@@ -170,6 +175,7 @@
                 unit_icon: null,
                 unit_name: null,
                 room: {
+                    authorized: true,
                     id: null,
                     is_loaded: false
                 }
@@ -252,19 +258,30 @@
                             this.unit_name = response.data.unit_name
                             this.room.is_loaded = true
                             console.log(response)
+
+
+                            // Dependency on Worm.js to be loaded in the header.
+                            // When we get closer to launch I will turn this
+                            // into an ES6 module
+                            this.worm = new Worm(document.getElementById('canvas'))
                         })
                         .catch(error => {
-                            console.log(error)
+                            if (error.status === 403) {
+                                // user forbidden
+                                this.room.authorized = false
+                            }
+                            console.log({error})
                         })
 
                 this.canvas_running = true
                 console.log('starting canvas')
 
+
             },
             deactivate () {
                 this.canvas_running = false
 //                this.socket.emit('leave_room', this.room.id)
-                this.socket.close()
+                this.socket && this.socket.close()
                 console.log('stopping canvas')
             }
         },
@@ -273,9 +290,6 @@
 
             this.initSocket()
 
-            // Dependency on Worm.js to be loaded in the header. When we get closer to launch I will turn this
-            // into an ES6 module
-            this.worm = new Worm(document.getElementById('canvas'))
         }
     }
 </script>
