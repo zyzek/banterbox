@@ -4,7 +4,6 @@
 //       E.G. buffer, don't keep scrolling to Date.now() if too far past worm end
 // TODO: If worm updates lag behind current time, move the clearing rectangle back
 //       to make it catch up to realtime faster, and not be jerky
-// TODO: Better names (especially 'y' and 'ts')
 // TODO: give the worm an end cap now that we're just lopping it.
 // TODO: Comment rendering.
 // TODO: scrolling + zooming when not tracking
@@ -53,7 +52,7 @@ class Worm {
         const now = Date.now();
 
         // The actual worm data itself.
-        this.data = [{y: 0, ts: now - 100, received: now - 100}, {y: 0, ts: now, received: now}];
+        this.data = [{value: 0, timestamp: now - 100, received: now - 100}, {value: 0, timestamp: now, received: now}];
 
         // Render the last render_duration milliseconds.
         this.render_duration = 20000;
@@ -89,7 +88,7 @@ class Worm {
                                 duration: () => {return this.rendered_time_slice.end - this.rendered_time_slice.start},
                                 pixels_per_millisecond: () => { return this.fg_canvas.width / this.rendered_time_slice.duration()}
                                }
-        this.interp_point = {ts: 0, y: 0};
+        this.interp_point = {timestamp: 0, value: 0, received: 0};
 
         // Used for fake data generation (but could be handy at some point)
         this.users = 50;
@@ -108,7 +107,7 @@ class Worm {
             if (Date.now() - this.last_updated > this.update_delay) {
                 const vote_trend_duration = 3000;
                 const trend = Math.cos(this.prev_tick / vote_trend_duration);
-                const vote_total = this.data[this.data.length - 1].y + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
+                const vote_total = this.data[this.data.length - 1].value + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
 
                 if (this.auto_rescale && (Math.abs(vote_total) * 1.2 > this.worm_range)) {
                     const overshoot_ratio = Math.abs(vote_total)/this.worm_range;
@@ -170,16 +169,9 @@ class Worm {
 
 
     /* Push a new data point to the end of the worm. */
-    push_data(val, timestamp) {
+    push_data(val, ts) {
         this.last_updated = Date.now();
-        this.data.push({y: val, ts: timestamp, received: this.last_updated});
-    }
-
-
-    /* Given an absolute worm value, and the magnitude of the range it should
-     * be rendered in, return the vertical position it would be rendered at. */
-    scale_worm_height(val, range, offset_pixels) {
-        return (-val * this.fg_canvas.height / (range * 2)) + (this.fg_canvas.height / 2) + offset_pixels;
+        this.data.push({value: val, timestamp: ts, received: this.last_updated});
     }
 
 
@@ -227,7 +219,7 @@ class Worm {
         this.bg_context.beginPath();
         this.bg_context.lineWidth = 1;
         this.bg_context.strokeStyle = "#777777";
-        let zero_height = this.scale_worm_height(0, this.worm_range, this.y_offset_pixels);
+        let zero_height = this.value_to_screen_space(0, this.worm_range, this.y_offset_pixels);
         this.bg_context.moveTo(0, zero_height);
         this.bg_context.lineTo(this.bg_canvas.width, zero_height);
         this.bg_context.stroke();
@@ -254,13 +246,13 @@ class Worm {
     draw_mouse_line(x) {
         const mouse_time = this.screen_space_to_timestep(x)
         const time_indicator = this.hours_mins_secs_string(mouse_time - this.start_timestamp);
-        const prior = _.findLast(this.data, (e) => {return e.ts <= mouse_time});
-        const posterior = _.find(this.data, (e) => {return e.ts >= mouse_time && e.ts < Date.now() - this.buffer_duration});
+        const prior = _.findLast(this.data, (e) => {return e.timestamp <= mouse_time});
+        const posterior = _.find(this.data, (e) => {return e.timestamp >= mouse_time && e.timestamp < Date.now() - this.buffer_duration});
 
         let val_string = ""
         if (prior && posterior) {
-            let fractional_position = (mouse_time - prior.ts) / (posterior.ts - prior.ts);
-            val_string = "" + Math.round(this.lerp(prior.y, posterior.y, fractional_position));
+            let fractional_position = (mouse_time - prior.timestamp) / (posterior.timestamp - prior.timestamp);
+            val_string = "" + Math.round(this.lerp(prior.value, posterior.value, fractional_position));
         }
 
         this.bg_context.save();
@@ -297,10 +289,10 @@ class Worm {
      * to right until it reaches the right border, minus padding,
      * and then it should scroll. */
     draw_worm_end(milliseconds, pad_milliseconds) {
-        const worm_start_time = this.data[0].ts;
-        const worm_end_time = this.data[this.data.length - 1].ts;
+        const worm_start_time = this.data[0].timestamp;
+        const worm_end_time = this.data[this.data.length - 1].timestamp;
 
-        // If the worm starts getting out of sync, it's possible to replace Date.now() with this.interp_point.ts
+        // If the worm starts getting out of sync, it's possible to replace Date.now() with this.interp_point.timestamp
         const start = Math.max(worm_start_time, Date.now() - milliseconds);
         const end = Math.max(worm_start_time + milliseconds, Date.now()) + pad_milliseconds;
 
@@ -315,7 +307,7 @@ class Worm {
      * the canvas horizontally.
      * If time_end exceeds the length of the worm data, empty space will be
      * rendered past the end. */
-    draw_worm_slice(time_start, time_end, y_range, y_offset_pixels) {
+    draw_worm_slice(time_start, time_end, value_range, y_offset_pixels) {
         // Set up the styles.
         this.fg_context.save();
         this.fg_context.beginPath();
@@ -326,14 +318,14 @@ class Worm {
         this.fg_context.lineJoin = 'bevel';
 
         // Draw the part of the worm that fits in the camera.
-        let start_index = Math.max(0, _.findLastIndex(this.data, (t) => {return t.ts < time_start}));
-        let end_index = _.findIndex(this.data, (t) => {return t.ts > time_end});
+        let start_index = Math.max(0, _.findLastIndex(this.data, (t) => {return t.timestamp < time_start}));
+        let end_index = _.findIndex(this.data, (t) => {return t.timestamp > time_end});
         end_index = (end_index < 0) ? this.data.length : end_index + 2; // +2 just a hack so it actually meets the right boundary.
         const slice = this.data.slice(start_index, end_index);
 
         // Initialise the first point to the first datum in the range or else 0.
-        let x = (slice.length > 0) ? this.timestep_to_screen_space(slice[0].ts) : 0;
-        let y = (slice.length > 0) ? this.scale_worm_height(slice[0].y, y_range, y_offset_pixels) : 0;
+        let x = (slice.length > 0) ? this.timestep_to_screen_space(slice[0].timestamp) : 0;
+        let y = (slice.length > 0) ? this.value_to_screen_space(slice[0].value, value_range, y_offset_pixels) : 0;
         this.fg_context.moveTo(x, y);
 
         //const stride = Math.max(1, Math.ceil(slice.length / this.max_render_segments));
@@ -346,10 +338,10 @@ class Worm {
             const point = slice[i];
             const next_point = slice[i+stride];
 
-            x = this.timestep_to_screen_space(point.ts);
-            y = this.scale_worm_height(point.y, y_range, y_offset_pixels);
-            let next_x = this.timestep_to_screen_space(next_point.ts);
-            let next_y = this.scale_worm_height(next_point.y, y_range, y_offset_pixels);
+            x = this.timestep_to_screen_space(point.timestamp);
+            y = this.value_to_screen_space(point.value, value_range, y_offset_pixels);
+            let next_x = this.timestep_to_screen_space(next_point.timestamp);
+            let next_y = this.value_to_screen_space(next_point.value, value_range, y_offset_pixels);
 
             let mid = {x: (x + next_x)/2, y: (y + next_y)/2};
 
@@ -370,7 +362,7 @@ class Worm {
      *  E.g. If the time between the last two updates was 100 milliseconds,
      *  and 50 milliseconds has passed since the last update, return 0.5. */
     update_fraction_elapsed() {
-        const last_update_delta = this.data[this.data.length - 1].ts - this.data[this.data.length - 2].ts
+        const last_update_delta = this.data[this.data.length - 1].timestamp - this.data[this.data.length - 2].timestamp
         const time_since_update = Date.now() - this.data[this.data.length - 1].received;
         return time_since_update / last_update_delta;
     }
@@ -403,6 +395,13 @@ class Worm {
     screen_space_to_timestep(x) {
         const screen_x_fraction = x / this.fg_canvas.width;
         return (screen_x_fraction * this.rendered_time_slice.duration()) + this.rendered_time_slice.start;
+    }
+
+
+    /* Given an absolute worm value, and the magnitude of the range it should
+     * be rendered in, return the vertical position it would be rendered at. */
+    value_to_screen_space(val, range, offset_pixels) {
+        return (-val * this.fg_canvas.height / (range * 2)) + (this.fg_canvas.height / 2) + offset_pixels;
     }
 
 
