@@ -31,7 +31,11 @@ class Worm {
             this.bg_canvas.height = window.innerHeight;
 
             this.set_worm_style({gradient: "GoodToBad"})
-        })
+        });
+
+        window.addEventListener('wheel', (event) => {
+            this.render_duration *= Math.pow(1.01, event.deltaY);
+        });
 
         const now = Date.now();
 
@@ -67,7 +71,8 @@ class Worm {
         // Camera
         this.rendered_time_slice = {start: 0,
                                 end:10,
-                                pixels_per_millisecond: () => { return this.fg_canvas.width / (this.rendered_time_slice.end - this.rendered_time_slice.start)}
+                                duration: () => {return this.rendered_time_slice.end - this.rendered_time_slice.start},
+                                pixels_per_millisecond: () => { return this.fg_canvas.width / this.rendered_time_slice.duration()}
                                }
         this.interp_point = {ts: 0, y: 0};
 
@@ -291,9 +296,15 @@ class Worm {
 
     /* Takes a unix timestep and returns the x position on screen it renders at. */
     timestep_to_screen_space(t) {
-        const width = this.rendered_time_slice.end - this.rendered_time_slice.start;
-        const screen_x = (t - this.rendered_time_slice.start) / width;
-        return screen_x * this.fg_canvas.width;
+        const screen_x_fraction = (t - this.rendered_time_slice.start) / this.rendered_time_slice.duration();
+        return screen_x_fraction * this.fg_canvas.width;
+    }
+
+
+    /* Take a screen space coordinate and return the timestep it represents. */
+    screen_space_to_timestep(x) {
+        const screen_x_fraction = x / this.fg_canvas.width;
+        return (screen_x_fraction * this.rendered_time_slice.duration()) + this.rendered_time_slice.start;
     }
 
 
