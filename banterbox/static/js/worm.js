@@ -54,9 +54,10 @@ class Worm {
 
         const now = Date.now();
 
-        // The actual worm data itself.
+        // The actual worm data itself. Initialise these arrays with dummy data to facilitate functions that assume
+        // that they are non-empty.
         this.data = [{value: 0, timestamp: now - 100, received: now - 100}, {value: 0, timestamp: now, received: now}];
-        this.comments = [];
+        this.comments = [{author: "Charon", text:"Scylla and Charybdis hunger for thee...", timestamp: now - 10000000}];
 
         // Render the last render_duration milliseconds.
         this.render_duration = 20000;
@@ -195,6 +196,11 @@ class Worm {
 
     /* Push a new data point to the end of the worm. */
     push_data(value, timestamp) {
+        // Since we assume the data series is monotonically increasing with time,
+        // Discard any time-travelling messages.
+        if (timestamp < this.data[this.data.length - 1].timestamp) {
+            return;
+        }
         this.last_updated = Date.now();
         this.data.push({value: value, timestamp: timestamp, received: this.last_updated});
     }
@@ -202,7 +208,13 @@ class Worm {
 
     /* Push a new comment to the end of the comment list. */
     push_comment(author, text, timestamp) {
-        this.comments.push({author: author, text: text, timestamp: timestamp})
+        // We'll insert comments in the correct place they should appear.
+        // Most of the time they'll be arriving in order, so this should be low-overhead, if we search backwards.
+        // Since comments are more meaningful and individual than data points,
+        // we choose expend more effort to insert them into our array.
+        let index = _.findLastIndex(this.comments, (c) => {c.timestamp < timestamp});
+        index = index >= 0 ? index + 1 : 0;
+        this.comments.splice(index, 0, {author: author, text: text, timestamp: timestamp});
     }
 
 
