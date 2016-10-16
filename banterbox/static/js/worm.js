@@ -7,7 +7,7 @@
 // TODO: Better names (especially 'y' and 'ts')
 // TODO: give the worm an end cap now that we're just lopping it.
 // TODO: Comment rendering.
-// TODO: scrolling and zooming
+// TODO: scrolling
 // TODO: current time slice relative to start
 
 class Worm {
@@ -48,6 +48,8 @@ class Worm {
         this.pad_duration = 0;
         // Defines a buffer of updates not to be rendered.
         this.buffer_duration = 2000;
+        // Defines the maximum number of worm segments to render.
+        this.max_render_segments = 100;
         // Whether to automatically track the end of the worm or not.
         this.auto_track = true;
 
@@ -259,10 +261,15 @@ class Worm {
         let y = (slice.length > 0) ? this.scale_worm_height(slice[0].y, y_range, y_offset_pixels) : 0;
         this.fg_context.moveTo(x, y);
 
+        //const stride = Math.max(1, Math.ceil(slice.length / this.max_render_segments));
+        // TODO: in order to fix this, move the slice indices to multiples of the stride,
+        //       otherwise the worm wiggles unpleasantly. Also always render the endpoints.
+        const stride = 1
+
         // Draw the actual body of the worm.
-        for (let i = 0; i < slice.length - 1; ++i) {
+        for (let i = 0; i < slice.length - stride; i += stride) {
             const point = slice[i];
-            const next_point = slice[i+1];
+            const next_point = slice[i+stride];
 
             x = this.timestep_to_screen_space(point.ts);
             y = this.scale_worm_height(point.y, y_range, y_offset_pixels);
