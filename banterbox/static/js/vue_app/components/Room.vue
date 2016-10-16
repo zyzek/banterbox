@@ -30,8 +30,7 @@
 
                                 <div id="settings-icon-container">
                                     <i v-for="icon in settings.icons"
-                                       class="fa fa-2x fa-{{icon}}"
-                                       :class="{selected: icon === settings.unit_icon}"
+                                       class="fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}"
                                        :title="icon"
                                        @click="setIcon(icon)"
                                     ></i>
@@ -427,7 +426,7 @@
 
 
                 // Send the request, and on return - adjust values of the room data.
-                this.$http.post(`/api/room/${this.room.id}/settings`, {
+                this.$http.put(`/api/room/${this.room.id}/settings`, {
                     unit_name: this.settings.unit_name,
                     unit_icon: this.settings.unit_icon,
                     password_protected: this.settings.password_protected,
@@ -437,9 +436,11 @@
                 }).then(() => {
                     this.unit_icon = this.settings.unit_icon
                     this.unit_name = this.settings.unit_name
+                    const global_unit = this.store.units.units.find(x => x.code === this.unit_code)
+                    global_unit && (global_unit.icon = this.unit_icon)
                 }).then(() => {
                     this.closeModal()
-                }).then(data => {
+                }).then(() => {
                     swal({
                         title: 'Saved!',
                         text: 'Your settings have been udpated',
