@@ -132,9 +132,21 @@
             <div style="color:dimgray;"><h3 style="font-weight: 200;">{{ unit_name }}</h3></div>
         </div>
 
-        <div class="col-xs-12" style="margin-bottom:20px;">
-            <canvas v-show="!mute_background" id="canvas"
-                    style="width:100%; height:350px; background-color: darkslategray"></canvas>
+        <div class="col-xs-12" style="margin-bottom:20px; position: relative">
+
+
+            <canvas v-show="!mute_background" id="fg_canvas"
+                        style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2">
+
+            </canvas>
+                <canvas v-show="!mute_background" id="bg_canvas"
+                        style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray">
+
+                </canvas>
+
+            <!-- This div is a dud to stop the parent from collapsing -->
+            <div id="dud" style="width:100%; height:350px;"></div>
+
             <div id="worm-comments">
 
             </div>
@@ -623,7 +635,7 @@
                             // Dependency on Worm.js to be loaded in the header.
                             // When we get closer to launch I will turn this
                             // into an ES6 module
-                            this.worm = new Worm(document.getElementById('canvas'))
+                            this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'))
                         })
                         .catch(error => {
                             if (error.status === 403) {

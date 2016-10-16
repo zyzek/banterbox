@@ -1,24 +1,32 @@
 const Promise = require('bluebird')
-const DB     = require('./database')
-const moment = require('moment')
+const DB      = require('./database')
+const moment  = require('moment')
 
 const room_states = {}
 
-function updateRoomStatement(room, status, status_verbose) {
-  if(!room_states[room]){
+/**
+ * A combined helper method that updates the global room states and generates SQL to correspond with it in the database.
+ * @param room
+ * @param status_id
+ * @param status_verbose
+ * @returns {{text: string, values: *[]}}
+ */
+function updateRoomStatement(room, status_id, status_verbose) {
+  if (!room_states[room]) {
     room_states[room] = {
-      status_id: status,
-      status: status_verbose,
+      status_id      : status_id,
+      status         : status_verbose,
       is_broadcasting: false,
-    interval_id : null
+      interval_id    : null
     }
-  }else{
+  }
+  else {
     Object.assign(room_states[room], {
-      status_id: status,
-      status: status_verbose,
+      status_id: status_id,
+      status   : status_verbose,
     })
   }
-  return {text: 'UPDATE banterbox_room SET status_id = $1 WHERE id = $2', values: [status, room]}
+  return {text: 'UPDATE banterbox_room SET status_id = $1 WHERE id = $2', values: [status_id, room]}
 }
 
 
@@ -36,6 +44,8 @@ function updateRooms() {
 
       return Promise.resolve()
     })
+
+    // Collect the room schedules
     .then(() => {
       return DB.connection().any(`SELECT U.*, S.*, R.id AS room_id, R.status_id, ST.name as status_name
       FROM banterbox_scheduledroom S
@@ -46,13 +56,17 @@ function updateRooms() {
         INNER JOIN banterbox_roomstatus ST
           ON R.status_id = ST.id`)
     })
+
+    /* Iterate through the schedule and if the day matches with the current day,
+     * perform calculations to see if the times are within current bounds and update
+     * the room states.
+     */
     .then(rows => {
       const time_now   = moment(Date.now())
-      const day        = (((time_now.day()-1) % 7) + 7) % 7; // negative modulo fix
+      // negative modulo fix & JS <-> Python day int conversion.
+      // Magic number 7 for days in a week
+      const day        = (((time_now.day() - 1) % 7) + 7) % 7;
       const statements = []
-
-
-      console.log({day})
 
       rows.map(row => {
         if (row.day === day) {
@@ -65,14 +79,18 @@ function updateRooms() {
           const length     = end_time.diff(start_time, 'minutes')
 
 
-          // If time between -10 and 0
+
+          /*
+           * Room Lifecycle:
+           *  Commencing --> Running --> Concluding --> Closed
+           */
+
           if (diff_start >= -10 && diff_start < 0) {
-            // room is commencing
             statements.push(updateRoomStatement(row.room_id, statuses['commencing'], 'commencing'))
           }
           else if (diff_start >= 0) {
-            if (diff_end >= 0  && diff_end < 10) {
-              statements.push(updateRoomStatement(row.room_id,statuses['concluding'], 'concluding'))
+            if (diff_end >= 0 && diff_end < 10) {
+              statements.push(updateRoomStatement(row.room_id, statuses['concluding'], 'concluding'))
             }
             else if (diff_end >= 10) {
               statements.push(updateRoomStatement(row.room_id, statuses['closed'], 'closed'))
@@ -86,8 +104,12 @@ function updateRooms() {
           statements.push(updateRoomStatement(row.room_id, statuses['closed'], 'closed'))
         }
       })
-      return Promise.resolve(statements)
+      return statements
     })
+
+    /*
+     *  Push and send all the statements together in a transaction instead of one by one.
+     */
     .then(statements => {
       function source(index) {
         // create and return a promise object dynamically,
