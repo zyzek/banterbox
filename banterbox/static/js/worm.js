@@ -6,17 +6,20 @@
 //       to make it catch up to realtime faster, and not be jerky
 // TODO: Better names (especially 'y' and 'ts')
 // TODO: give the worm an end cap now that we're just lopping it.
+// TODO: Comment rendering.
+// TODO: scrolling and zooming
+// TODO: current time slice relative to start
 
 class Worm {
 
 
     constructor(container_fg, container_bg) {
-        this.fg_canvas = container_fg
-        this.fg_context = this.fg_canvas.getContext('2d')
+        this.fg_canvas = container_fg;
+        this.fg_context = this.fg_canvas.getContext('2d');
         this.fg_canvas.width = window.innerWidth;
         this.fg_canvas.height = window.innerHeight;
-        this.bg_canvas = container_bg
-        this.bg_context = this.bg_canvas.getContext('2d')
+        this.bg_canvas = container_bg;
+        this.bg_context = this.bg_canvas.getContext('2d');
         this.bg_canvas.width = window.innerWidth;
         this.bg_canvas.height = window.innerHeight;
 
@@ -30,8 +33,10 @@ class Worm {
             this.set_worm_style({gradient: "GoodToBad"})
         })
 
+        const now = Date.now();
+
         // The actual worm data itself.
-        this.data = [{y: 0, ts: Date.now()}, {y: 0, ts: Date.now()}];
+        this.data = [{y: 0, ts: now - 100}, {y: 0, ts: now}];
 
         // Render the last render_duration milliseconds.
         this.render_duration = 20000;
@@ -41,26 +46,26 @@ class Worm {
         this.buffer_duration = 2000;
 
         // Timer information
-        this.prev_tick = Date.now();
+        this.prev_tick = now;
         this.delta = 0;
-        this.update_timer = 0;
         this.update_delay = 150;
-        this.last_updated = Date.now();
+        this.last_updated = now;
+        this.start_timestamp = now;
 
         // Used for vertical scaling.
         this.worm_range = 150;
         this.rescale_target_range = 150;
         this.rescale_start_range = 150;
-        this.rescale_start_time = Date.now();
+        this.rescale_start_time = now;
         this.rescale_duration = 0;
         this.rescaling = false;
         this.y_offset_pixels = 0;
         this.auto_rescale = true;
 
         // Camera
-        this.draw_time_slice = {start: 0,
+        this.rendered_time_slice = {start: 0,
                                 end:10,
-                                pixels_per_millisecond: () => { return this.fg_canvas.width / (this.draw_time_slice.end - this.draw_time_slice.start)}
+                                pixels_per_millisecond: () => { return this.fg_canvas.width / (this.rendered_time_slice.end - this.rendered_time_slice.start)}
                                }
         this.interp_point = {ts: 0, y: 0};
 
@@ -68,22 +73,17 @@ class Worm {
         this.users = 50;
 
         // Render settings and parameters.
+        this.worm_thickness = 1;
         this.set_worm_style({smoothing: "quadratic",
-                             gradient: "GoodToBad"});
-
-        this.fg_context.fillStyle = "rgb(239, 5, 239)";
-        this.fg_context.strokeStyle = "rgb(239, 5, 239)";
-        this.fg_context.lineWidth = 10;
+                             gradient: "GoodToBad",
+                             thickness: 4});
 
         // Set up functions to run every update step.
         this.update_functions = {};
 
         /* Function to add a fake data point to the end of the worm every update_delay milliseconds. */
         this.add_fake_point = () => {
-            this.update_timer += this.delta;
-            if (this.update_timer > this.update_delay) {
-                this.update_timer = 0;
-
+            if (Date.now() - this.last_updated > this.update_delay) {
                 const vote_trend_duration = 3000;
                 const trend = Math.cos(this.prev_tick / vote_trend_duration);
                 const vote_total = this.data[this.data.length - 1].y + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
@@ -214,8 +214,8 @@ class Worm {
         const start = Math.max(worm_start_time, Date.now() - milliseconds);
         const end = Math.max(worm_start_time + milliseconds, Date.now()) + pad_milliseconds;
 
-        this.draw_time_slice.start = start;
-        this.draw_time_slice.end = end;
+        this.rendered_time_slice.start = start;
+        this.rendered_time_slice.end = end;
 
         this.draw_worm_slice(start, end, this.worm_range, this.y_offset_pixels);
     }
@@ -230,7 +230,7 @@ class Worm {
         this.fg_context.save();
         this.fg_context.beginPath();
         this.fg_context.strokeStyle = this.worm_style;
-        this.fg_context.lineWidth = 4;
+        this.fg_context.lineWidth = this.worm_thickness;
         this.fg_context.lineCap = 'round';
         // Change lineJoin to "round" for rounder corners.
         this.fg_context.lineJoin = 'bevel';
@@ -283,8 +283,8 @@ class Worm {
 
     /* Takes a unix timestep and returns the x position on screen it renders at. */
     timestep_to_screen_space(t) {
-        const width = this.draw_time_slice.end - this.draw_time_slice.start;
-        const screen_x = (t - this.draw_time_slice.start) / width;
+        const width = this.rendered_time_slice.end - this.rendered_time_slice.start;
+        const screen_x = (t - this.rendered_time_slice.start) / width;
         return screen_x * this.fg_canvas.width;
     }
 
@@ -320,6 +320,11 @@ class Worm {
         // Draw the worm with a solid colour.
         if (style.hasOwnProperty("color")) {
             this.worm_style = style.color;
+        }
+
+        // Set the thickness of the worm.
+        if (style.hasOwnProperty("thickness")) {
+            this.worm_thickness = style.thickness;
         }
 
         // Rainbow mode makes the worm pulsate rainbow colours.
