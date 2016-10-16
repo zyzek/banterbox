@@ -11,6 +11,7 @@ from django.db import IntegrityError
 from django.utils import timezone
 from datetime import timedelta, datetime
 import calendar
+from .icons import Icons
 
 '''
 ---------------------------------------------------- /api/room/blacklist ------------------------------------------
@@ -60,9 +61,24 @@ def blacklist_POST(request, room):
     return HttpResponse(200)
 
 
-# Custom API view/responses etc
-@api_view(['GET'])
+
+
+@api_view(['GET','PUT'])
 def room_settings(request, room_id):
+    if request.method == 'GET':
+        return get_room_settings(request,room_id)
+    elif request.method == 'PUT':
+        return update_room_settings(request, room_id)
+
+
+@api_view(['GET'])
+def get_room_settings(request, room_id):
+    """
+    Collects data for a room to populate the settings form.
+    :param request:
+    :param room_id:
+    :return:
+    """
     user = request.user
 
     if user.is_staff != 1:
@@ -88,7 +104,7 @@ def room_settings(request, room_id):
             'blacklisted': e.id in blacklist_ids,
             'email'      : e.email,
             'username'   : e.username,
-            'user_id'    : e.id
+            'id'    : e.id
         })
 
     result = {
@@ -98,10 +114,51 @@ def room_settings(request, room_id):
         'password'          : room.password,
         'icon'              : room.unit.icon,
         'unit_name'         : room.unit.name,
-        'enrolled'          : enrolled_users
+        'enrolled'          : enrolled_users,
+        'icons'             : Icons.icons
     }
 
     return Response(result)
+
+
+@api_view(['PUT'])
+def update_room_settings(request, room_id):
+    """
+    Updates a room with the settings provided.
+    :param request:
+    :param room_id:
+    :return:
+    """
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({'message' : 'Room does not exist'}, status=404)
+
+    # Update and save room properties
+    unit = room.unit
+    unit.name = request.data.get('unit_name')
+    unit.icon = request.data.get('unit_icon','graduation-cap')
+    room.password_protected = request.data.get('password_protected', False)
+    room.password = request.data.get('password', None)
+
+    unit.save()
+    room.save()
+
+
+    blacklist = User.objects.filter(id__in=request.data.get('blacklist',[]))
+    whitelist = User.objects.filter(id__in=request.data.get('whitelist',[]))
+
+
+    # Remove people off the blacklist matching the whitelist IDs
+    UserRoomBLackList.objects.filter(user_id__in=whitelist, room_id=room_id).delete()
+
+    # Add people to blacklist if they are not already there
+    for a in blacklist:
+        UserRoomBLackList.objects.get_or_create(room_id=room_id,user=a)
+
+
+
+    return Response({'message' : 'OK'})
 
 
 '''

@@ -18,20 +18,24 @@
             <div id="modal-content">
 
 
-                <form autocomplete="off" @submit.prevent="closeModal()">
+                <div autocomplete="off">
                     <div class="container">
                         <h2>Edit Settings</h2>
-                        <div class="form-group row">
-                            <label class="col-xs-3 col-form-label">Unit Code</label>
-                            <div class="col-xs-9">
-                                <input type="text" :value="unit_code" disabled>
-                            </div>
-                        </div>
 
                         <div class="form-group row">
                             <label class="col-xs-3 col-form-label">Icon</label>
-                            <div class="col-xs-9">
-                                <input type="text" class="form-control" v-model="settings.unit_icon">
+                            <div class="col-xs-2" id="icon-preview-container"><i
+                                    class="fa fa-4x fa-{{settings.unit_icon}}"></i></div>
+                            <div class="col-xs-7">
+
+                                <div id="settings-icon-container">
+                                    <i v-for="icon in settings.icons"
+                                       class="fa fa-2x fa-{{icon}}"
+                                       :class="{selected: icon === settings.unit_icon}"
+                                       :title="icon"
+                                       @click="setIcon(icon)"
+                                    ></i>
+                                </div>
                             </div>
                         </div>
 
@@ -82,9 +86,9 @@
                                             </option>
                                         </select>
                                     </div>
-                                    <div class="col-xs-2">
-                                        <button> >></button>
-                                        <button> <<</button>
+                                    <div class="col-xs-2" id="blacklist-controls">
+                                        <button class="btn btn-sm" @click.prevent()="setUsersBlacklisted()"> >></button>
+                                        <button class="btn btn-sm" @click.prevent()="setUsersAllowed()"> <<</button>
                                     </div>
                                     <div class="col-xs-5">
                                         <label>Blacklisted</label>
@@ -102,12 +106,16 @@
 
                         <div class="form-group row">
                             <div class="offset-xs-3 col-xs-9">
-                                <button type="submit" class="btn btn-success">Submit</button>
-                                <button type="submit" class="btn btn-danger" style="margin-left: 20px;">Cancel</button>
+                                <button type="submit" class="btn btn-success" @click.prevent="submitSettingsForm()">
+                                    Submit
+                                </button>
+                                <button type="submit" class="btn btn-danger" @click.prevent="closeModal()"
+                                        style="margin-left: 20px;">Cancel
+                                </button>
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -179,6 +187,62 @@
 <style lang="scss" rel="stylesheet/scss">
     @import "../../../sass/colours";
 
+    #icon-preview-container {
+        justify-content: center;
+        display: flex;
+        align-items: center;
+    }
+
+    #settings-icon-container {
+        display: flex;
+        width: 100%;
+        height: 195px;
+        overflow: auto;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: flex-start;
+        border-radius: 3px;
+        border: 1px solid gainsboro;
+
+        i {
+            padding: 5px;
+            margin: 3px;
+            width: 50px;
+            display: flex;
+            height: 50px;
+            border: 1px solid gainsboro;
+            justify-content: center;
+            align-items: center;
+            color: #464646;
+            transition: all 0.15s ease-out;
+
+            &:hover {
+                transform: scale(1.1)
+            }
+
+            &.selected {
+                box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.67);
+                color: gainsboro;
+                background-color: #464646;
+                transform: scale(1.2);
+            }
+        }
+    }
+
+    #blacklist-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        button {
+            font-weight: bold;
+            color: white;
+            margin: 10px 0;
+            background-color: $header-background;
+        }
+    }
+
     *:disabled {
         cursor: not-allowed;
     }
@@ -203,6 +267,7 @@
         align-items: center;
 
         #modal-content {
+            overflow: auto;
             padding: 10px;
             width: 80%;
             max-height: 90%;
@@ -308,6 +373,7 @@
     import {store} from '../store'
     import moment from 'moment'
     import io from 'socket.io-client'
+    import swal from 'sweetalert2'
     export default {
         data: () => {
             return {
@@ -317,7 +383,8 @@
                     unit_icon: null,
                     password_protected: false,
                     password: null,
-                    users: []
+                    users: [],
+                    icons: []
 
                 },
                 socket: null,
@@ -342,17 +409,78 @@
         methods: {
 
             /**
-             * Change users to blacklisted on the settings page
+             * Send updated settings to the server
              */
-            setUsersBlacklisted(){
+            submitSettingsForm(){
 
+                const blacklist = [];
+                const whitelist = []
+
+                // Set up the people who are to be blacklisted/removed from blacklist
+                this.settings.users.forEach(x => {
+                    if(x.blacklisted){
+                        blacklist.push(x.id)
+                    }else{
+                        whitelist.push(x.id)
+                    }
+                })
+
+
+                // Send the request, and on return - adjust values of the room data.
+                this.$http.post(`/api/room/${this.room.id}/settings`, {
+                    unit_name: this.settings.unit_name,
+                    unit_icon: this.settings.unit_icon,
+                    password_protected: this.settings.password_protected,
+                    password: this.settings.password,
+                    blacklist,
+                    whitelist
+                }).then(() => {
+                    this.unit_icon = this.settings.unit_icon
+                    this.unit_name = this.settings.unit_name
+                }).then(() => {
+                    this.closeModal()
+                }).then(data => {
+                    swal({
+                        title: 'Saved!',
+                        text: 'Your settings have been udpated',
+                        type: 'success',
+                        confirmButtonColor: '#17b000',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    })
+                }).catch(error => console.log({error}))
+            },
+
+
+            /**
+             * Choose the icon in the settings page.
+             */
+            setIcon(icon){
+                this.settings.unit_icon = icon
             },
 
             /**
-             * Change users to allowed on the settings page
+             * Change selected users to blacklisted on the settings page
+             */
+            setUsersBlacklisted(){
+                [...document.getElementById('allowed-users').options]
+                        .forEach(x => {
+                            if (x.selected) {
+                                this.settings.users.find(u => u.id == x.value).blacklisted = true
+                            }
+                        })
+            },
+
+            /**
+             * Change selected users to allowed on the settings page
              */
             setUsersAllowed(){
-
+                [...document.getElementById('blacklisted-users').options]
+                        .forEach(x => {
+                            if (x.selected) {
+                                this.settings.users.find(u => u.id == x.value).blacklisted = false
+                            }
+                        })
             },
 
             /**
@@ -369,6 +497,7 @@
                             this.settings.unit_name = response.data.unit_name
                             this.settings.password_protected = response.data.password_protected
                             this.settings.password = response.data.password
+                            this.settings.icons = [...response.data.icons]
 
 
                             this.modal = true
@@ -385,7 +514,8 @@
                     unit_icon: null,
                     password_protected: false,
                     password: null,
-                    users: []
+                    users: [],
+                    icons: []
                 })
             },
 
