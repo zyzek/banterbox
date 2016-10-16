@@ -165,8 +165,8 @@ class Worm {
     render() {
         this.bg_context.clearRect(0, 0, this.bg_canvas.width, this.bg_canvas.height);
         this.draw_zero_line();
-        this.draw_time_slice_indicators();
         this.draw_comment_blips();
+        this.draw_time_slice_indicators();
         if (this.mouse_on_canvas) {
             this.draw_mouse_line(this.mouse_x);
         }
@@ -342,7 +342,6 @@ class Worm {
             this.bg_context.fill();
             this.bg_context.stroke();
 
-            // TODO: factor this out into a draw_comment method which will gracefully handle rendering and positioning.
             const mouse_dist = Math.abs(this.mouse_x - x);
             if (this.mouse_on_canvas && mouse_dist <= this.comment_max_dist) {
                 this.draw_comment(comment, mouse_dist);
