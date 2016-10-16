@@ -1,11 +1,12 @@
 // TODO: Fix worm gradient when y offset is applied.
-// TODO: Move worm style stuff into the set_worm_style() function.
 // TODO: Improve draw_worm_end tracking to be more robust to slow worm updates.
-//       E.G. buffer, don't keep scrolling to Date.now() if too far past worm end
+//       E.G. stop autoscrolling if too far past worm end
 // TODO: If worm updates lag behind current time, move the clearing rectangle back
 //       to make it catch up to realtime faster, and not be jerky
 // TODO: give the worm an end cap now that we're just lopping it.
-// TODO: Comment rendering.
+// TODO: Make the comments look half-decent.
+// TODO: Make comments etc. more parametric
+// TODO: Add add background, comment style setting functions
 // TODO: scrolling + zooming when not tracking
 
 class Worm {
@@ -53,6 +54,7 @@ class Worm {
 
         // The actual worm data itself.
         this.data = [{value: 0, timestamp: now - 100, received: now - 100}, {value: 0, timestamp: now, received: now}];
+        this.comments = [];
 
         // Render the last render_duration milliseconds.
         this.render_duration = 20000;
@@ -141,10 +143,11 @@ class Worm {
         this.bg_context.clearRect(0, 0, this.bg_canvas.width, this.bg_canvas.height);
         this.draw_zero_line();
         this.draw_time_slice_indicators();
-
+        this.draw_comment_blips();
         if (this.mouse_on_canvas) {
             this.draw_mouse_line(this.mouse_x);
         }
+
 
         this.fg_context.clearRect(0, 0, this.fg_canvas.width, this.fg_canvas.height);
         if (this.auto_track) {
@@ -169,9 +172,15 @@ class Worm {
 
 
     /* Push a new data point to the end of the worm. */
-    push_data(val, ts) {
+    push_data(value, timestamp) {
         this.last_updated = Date.now();
-        this.data.push({value: val, timestamp: ts, received: this.last_updated});
+        this.data.push({value: value, timestamp: timestamp, received: this.last_updated});
+    }
+
+
+    /* Push a new comment to the end of the comment list. */
+    push_comment(author, text, timestamp) {
+        this.comments.push({author: author, text: text, timestamp: timestamp})
     }
 
 
@@ -280,6 +289,46 @@ class Worm {
         this.bg_context.fillText(time_indicator, x + pad, 20);
         this.bg_context.fillText(val_string, x + pad, 40);
         this.bg_context.restore();
+    }
+
+
+    /* Draw each of the small markers indicating that a comment has been left at a given time. */
+    draw_comment_blips() {
+        this.bg_context.save();
+
+        this.bg_context.fillStyle = "#5533CC";
+        this.bg_context.strokeStyle = "#8855EE"
+
+        const slice_comments = _.takeWhile(_.dropWhile(this.comments, (c) => (c.timestamp < this.rendered_time_slice.start)), (c) => (c.timestamp <= this.rendered_time_slice.end));
+
+        for (let comment of slice_comments) {
+            this.bg_context.beginPath();
+            const x = this.timestep_to_screen_space(comment.timestamp);
+            this.bg_context.arc(x, this.bg_canvas.height - 5, 10, Math.PI, 0);
+            this.bg_context.fill();
+            this.bg_context.stroke();
+
+            // TODO: factor this out into a draw_comment method which will gracefully handle rendering and positioning.
+            const mouse_dist = Math.abs(this.mouse_x - x);
+            if (this.mouse_on_canvas && mouse_dist <= 30) {
+                this.draw_comment(comment, mouse_dist);
+            }
+            this.bg_context.closePath();
+        }
+
+        this.bg_context.restore();
+    }
+
+    draw_comment(comment, distance) {
+        this.bg_context.save()
+        const opacity = Math.min((30 - distance) / 20, 1);
+        const elevation = this.bg_canvas.height - 20 - 20*opacity;
+
+        const x = this.timestep_to_screen_space(comment.timestamp);
+        this.bg_context.fillStyle = "rgba(255, 255, 255, " + opacity + ")";
+        this.bg_context.font = "18px sans-serif";
+        this.bg_context.fillText(comment.author + ": \"" + comment.text + "\"", x, elevation);
+        this.bg_context.restore()
     }
 
 
