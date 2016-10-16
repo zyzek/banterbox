@@ -6,8 +6,10 @@
 // TODO: give the worm an end cap now that we're just lopping it.
 // TODO: Make the comments look half-decent.
 // TODO: Make comments etc. more parametric
-// TODO: Add add background, comment style setting functions
+// TODO: Add add background and comment style-setting functions
 // TODO: scrolling + zooming when not tracking
+// TODO: add toggles for automatic comment/data generation.
+// TODO: refactor to handle raw yes/no counts and render attendance as well as rating.
 
 class Worm {
 
@@ -84,16 +86,12 @@ class Worm {
         this.y_offset_pixels = 0;
         this.auto_rescale = true;
 
-        // Camera
+        // A structure that contains the actual slice of time being rendered.
         this.rendered_time_slice = {start: 0,
                                 end:10,
                                 duration: () => {return this.rendered_time_slice.end - this.rendered_time_slice.start},
                                 pixels_per_millisecond: () => { return this.fg_canvas.width / this.rendered_time_slice.duration()}
                                }
-        this.interp_point = {timestamp: 0, value: 0, received: 0};
-
-        // Used for fake data generation (but could be handy at some point)
-        this.users = 50;
 
         // Render settings and parameters.
         this.worm_thickness = 1;
@@ -101,15 +99,26 @@ class Worm {
                              gradient: "mood",
                              thickness: 4});
 
+        // Comment rendering / pop-in parameters.
+        this.comment_blip_radius = 15;
+        this.comment_max_dist = 50;
+        this.comment_min_dist = 20;
+        this.comment_min_height = 10;
+        this.comment_max_height = 30;
+
         // Set up functions to run every update step.
         this.update_functions = {};
+
+        // Used for fake data generation (but could be handy at some point)
+        this.random_users = 50;
 
         /* Function to add a fake data point to the end of the worm every update_delay milliseconds. */
         this.add_fake_point = () => {
             if (Date.now() - this.last_updated > this.update_delay) {
-                const vote_trend_duration = 3000;
+                const vote_trend_duration_duration = 60000;
+                const vote_trend_duration = 4000*(2.5*Math.sin(this.prev_tick / vote_trend_duration_duration) + 0.5);
                 const trend = Math.cos(this.prev_tick / vote_trend_duration);
-                const vote_total = this.data[this.data.length - 1].value + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
+                const vote_total = this.data[this.data.length - 1].value + (this.random_users * this.lerp(2 * Math.random() - 1, trend, 0.15));
 
                 if (this.auto_rescale && (Math.abs(vote_total) * 1.2 > this.worm_range)) {
                     const overshoot_ratio = Math.abs(vote_total)/this.worm_range;
@@ -120,8 +129,21 @@ class Worm {
             }
         };
 
+        this.comment_delay = 5000;
+        this.next_comment_time = now + 5000;
+
+        /* A function to add a fake comment every little while. */
+        this.add_fake_comment = () => {
+            const now = Date.now();
+            if (now > this.next_comment_time) {
+                this.push_comment("Boo Sucks", "Your mother was a great big black dog and I hated her guts, you idiot.", now);
+                this.next_comment_time = now + (1.2*Math.random() + 0.5)*this.comment_delay;
+            }
+        };
+
         // Generate fake data.
         this.update_functions.add_fake_point = this.add_fake_point;
+        this.update_functions.add_fake_comment = this.add_fake_comment;
 
         // RELEASE THE WORM
         this.run = this.run.bind(this);
@@ -304,13 +326,13 @@ class Worm {
         for (let comment of slice_comments) {
             this.bg_context.beginPath();
             const x = this.timestep_to_screen_space(comment.timestamp);
-            this.bg_context.arc(x, this.bg_canvas.height - 5, 10, Math.PI, 0);
+            this.bg_context.arc(x, this.bg_canvas.height, this.comment_blip_radius, Math.PI, 0);
             this.bg_context.fill();
             this.bg_context.stroke();
 
             // TODO: factor this out into a draw_comment method which will gracefully handle rendering and positioning.
             const mouse_dist = Math.abs(this.mouse_x - x);
-            if (this.mouse_on_canvas && mouse_dist <= 30) {
+            if (this.mouse_on_canvas && mouse_dist <= this.comment_max_dist) {
                 this.draw_comment(comment, mouse_dist);
             }
             this.bg_context.closePath();
@@ -321,8 +343,8 @@ class Worm {
 
     draw_comment(comment, distance) {
         this.bg_context.save()
-        const opacity = Math.min((30 - distance) / 20, 1);
-        const elevation = this.bg_canvas.height - 20 - 20*opacity;
+        const opacity = Math.min((this.comment_max_dist - distance) / (this.comment_max_dist - this.comment_min_dist), 1);
+        const elevation = this.bg_canvas.height - this.comment_min_height - (this.comment_max_height - this.comment_min_height)*opacity;
 
         const x = this.timestep_to_screen_space(comment.timestamp);
         this.bg_context.fillStyle = "rgba(255, 255, 255, " + opacity + ")";
@@ -341,7 +363,6 @@ class Worm {
         const worm_start_time = this.data[0].timestamp;
         const worm_end_time = this.data[this.data.length - 1].timestamp;
 
-        // If the worm starts getting out of sync, it's possible to replace Date.now() with this.interp_point.timestamp
         const start = Math.max(worm_start_time, Date.now() - milliseconds);
         const end = Math.max(worm_start_time + milliseconds, Date.now()) + pad_milliseconds;
 
@@ -505,7 +526,7 @@ class Worm {
                 this.set_worm_style({rainbow_mode: 0.5});
             }
             else {
-                /* Set the worm's colour depending on the current timestep and the given frequency. */
+                /* Set the worm's colour depending on the current time step and the given frequency. */
                 const freq = style.rainbow_mode;
                 this.update_functions.rainbow = () => {this.set_worm_style({color: "hsl(" + (this.prev_tick * freq * 360 / 1000) % 360 + ", 90%, 60%)"})};
             }
