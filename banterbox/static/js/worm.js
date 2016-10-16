@@ -8,7 +8,7 @@
 // TODO: give the worm an end cap now that we're just lopping it.
 // TODO: Comment rendering.
 // TODO: scrolling
-// TODO: current time slice relative to start
+// TODO: Mouse stuff
 
 class Worm {
 
@@ -126,16 +126,18 @@ class Worm {
 
     /* Draw a frame */
     render() {
-        this.fg_context.clearRect(0, 0, this.fg_canvas.width, this.fg_canvas.height);
         this.bg_context.clearRect(0, 0, this.bg_canvas.width, this.bg_canvas.height);
         this.draw_zero_line();
+        this.draw_time_slice_indicators();
 
+        this.fg_context.clearRect(0, 0, this.fg_canvas.width, this.fg_canvas.height);
         if (this.auto_track) {
             this.draw_worm_end(this.render_duration, this.pad_duration);
         }
         else {
             this.draw_worm_slice(this.rendered_time_slice.start, this.rendered_time_slice.end, this.worm_range, this.y_offset_pixels);
         }
+
         this.smooth_rescale_worm()
     }
 
@@ -212,6 +214,20 @@ class Worm {
         this.bg_context.moveTo(0, zero_height);
         this.bg_context.lineTo(this.bg_canvas.width, zero_height);
         this.bg_context.stroke();
+        this.bg_context.restore();
+    }
+
+    /* Draw the indicators of the displayed time slice. */
+    draw_time_slice_indicators() {
+        const start_indicator = this.hours_mins_secs_string(this.rendered_time_slice.start - this.start_timestamp)
+        const end_indicator = this.hours_mins_secs_string(this.rendered_time_slice.end - this.start_timestamp)
+
+        this.bg_context.save();
+        this.bg_context.fillStyle = "#FFFFFF";
+        this.bg_context.font = "20px sans-serif";
+        this.bg_context.fillText(start_indicator, 5, this.bg_canvas.height - 5);
+        this.bg_context.textAlign = "right";
+        this.bg_context.fillText(end_indicator, this.bg_canvas.width - 5, this.bg_canvas.height - 5);
         this.bg_context.restore();
     }
 
@@ -298,6 +314,21 @@ class Worm {
         const last_update_delta = this.data[this.data.length - 1].ts - this.data[this.data.length - 2].ts
         const time_since_update = Date.now() - this.data[this.data.length - 1].received;
         return time_since_update / last_update_delta;
+    }
+
+    /* Given a duration in milliseconds, return the equivalent H*:MM:SS string */
+    hours_mins_secs_string(d) {
+        const sign = Math.sign(d);
+        d *= sign;
+        const seconds = Math.floor((d / 1000) % 60);
+        const minutes = Math.floor((d / (60 * 1000)) % 60);
+        const hours = Math.floor((d / (60 * 60 * 1000)));
+        const is_zero = seconds + minutes + hours;
+        const str_sign = sign*is_zero >= 0 ? "" : "-";
+        return str_sign +
+               (hours > 0 ? hours + ":" : "") +
+               (minutes < 10 ? "0" : "") + minutes + ":" +
+               (seconds < 10 ? "0" : "") + seconds;
     }
 
 
