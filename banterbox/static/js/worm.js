@@ -197,7 +197,7 @@ class Worm {
     /* Push a new data point to the end of the worm. */
     push_data(value, timestamp) {
         // Since we assume the data series is monotonically increasing with time,
-        // Discard any time-travelling messages.
+        // discard any time-travelling messages.
         if (timestamp < this.data[this.data.length - 1].timestamp) {
             return;
         }
@@ -354,7 +354,7 @@ class Worm {
 
     draw_comment(comment, distance) {
         this.bg_context.save()
-        const opacity = Math.min((this.comment_max_dist - distance) / (this.comment_max_dist - this.comment_min_dist), 1);
+        const opacity = this.ease_interp(0, 1, Math.min((this.comment_max_dist - distance) / (this.comment_max_dist - this.comment_min_dist), 1));
         const elevation = this.bg_canvas.height - this.comment_min_height - (this.comment_max_height - this.comment_min_height)*opacity;
 
         const x = this.timestep_to_screen_space(comment.timestamp);
