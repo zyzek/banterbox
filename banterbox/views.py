@@ -1,4 +1,3 @@
-
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
 from django.template import loader
@@ -12,7 +11,6 @@ from django.db import IntegrityError
 from django.utils import timezone
 from datetime import timedelta, datetime
 import calendar
-
 
 '''
 ---------------------------------------------------- /api/room/blacklist ------------------------------------------
@@ -34,11 +32,13 @@ def blacklist(request, room_id):
 
 
 def blacklist_GET(request, room):
-    return {'blacklisted_users': 'TBI'}  # return {'blacklisted_users' : [User.objects.get(id = UserRoomBlacklist.user_id).id for UserRoomBlacklist in UserRoomBlacklist.objects.filter(room_id=room.id)]}
+    return {
+        'blacklisted_users': 'TBI'}  # return {'blacklisted_users' : [User.objects.get(id = UserRoomBlacklist.user_id).id for UserRoomBlacklist in UserRoomBlacklist.objects.filter(room_id=room.id)]}
 
 
 def blacklist_POST(request, room):
     # check if admin
+    user = request.user
     if user.is_staff != 1:
         return Response({"message": "permission denied."}, status=403)
 
@@ -64,8 +64,6 @@ def blacklist_POST(request, room):
 @api_view(['GET'])
 def room_settings(request, room_id):
     user = request.user
-    print("room id<" + room_id + ">.")
-    print(Room.objects.get(id=room_id))
 
     if user.is_staff != 1:
         return Response({"message": "permission denied."}, status=403)
@@ -73,18 +71,35 @@ def room_settings(request, room_id):
     # get the room
     try:
         room = Room.objects.get(id=room_id)
+
     except Room.DoesNotExist:
         return Response({"message": "room does not exist."}, status=404)
 
-    result = {'name'              : room.name,
-              'visibility'        : ("private" if room.private else "public"),
-              'password_protected': room.password_protected,
-              'password'          : room.password,
-              'icon'              : room.unit.icon,
-              'description'       : room.unit.description,
-              'blacklisted_users' : [User.objects.get(id=UserRoomBlacklist.user_id).id for UserRoomBlacklist in
-                                     UserRoomBlacklist.objects.filter(room_id=room.id)],
-              }
+    try:
+        blacklist_ids = [u.user_id for u in UserRoomBLackList.objects.filter(room_id=room.id)]
+    except UserRoomBLackList.DoesNotExist:
+        blacklist_ids = []
+
+    enrolled = User.objects.filter(userunitenrolment__unit_id=room.unit_id)
+    enrolled_users = []
+
+    for e in enrolled:
+        enrolled_users.append({
+            'blacklisted': e.id in blacklist_ids,
+            'email'      : e.email,
+            'username'   : e.username,
+            'user_id'    : e.id
+        })
+
+    result = {
+        'room_name'         : room.name,
+        'visibility'        : ("private" if room.private else "public"),
+        'password_protected': room.password_protected,
+        'password'          : room.password,
+        'icon'              : room.unit.icon,
+        'unit_name'         : room.unit.name,
+        'enrolled'          : enrolled_users
+    }
 
     return Response(result)
 
@@ -92,6 +107,7 @@ def room_settings(request, room_id):
 '''
     ----------------------------------------- /api/user -----------------------------------------------------------
 '''
+
 
 @api_view(['GET'])
 def current_user(request):
@@ -147,7 +163,7 @@ def get_update(request, room_id):
 def pause_room(request, room_id):
     user = request.user
     if user.is_staff != 1:
-        return Response({"error": "permission denied."},status=403)
+        return Response({"error": "permission denied."}, status=403)
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
@@ -163,9 +179,6 @@ def pause_room(request, room_id):
         return Response({"message": "room has already been paused."}, status=400)
     else:
         return Response({"message": "room has already been paused."}, status=400)
-
-
-
 
 
 def get_next_session(unit):
@@ -187,6 +200,7 @@ def get_next_session(unit):
                    or next((x for x in scheduled_rooms if x.day < today), None)
 
     return {'time': next_session.start_time.strftime('%H:%M'), 'day': calendar.day_name[next_session.day]}
+
 
 @api_view(['GET'])
 def get_rooms(request):
@@ -268,7 +282,7 @@ def comment_get(request, room):
         queryset = Comment.objects.filter(room_id=room.id)  # , timestamp__gt = timestamp)
     except:
         # server error
-        return Response({"message" : "Could not find room."},status=500)
+        return Response({"message": "Could not find room."}, status=500)
 
     result = {'values': [{'id'       : comment.id,
                           'timestamp': comment.timestamp,
@@ -279,13 +293,13 @@ def comment_get(request, room):
                           } for comment in queryset]}
     return Response(result)
 
+
 def worm(request):
     return render(request, 'worm.html')
 
+
 def index(request):
     return render(request, 'index.html')
-
-
 
 
 @api_view(['GET'])
@@ -299,13 +313,12 @@ def enter_room(request, room_id):
     except Room.DoesNotExist:
         return Response({'message': 'The room you are trying to access does not exist'}, status=404)
 
-
     # TODO: Turn this into a decorator
     # Check authorization, if they're not allowed to enter we let them know they're unauthorized
     room_blacklist = room.userroomblacklist_set.all()
     for entry in room_blacklist:
         if entry.user_id == request.user.id:
-            return Response({'message' : 'Unauthorized'}, status=403)
+            return Response({'message': 'Unauthorized'}, status=403)
 
     try:
         role = UserUnitRole.objects.get(unit_id=room.unit_id, user_id=request.user.id).role.name
@@ -319,5 +332,5 @@ def enter_room(request, room_id):
         'unit_code': room.unit.code,
         'unit_name': room.unit.name,
         'unit_icon': room.unit.icon,
-        'role' : role
+        'role'     : role
     })

@@ -22,16 +22,24 @@
                     <div class="container">
                         <h2>Edit Settings</h2>
                         <div class="form-group row">
-                            <label for="first_name" class="col-xs-3 col-form-label">Name</label>
+                            <label class="col-xs-3 col-form-label">Unit Code</label>
                             <div class="col-xs-9">
-                                <input type="text" class="form-control" id="first_name" name="first_name">
+                                <input type="text" :value="unit_code" disabled>
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label for="description" class="col-xs-3 col-form-label">Description</label>
+                            <label class="col-xs-3 col-form-label">Icon</label>
                             <div class="col-xs-9">
-                                <input type="text" class="form-control" id="description" name="description">
+                                <input type="text" class="form-control" v-model="settings.unit_icon">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="description" class="col-xs-3 col-form-label">Unit Name</label>
+                            <div class="col-xs-9">
+                                <input type="text" v-model="settings.unit_name" class="form-control" id="description"
+                                       name="description">
                             </div>
                         </div>
 
@@ -41,41 +49,61 @@
                             <div class="col-xs-9">
                                 <!-- Radio Buttons -->
                                 <label class="form-check-inline">
-                                    <input class="form-check-input" type="radio" name="password_protect" :value="true">
+                                    <input class="form-check-input" type="radio" v-model="settings.password_protected"
+                                           :value="true">
                                     Yes
                                 </label>
                                 <label class="form-check-inline">
-                                    <input class="form-check-input" type="radio" name="password_protect" :value="false"
+                                    <input class="form-check-input" type="radio" v-model="settings.password_protected"
+                                           :value="false"
                                            checked> No
                                 </label>
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label for="password" class="col-xs-3 col-form-label">Password</label>
+                            <label class="col-xs-3 col-form-label">Password</label>
                             <div class="col-xs-9">
-                                <input type="text" class="form-control" id="password" name="password">
+                                <input type="text" class="form-control" v-model="settings.password"
+                                       :disabled="!settings.password_protected">
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="blacklist" class="col-xs-3 col-form-label">Blacklist</label>
+                        <div class="form-group row" id="blacklist-row">
+                            <label class="col-xs-3 col-form-label">Blacklist</label>
                             <div class="col-xs-9">
-                                <input type="text" class="form-control" id="blacklist" name="blacklist">
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="room_icon" class="col-xs-3 col-form-label">Icon</label>
-                            <div class="col-xs-9">
-                                <input type="text" class="form-control" id="room_icon" name="room_icon">
+                                <div class="row">
+                                    <div class="col-xs-5">
+                                        <label>Allowed</label>
+                                        <select multiple class="form-control" id="allowed-users">
+                                            <option v-for="user in settings.users" v-if="!user.blacklisted"
+                                                    :value="user.id">
+                                                {{ user.username }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <button> >></button>
+                                        <button> <<</button>
+                                    </div>
+                                    <div class="col-xs-5">
+                                        <label>Blacklisted</label>
+                                        <select multiple class="form-control" id="blacklisted-users">
+                                            <option v-for="user in settings.users" v-if="user.blacklisted"
+                                                    :value="user.id">
+                                                {{ user.username }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
 
                         <div class="form-group row">
                             <div class="offset-xs-3 col-xs-9">
-                                <button type="submit" class="btn btn-default">Submit</button>
+                                <button type="submit" class="btn btn-success">Submit</button>
+                                <button type="submit" class="btn btn-danger" style="margin-left: 20px;">Cancel</button>
                             </div>
                         </div>
                     </div>
@@ -151,6 +179,17 @@
 <style lang="scss" rel="stylesheet/scss">
     @import "../../../sass/colours";
 
+    *:disabled {
+        cursor: not-allowed;
+    }
+
+    #blacklist-row {
+        select {
+            overflow-y: scroll;
+            height: 250px;
+        }
+    }
+
     #modal {
         width: 100%;
         height: 100%;
@@ -182,10 +221,6 @@
     }
 
     #comments-form {
-
-        *:disabled {
-            cursor: not-allowed;
-        }
 
         display: flex;
         margin-bottom: 10px;
@@ -277,7 +312,12 @@
         data: () => {
             return {
                 store,
-                settings : {
+                settings: {
+                    unit_name: null,
+                    unit_icon: null,
+                    password_protected: false,
+                    password: null,
+                    users: []
 
                 },
                 socket: null,
@@ -301,23 +341,73 @@
         },
         methods: {
 
-            toggleModal(){
-                this.modal = !this.modal
+            /**
+             * Change users to blacklisted on the settings page
+             */
+            setUsersBlacklisted(){
+
             },
 
+            /**
+             * Change users to allowed on the settings page
+             */
+            setUsersAllowed(){
+
+            },
+
+            /**
+             * Open the settings modal.
+             * Before opening it will fetch the settings data from the server and set it up.
+             */
             openModal(){
-                this.modal = true
+                this.$http.get(`/api/room/${this.room.id}/settings`)
+                        .then(response => {
+                            console.log({response})
+
+                            this.settings.users = [...response.data.enrolled]
+                            this.settings.unit_icon = response.data.icon
+                            this.settings.unit_name = response.data.unit_name
+                            this.settings.password_protected = response.data.password_protected
+                            this.settings.password = response.data.password
+
+
+                            this.modal = true
+                        })
             },
 
+            /**
+             * Closes the modal and cleans up after itself.
+             */
             closeModal(){
                 this.modal = false
+                Object.assign(this.settings, {
+                    unit_name: null,
+                    unit_icon: null,
+                    password_protected: false,
+                    password: null,
+                    users: []
+                })
             },
 
+
+            /**
+             * Submits a comment
+             */
             submitComment(){
                 this.socket.emit('comment', {comment: this.comment})
                 this.comment = ''
             },
 
+
+            /**
+             * Initialises a socket and attempts to authenticate.
+             *
+             * If the socket authenticates, it then proceeds to add all the listeners required to communicate
+             * with the room.
+             *
+             * Otherwise it will just fail.
+             *
+             */
             initSocket(){
                 const socket = io('http://localhost:3000');
 
@@ -367,6 +457,11 @@
             },
 
 
+            /**
+             * Sets the value of the user's current vote.
+             * If they click the same button it will cancel their vote and they will be in a neutral state
+             * @param value
+             */
             changeVote(value){
                 if (this.vote_direction === value) {
                     this.vote_direction = 'cancel'
@@ -378,6 +473,10 @@
             }
         },
         route: {
+            /**
+             * On route activation, collect page data to load the room and activate the worm.
+             * If they are unauthorized, nothing will be loaded.
+             */
             activate() {
                 this.room.id = this.$route.params.id
                 this.$http.get(`/api/room/${this.room.id}`)
@@ -408,14 +507,24 @@
 
 
             },
+
+            /**
+             * On page leave, clean up running objects
+             */
             deactivate () {
+
                 this.canvas_running = false
+                this.worm = null
 //                this.socket.emit('leave_room', this.room.id)
                 this.socket && this.socket.close()
+                this.socket = null
                 console.log('stopping canvas')
             }
         },
 
+        /**
+         * After the page has loaded, init the socket.
+         */
         ready(){
 
             this.initSocket()
