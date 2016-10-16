@@ -14,13 +14,6 @@ from datetime import timedelta, datetime
 import calendar
 
 
-
-
-
-
-
-
-
 '''
 ---------------------------------------------------- /api/room/blacklist ------------------------------------------
 '''
@@ -32,7 +25,7 @@ def blacklist(request, room_id):
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
-        return Response({"error": "room does not exist."})
+        return Response({"message": "room does not exist."}, status=404)
     # perform GET or POST request
     if request.method == "GET":
         return blacklist_GET(request, room)
@@ -41,20 +34,19 @@ def blacklist(request, room_id):
 
 
 def blacklist_GET(request, room):
-    return {
-        'blacklisted_users': 'TBI'}  # return {'blacklisted_users' : [User.objects.get(id = UserRoomBlacklist.user_id).id for UserRoomBlacklist in UserRoomBlacklist.objects.filter(room_id=room.id)]}
+    return {'blacklisted_users': 'TBI'}  # return {'blacklisted_users' : [User.objects.get(id = UserRoomBlacklist.user_id).id for UserRoomBlacklist in UserRoomBlacklist.objects.filter(room_id=room.id)]}
 
 
 def blacklist_POST(request, room):
     # check if admin
     if user.is_staff != 1:
-        return Response({"error": "permission denied."})
+        return Response({"message": "permission denied."}, status=403)
 
         # get the userids
     try:
         user_ids = request.data["user_ids"].split(",")
     except KeyError:
-        return Response({"error": "missing argument <user_ids>."})
+        return Response({"message": "missing argument <user_ids>."}, status=400)
 
     for user_id in user_ids:
         user = User.objects.get(id=user_id)
@@ -76,13 +68,13 @@ def room_settings(request, room_id):
     print(Room.objects.get(id=room_id))
 
     if user.is_staff != 1:
-        return Response({"error": "permission denied."})
+        return Response({"message": "permission denied."}, status=403)
 
     # get the room
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
-        return Response({"error": "room does not exist."})
+        return Response({"message": "room does not exist."}, status=404)
 
     result = {'name'              : room.name,
               'visibility'        : ("private" if room.private else "public"),
@@ -128,11 +120,11 @@ def run(request, room_id):
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
-        return Response({"error": "room does not exist."})
+        return Response({"message": "room does not exist."}, status=404)
     status = RoomStatus.objects.get(name="running")
     room.status = status
     room.save()
-    return Response({"success": "room running."})
+    return Response({"message": "Success, room running."})
 
 
 @api_view(['GET'])
@@ -141,7 +133,7 @@ def get_update(request, room_id):
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
-        return Response({"error": "room does not exist."})
+        return Response({"message": "room does not exist."}, status=404)
 
     next_session = ScheduledRoom.objects.filter(unit_id=room.unit_id).order_by("start_timestamp")[0]
     room = updateCheckRoomStatus(room, next_session)
@@ -159,7 +151,7 @@ def pause_room(request, room_id):
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
-        return Response({"error": "room does not exist."})
+        return Response({"message": "room does not exist."}, status=400)
     if room.status != "paused" and room.pause_date_time is None:
         # pause the room
         room.pause_date_time = timezone.now()
@@ -168,9 +160,9 @@ def pause_room(request, room_id):
         room.save()
         return Response({"success": "room paused, will unpause at " + str(timezone.now() + timedelta(minutes=5)) + "."})
     elif room.status == "paused":
-        return Response({"error": "room already paused."})
+        return Response({"message": "room has already been paused."}, status=400)
     else:
-        return Response({"error": "room has already been paused."})
+        return Response({"message": "room has already been paused."}, status=400)
 
 
 
@@ -201,7 +193,7 @@ def get_rooms(request):
     try:
         user = request.user
     except:
-        return Response({'rooms': []})
+        return Response({'message': "no user."}, status=400)
 
     rooms = []
     for user_enrolment in UserUnitEnrolment.objects.filter(user_id=user.id):
@@ -233,7 +225,7 @@ def comment(request, room_id):
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
-        return Response({"error": "room does not exist."})
+        return Response({"error": "room does not exist."}, status=400)
 
     if request.method == "POST":
         return comment_post(request, room)
@@ -245,7 +237,7 @@ def comment_post(request, room):
     try:
         content = request.data['content']
     except:
-        return Response({"error": "missing argument <content>."})
+        return Response({"message": "missing argument <content>."}, status=400)
 
     user = request.user
     rooms = []
@@ -253,15 +245,15 @@ def comment_post(request, room):
         if room == Room.objects.get(unit_id=user_enrolment.unit_id):
 
             if room.status.name != "running":
-                return Response({"error": "room is not running."})
+                return Response({"message": "room is not running."}, status=400)
 
             comment = Comment()
             comment.room = room
             comment.user = user
             comment.content = content
             comment.save()
-            return Response({"success": "comment posted."})
-    return Response({"error": "unable to post comment."})
+            return Response({"message": "comment posted."})
+    return Response({"message": "You're not enrolled in this room."}, status=400);
 
 
 def comment_get(request, room):
@@ -276,7 +268,7 @@ def comment_get(request, room):
         queryset = Comment.objects.filter(room_id=room.id)  # , timestamp__gt = timestamp)
     except:
         # server error
-        return Response(status=500)
+        return Response({"message" : "Could not find room."},status=500)
 
     result = {'values': [{'id'       : comment.id,
                           'timestamp': comment.timestamp,
