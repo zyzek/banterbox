@@ -14,58 +14,136 @@
         </div>
 
 
-        <div class="col-xs-12" v-show="room.is_loaded">
-            <div class="col-xs-12">
-                <div><h1><i class="unit-icon fa  fa-{{ unit_icon }}"> </i> {{ unit_code }}</h1></div>
-                <div style="color:dimgray;"><h3 style="font-weight: 200;">{{ unit_name }}</h3></div>
-            </div>
-
-            <div class="col-xs-12" style="margin-bottom:20px;">
-                <canvas v-show="!mute_background" id="canvas"
-                        style="width:100%; height:350px; background-color: darkslategray"></canvas>
-                <div id="worm-comments">
-
-                </div>
-            </div>
+        <div id="modal" v-if="modal" transition="fade">
+            <div id="modal-content">
 
 
-            <div class="col-xs-12">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <form @submit.prevent="submitComment()" id="comments-form" >
-                            <input type="text" v-model="comment" placeholder="Add a comment" :disabled="!socket">
-                            <button class="btn btn-primary" :disabled="!socket">SUBMIT</button>
-                        </form>
+                <form autocomplete="off" @submit.prevent="closeModal()">
+                    <div class="container">
+                        <h2>Edit Settings</h2>
+                        <div class="form-group row">
+                            <label for="first_name" class="col-xs-3 col-form-label">Name</label>
+                            <div class="col-xs-9">
+                                <input type="text" class="form-control" id="first_name" name="first_name">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="description" class="col-xs-3 col-form-label">Description</label>
+                            <div class="col-xs-9">
+                                <input type="text" class="form-control" id="description" name="description">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-xs-3 col-form-label">Password Protected</label>
+                            <div class="col-xs-9">
+                                <!-- Radio Buttons -->
+                                <label class="form-check-inline">
+                                    <input class="form-check-input" type="radio" name="password_protect" :value="true">
+                                    Yes
+                                </label>
+                                <label class="form-check-inline">
+                                    <input class="form-check-input" type="radio" name="password_protect" :value="false"
+                                           checked> No
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-xs-3 col-form-label">Password</label>
+                            <div class="col-xs-9">
+                                <input type="text" class="form-control" id="password" name="password">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="blacklist" class="col-xs-3 col-form-label">Blacklist</label>
+                            <div class="col-xs-9">
+                                <input type="text" class="form-control" id="blacklist" name="blacklist">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="room_icon" class="col-xs-3 col-form-label">Icon</label>
+                            <div class="col-xs-9">
+                                <input type="text" class="form-control" id="room_icon" name="room_icon">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <div class="offset-xs-3 col-xs-9">
+                                <button type="submit" class="btn btn-default">Submit</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-xs-4">
-                        <div class="text-xs-center">
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-xs-12" v-show="room.is_loaded">
+        <div class="col-xs-12">
+            <div>
+                <h1><i class="unit-icon fa  fa-{{ unit_icon }}"> </i> {{ unit_code }}
+                    <button @click="openModal()" v-if="room.role === 'owner'"
+                            class="settings-button btn btn-danger btn-sm"><i class="fa fa-cog"></i>Room Settings
+                    </button>
+                </h1>
+            </div>
+            <div style="color:dimgray;"><h3 style="font-weight: 200;">{{ unit_name }}</h3></div>
+        </div>
+
+        <div class="col-xs-12" style="margin-bottom:20px;">
+            <canvas v-show="!mute_background" id="canvas"
+                    style="width:100%; height:350px; background-color: darkslategray"></canvas>
+            <div id="worm-comments">
+
+            </div>
+        </div>
+
+
+        <div class="col-xs-12">
+            <div class="row">
+                <div class="col-xs-12">
+                    <form @submit.prevent="submitComment()" id="comments-form">
+                        <input type="text" v-model="comment" placeholder="Add a comment" :disabled="!socket">
+                        <button class="btn btn-primary" :disabled="!socket">SUBMIT</button>
+                    </form>
+                </div>
+                <div class="col-xs-4">
+                    <div class="text-xs-center">
                         <span class="vote-icon-container" id="upvote">
                             <i @click="changeVote('yes')" class="vote-icon fa fa-5x fa-thumbs-o-up"
                                :class="{green : vote_direction === 'yes'}"></i>
                         </span>
-                        </div>
-                        <div class="text-xs-center">
+                    </div>
+                    <div class="text-xs-center">
                         <span class="vote-icon-container" id="downvote">
                             <i @click="changeVote('no')" class="vote-icon fa fa-5x fa-thumbs-o-down"
                                :class="{red: vote_direction === 'no'}"></i>
                         </span>
-                        </div>
                     </div>
-                    <div class="col-xs-8">
+                </div>
+                <div class="col-xs-8">
 
-                        <div id="comments-panel">
+                    <div id="comments-panel">
 
-                            <div class="comment" :id="comment.id" v-for="comment in comments">
-                                <span class="comment-hash"><i class="fa fa-{{comment.icon}}">  </i>  @{{ comment.author }}</span>
-                                <span class="comment-time">{{comment.date}} - {{comment.time}}</span>
-                                <div class="comment-text">{{ comment.content }}</div>
-                            </div>
-
+                        <div class="comment" :id="comment.id" v-for="comment in comments">
+                            <span class="comment-hash"><i
+                                    class="fa fa-{{comment.icon}}">  </i>  @{{ comment.author }}</span>
+                            <span class="comment-time">{{comment.date}} - {{comment.time}}</span>
+                            <div class="comment-text">{{ comment.content }}</div>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </template>
 
@@ -73,10 +151,40 @@
 <style lang="scss" rel="stylesheet/scss">
     @import "../../../sass/colours";
 
+    #modal {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        background-color: rgba(0, 0, 0, 0.6);
+        top: 0;
+        left: 0;
+        z-index: 1000000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        #modal-content {
+            padding: 10px;
+            width: 80%;
+            max-height: 90%;
+            background-color: white;
+            border-radius: 3px;
+            box-shadow: 0 7px 8px -3px rgba(0, 0, 0, 0.78);
+        }
+    }
+
+    .settings-button {
+        i {
+            padding-right: 5px;
+        }
+
+        margin-left: 10px;;
+    }
+
     #comments-form {
 
-        *:disabled{
-            cursor:not-allowed;
+        *:disabled {
+            cursor: not-allowed;
         }
 
         display: flex;
@@ -169,6 +277,9 @@
         data: () => {
             return {
                 store,
+                settings : {
+
+                },
                 socket: null,
                 canvas_running: false,
                 worm: null,
@@ -179,6 +290,7 @@
                 unit_code: null,
                 unit_icon: null,
                 unit_name: null,
+                modal: false,
                 room: {
                     authorized: true,
                     id: null,
@@ -188,6 +300,18 @@
             }
         },
         methods: {
+
+            toggleModal(){
+                this.modal = !this.modal
+            },
+
+            openModal(){
+                this.modal = true
+            },
+
+            closeModal(){
+                this.modal = false
+            },
 
             submitComment(){
                 this.socket.emit('comment', {comment: this.comment})
