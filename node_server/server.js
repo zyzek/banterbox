@@ -117,34 +117,41 @@ function authenticate(socket, data, next) {
   EN.user_id,
   ROOM.id,
   ROLE.name                AS role,
-  BLACKLIST.id IS NOT NULL AS blacklisted
-FROM banterbox_userunitenrolment EN
-  INNER JOIN banterbox_room ROOM
-    ON EN.unit_id = ROOM.unit_id
-  LEFT JOIN banterbox_userunitrole ROOM_ROLE
-    ON EN.unit_id = ROOM_ROLE.unit_id
-       AND ROOM_ROLE.user_id = EN.user_id
-  LEFT JOIN banterbox_userrole ROLE
-    ON ROOM_ROLE.role_id = ROLE.id
-  LEFT JOIN banterbox_userroomblacklist BLACKLIST
-    ON ROOM.id = BLACKLIST.room_id
-       AND BLACKLIST.user_id = EN.user_id
-WHERE EN.user_id = (SELECT user_id FROM authtoken_token WHERE key = $1)
-      AND ROOM.id = $2;`,
+  BLACKLIST.id IS NOT NULL AS blacklisted,
+  U.username
+  FROM banterbox_userunitenrolment EN
+    INNER JOIN banterbox_room ROOM
+      ON EN.unit_id = ROOM.unit_id
+    LEFT JOIN banterbox_userunitrole ROOM_ROLE
+      ON EN.unit_id = ROOM_ROLE.unit_id
+         AND ROOM_ROLE.user_id = EN.user_id
+    LEFT JOIN banterbox_userrole ROLE
+      ON ROOM_ROLE.role_id = ROLE.id
+    LEFT JOIN banterbox_userroomblacklist BLACKLIST
+      ON ROOM.id = BLACKLIST.room_id
+         AND BLACKLIST.user_id = EN.user_id
+    LEFT JOIN auth_user U on EN.user_id = U.id
+  WHERE EN.user_id = (SELECT user_id FROM authtoken_token WHERE key = $1)
+        AND ROOM.id = $2;`,
       values: [token_id, room_id]
     })
 
   }, error => {
     next(new Error('User not found.'))
   }).then(room => {
+
     client.blacklisted = room.blacklisted
     client.role = room.role
     client.room_id = room.id
+    client.username = room.username
+
+    // If a user is blacklisted, do not register socket event listeners, return a message to the user.
     if(client.blacklisted){
       return next(new Error('You are blacklisted from this room.'))
     }
     return next(null, !!room)
   }, error => {
+    console.log({error})
     next(new Error('Room not found.'))
   })
 }
@@ -164,7 +171,11 @@ function postAuth(socket, data) {
 
 
   generateName('pascal').then(alias => {
-    rclient.hsetnxAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, alias)
+    let _alias = alias
+    if(client.role === 'owner' || client.role === 'moderator'){
+      _alias = client.username
+    }
+    rclient.hsetnxAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, _alias)
   })
 
   client.room_id = data.room_id
@@ -197,6 +208,10 @@ function setupEventListeners(socket) {
     socket.emit('message', 'Room leave success')
   })
 
+
+  /**
+   * Broadcast a comment to the room's chat channel , and persist it to the database.
+   */
   socket.on('comment', data => {
 
     const client = socket.client
@@ -212,7 +227,8 @@ function setupEventListeners(socket) {
           timestamp: Date.now(),
           date     : moment(now).format('DD/MM/YYYY'),
           time     : moment(now).format('HH:mm:ss'),
-          author   : alias
+          author   : alias,
+          icon : ['owner','moderator'].indexOf(client.role) !== -1 ? 'user-secret' : null
         }
 
         io.to(client.room_id).emit('comment', comment);
@@ -368,17 +384,24 @@ function sendVoteHistory(room_id, socket) {
 
 
 /**
- * Returns all comments so far back to the future.
- * Must keep them anonymous, therefore we set aliases
+ * Returns all comments so far.
+ * Non moderator/owner comments are anonymous, therefore we set aliases
  * @param room_id
  * @param socket
  */
 function sendCommentHistory(room_id, socket) {
-  const client = socket.client
 
   DB.connection().any({
     name  : 'grab-comments-for-room',
-    text  : 'SELECT * FROM banterbox_comment WHERE room_id = $1 AND private = FALSE ORDER BY timestamp DESC;',
+    text  : `SELECT COMMENT_DATA.*, UR.name as ROLE
+             FROM (SELECT * FROM banterbox_comment C
+               INNER JOIN banterbox_room  ROOM ON C.room_id = ROOM.id
+               INNER JOIN auth_user ON C.user_id = auth_user.id
+               LEFT JOIN banterbox_userunitrole ROLE ON ROOM.unit_id = ROLE.unit_id  AND ROLE.user_id = C.user_id
+             WHERE room_id = $1
+             AND C.private = FALSE ) COMMENT_DATA
+             LEFT JOIN banterbox_userrole UR ON UR.id = COMMENT_DATA.role_id
+             ORDER BY timestamp DESC ;`,
     values: [room_id]
   })
     .then(rows => {
@@ -387,8 +410,13 @@ function sendCommentHistory(room_id, socket) {
         promises.push(
           generateName('pascal')
             .then(alias => {
+
               // Add alias if not exists
-              rclient.hsetnxAsync(`room:${room_id}:alias`, `user:${r.user_id}`, alias)
+              let _alias = alias
+              if(r.role === 'owner' || r.role === 'moderator'){
+                _alias = r.username
+              }
+              rclient.hsetnxAsync(`room:${room_id}:alias`, `user:${r.user_id}`, _alias)
             })
         )
       }
@@ -414,7 +442,9 @@ function sendCommentHistory(room_id, socket) {
           timestamp: moment(r.timestamp).unix(),
           date     : moment(r.timestamp).format('DD/MM/YYYY'),
           time     : moment(r.timestamp).format('HH:mm:ss'),
-          author   : aliases[`user:${r.user_id}`]
+          author   : aliases[`user:${r.user_id}`],
+          icon : ['owner','moderator'].indexOf(r.role) !== -1 ? 'user-secret' : null
+
         })
       }
 

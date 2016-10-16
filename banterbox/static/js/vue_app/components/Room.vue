@@ -32,9 +32,9 @@
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-xs-12">
-                        <form @submit.prevent="submitComment()" id="comments-form">
-                            <input type="text" v-model="comment" placeholder="Add a comment">
-                            <button class="btn btn-primary">SUBMIT</button>
+                        <form @submit.prevent="submitComment()" id="comments-form" >
+                            <input type="text" v-model="comment" placeholder="Add a comment" :disabled="!socket">
+                            <button class="btn btn-primary" :disabled="!socket">SUBMIT</button>
                         </form>
                     </div>
                     <div class="col-xs-4">
@@ -74,6 +74,11 @@
     @import "../../../sass/colours";
 
     #comments-form {
+
+        *:disabled{
+            cursor:not-allowed;
+        }
+
         display: flex;
         margin-bottom: 10px;
         input {
@@ -177,7 +182,8 @@
                 room: {
                     authorized: true,
                     id: null,
-                    is_loaded: false
+                    is_loaded: false,
+                    role: null
                 }
             }
         },
@@ -252,10 +258,10 @@
                 this.room.id = this.$route.params.id
                 this.$http.get(`/api/room/${this.room.id}`)
                         .then(response => {
-                            // TODO : Stop comments sending from API on room load
                             this.unit_code = response.data.unit_code
                             this.unit_icon = response.data.unit_icon
                             this.unit_name = response.data.unit_name
+                            this.room.role = response.data.role
                             this.room.is_loaded = true
                             console.log(response)
 

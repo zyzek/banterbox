@@ -315,11 +315,17 @@ def enter_room(request, room_id):
         if entry.user_id == request.user.id:
             return Response({'message' : 'Unauthorized'}, status=403)
 
+    try:
+        role = UserUnitRole.objects.get(unit_id=room.unit_id, user_id=request.user.id).role.name
+    except UserUnitRole.DoesNotExist:
+        role = None
+
     # Then , we will need the following things to start them off in a room:
     #   1. The Room's unit info : name,code
 
     return Response({
         'unit_code': room.unit.code,
         'unit_name': room.unit.name,
-        'unit_icon': room.unit.icon
+        'unit_icon': room.unit.icon,
+        'role' : role
     })
