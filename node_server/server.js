@@ -1,26 +1,3 @@
-/*
- * Notes about the current state of the program:
- *
- * Redis is currently ONLY operating on db0, which means that concurrent rooms will overwrite each others data
- *  - This will be the case until we decide how we're actually going to be determining which redis inst we should use
- *
- * Functions that need implementing for interaction with client:
- *  - nothing here woo
- *
- * Things that will need changing for final release:
- *  - redis db location/instance code
- *  - testing lol
- *
- * Things that probably should be done
- *  - promisify auth code (db)
- *  - double check setup code (on 'connect')
- *  - consolidate magic numbers
- *  - remove express serving pages
- *  - do we need to check if the server accepted their vote?
- *  - handling most recent vote by including timestep info
- */
-
-
 /* Some notes about redis:
  * http://stackoverflow.com/a/36498590/3315133
  *
@@ -28,7 +5,7 @@
  * ============
  * Multiple DBs are frowned upon, and what is encouraged is the "Access pattern".
  * Basically, namespace keys, and keep a list of keys somewhere. That way most of the actions will be O(1)
- * and O(N) actions won't be too large.
+ * or low O(N).
  *
  * Naming Convention
  * =================
@@ -37,29 +14,29 @@
  *
  * http://webcache.googleusercontent.com/search?q=cache:ThrFdvthOdIJ:instagram-engineering.tumblr.com/post/12202313862/storing-hundreds-of-millions-of-simple-key-value+&cd=3&hl=en&ct=clnk&gl=au
  * The most efficient storage we can use will be redis's Hash Maps, which efficiently store the keys we will need with
- * significantly less space.
+ * significantly less space over just storing them all in global space.
  *
  * Our Schema
  * ==========
  *
  * Hashmap fields to be namespaced on what they are:
- * - user:USER-ID
- * - timestamp:TIMESTAMP
+ * - user:<USER-ID>
+ * - timestamp:<TIMESTAMP>
  *
  * Each room will have:
  *  A Hashmap for the values: room:ROOM-ID FIELD VALUE
- *  - room:ROOM-ID FIELD VALUE
+ *  - room:<ROOM-ID> <FIELD> <VALUE>
  *
- *  A Set of keys for history
- *  - room:ROOM-ID:history
+ *  A Hashmap for the aliases:
+ *  - room:<ROOM-ID> <USER-ID> <ALIAS>
+ *
+ *  A List of keys for history
+ *  - room:<ROOM-ID>:history
  *
  * A Set of keys for users
- * - room:ROOM-ID:users
+ * - room:<ROOM-ID>:users
  *
- * At the end we will only need to drop 3 items from redis and it will be cleaned of that table.
- * Also
- *
- *
+ * At the end we will only need to drop a total of 4 items from redis and all room data will be purged.
  */
 
 
@@ -97,8 +74,9 @@ require('socketio-auth')(io, {
 function authenticate(socket, data, next) {
   let token_id = data.token_id;
   let room_id  = data.room_id;
-  let client = socket.client
+  let client   = socket.client
 
+  // Check against their token they sent
   DB.connection().one({
     name  : 'get-user-from-token',
     text  : `SELECT U.id, A.key 
@@ -107,13 +85,28 @@ function authenticate(socket, data, next) {
             ON U.id = A.user_id 
            WHERE A.key = $1`,
     values: [token_id]
-  }).then(user => {
-    client.user_id = user.id
+  }).then(found => {
+    return next(null, !!found)
+  }, error => {
+    console.log({error})
+    next(new Error('Invalid user/token.'))
+  })
+}
 
-    // For some reason this absolutely doesn't work in the post auth function so it must be done here.
-    return DB.connection().one({
-      name  : 'get-room-for-user',
-      text  : `SELECT
+/**
+ * Sets up variables for the socket to join correct room
+ * Gets called after authentication succeeds.
+ * If the user is blacklisted from the room, they are unauthorized and their socket doesn't join a room.
+ * @param socket
+ * @param data
+ */
+function postAuth(socket, data) {
+
+  let client = socket.client
+
+  DB.connection().one({
+    name  : 'get-room-for-user',
+    text  : `SELECT
   EN.user_id,
   ROOM.id,
   ROLE.name                AS role,
@@ -133,55 +126,46 @@ function authenticate(socket, data, next) {
     LEFT JOIN auth_user U on EN.user_id = U.id
   WHERE EN.user_id = (SELECT user_id FROM authtoken_token WHERE key = $1)
         AND ROOM.id = $2;`,
-      values: [token_id, room_id]
-    })
+    values: [data.token_id, data.room_id]
+  }).then(result => {
 
-  }, error => {
-    next(new Error('User not found.'))
-  }).then(room => {
-
-    client.blacklisted = room.blacklisted
-    client.role = room.role
-    client.room_id = room.id
-    client.username = room.username
 
     // If a user is blacklisted, do not register socket event listeners, return a message to the user.
-    if(client.blacklisted){
-      return next(new Error('You are blacklisted from this room.'))
+    client.blacklisted = result.blacklisted
+    if (client.blacklisted) {
+      socket.emit('unauthorized', {message: 'You are blacklisted from this room'})
+      return Promise.reject('User is blacklisted')
     }
-    return next(null, !!room)
-  }, error => {
-    console.log({error})
-    next(new Error('Room not found.'))
-  })
-}
 
-/**
- * Sets up variables for the socket to join correct room
- * Gets called after authentication succeeds
- * @param socket
- * @param data
- */
-function postAuth(socket, data) {
-  //add them to the room
-
-  let client = socket.client
+    // Otherwise continue with assignment
+    client.user_id  = result.user_id
+    client.role     = result.role
+    client.room_id  = result.id
+    client.username = result.username
 
 
-
-
-  generateName('pascal').then(alias => {
-    let _alias = alias
-    if(client.role === 'owner' || client.role === 'moderator'){
-      _alias = client.username
-    }
-    rclient.hsetnxAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, _alias)
   })
 
-  client.room_id = data.room_id
-  socket.join(data.room_id);
+  /*
+   * Create an alias for the user for the sake of anon comments,
+   * and set up their event listeners.
+   *
+   */
+    .then(() => {
+      generateName('pascal').then(alias => {
+        let _alias = alias
+        if (client.role === 'owner' || client.role === 'moderator') {
+          _alias = client.username
+        }
+        rclient.hsetnxAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, _alias)
+      })
 
-  setupEventListeners(socket);
+      socket.join(data.room_id);
+
+      setupEventListeners(socket);
+    })
+
+
 }
 
 
@@ -197,7 +181,7 @@ function setupEventListeners(socket) {
   rclient.saddAsync(`room:${client.room_id}:users`, client.user_id);
   //send current vote data
   sendVoteHistory(client.room_id, socket);
-  sendCommentHistory(client.room_id,socket)
+  sendCommentHistory(client.room_id, socket)
 
   socket.on('vote', data => {
     acceptVote(client.user_id, client.room_id, data.value)
@@ -217,8 +201,6 @@ function setupEventListeners(socket) {
     const client = socket.client
     const now    = Date.now()
 
-    // Todo : random icon like aliases
-
     // Anonymous comment system. Grab the user's room alias
     rclient.hgetAsync(`room:${client.room_id}:alias`, `user:${client.user_id}`)
       .then(alias => {
@@ -228,7 +210,7 @@ function setupEventListeners(socket) {
           date     : moment(now).format('DD/MM/YYYY'),
           time     : moment(now).format('HH:mm:ss'),
           author   : alias,
-          icon : ['owner','moderator'].indexOf(client.role) !== -1 ? 'user-secret' : null
+          icon     : ['owner', 'moderator'].indexOf(client.role) !== -1 ? 'user-secret' : null,
         }
 
         io.to(client.room_id).emit('comment', comment);
@@ -413,14 +395,13 @@ function sendCommentHistory(room_id, socket) {
 
               // Add alias if not exists
               let _alias = alias
-              if(r.role === 'owner' || r.role === 'moderator'){
+              if (r.role === 'owner' || r.role === 'moderator') {
                 _alias = r.username
               }
               rclient.hsetnxAsync(`room:${room_id}:alias`, `user:${r.user_id}`, _alias)
             })
         )
       }
-
 
 
       // When all aliases are created, set up alias lookup object
@@ -443,7 +424,7 @@ function sendCommentHistory(room_id, socket) {
           date     : moment(r.timestamp).format('DD/MM/YYYY'),
           time     : moment(r.timestamp).format('HH:mm:ss'),
           author   : aliases[`user:${r.user_id}`],
-          icon : ['owner','moderator'].indexOf(r.role) !== -1 ? 'user-secret' : null
+          icon     : ['owner', 'moderator'].indexOf(r.role) !== -1 ? 'user-secret' : null
 
         })
       }
