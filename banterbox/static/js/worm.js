@@ -44,6 +44,8 @@ class Worm {
         this.pad_duration = 0;
         // Defines a buffer of updates not to be rendered.
         this.buffer_duration = 2000;
+        // Whether to automatically track the end of the worm or not.
+        this.auto_track = true;
 
         // Timer information
         this.prev_tick = now;
@@ -120,7 +122,13 @@ class Worm {
         this.fg_context.clearRect(0, 0, this.fg_canvas.width, this.fg_canvas.height);
         this.bg_context.clearRect(0, 0, this.bg_canvas.width, this.bg_canvas.height);
         this.draw_zero_line();
-        this.draw_worm_end(this.render_duration, this.pad_duration);
+
+        if (this.auto_track) {
+            this.draw_worm_end(this.render_duration, this.pad_duration);
+        }
+        else {
+            this.draw_worm_slice(this.rendered_time_slice.start, this.rendered_time_slice.end, this.worm_range, this.y_offset_pixels);
+        }
         this.smooth_rescale_worm()
     }
 
@@ -238,7 +246,7 @@ class Worm {
         // Draw the part of the worm that fits in the camera.
         let start_index = Math.max(0, _.findLastIndex(this.data, (t) => {return t.ts < time_start}));
         let end_index = _.findIndex(this.data, (t) => {return t.ts > time_end});
-        end_index = (end_index < 0) ? this.data.length : end_index;
+        end_index = (end_index < 0) ? this.data.length : end_index + 2; // +2 just a hack so it actually meets the right boundary.
         const slice = this.data.slice(start_index, end_index);
 
         // Initialise the first point to the first datum in the range or else 0.
