@@ -2,10 +2,10 @@
 // TODO: Move worm style stuff into the set_worm_style() function.
 // TODO: Improve draw_worm_end tracking to be more robust to slow worm updates.
 //       E.G. buffer, don't keep scrolling to Date.now() if too far past worm end
-// TODO: If worm updates lag behind current time, move the clear rectangle back
+// TODO: If worm updates lag behind current time, move the clearing rectangle back
 //       to make it catch up to realtime faster, and not be jerky
 // TODO: Better names (especially 'y' and 'ts')
-// TODO: make the worm end cap round now that we're just lopping off the end.
+// TODO: give the worm an end cap now that we're just lopping it.
 
 class Worm {
 
@@ -75,6 +75,31 @@ class Worm {
         this.fg_context.strokeStyle = "rgb(239, 5, 239)";
         this.fg_context.lineWidth = 10;
 
+        // Set up functions to run every update step.
+        this.update_functions = {};
+
+        /* Function to add a fake data point to the end of the worm every update_delay milliseconds. */
+        this.add_fake_point = () => {
+            this.update_timer += this.delta;
+            if (this.update_timer > this.update_delay) {
+                this.update_timer = 0;
+
+                const vote_trend_duration = 3000;
+                const trend = Math.cos(this.prev_tick / vote_trend_duration);
+                const vote_total = this.data[this.data.length - 1].y + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
+
+                if (this.auto_rescale && (Math.abs(vote_total) * 1.2 > this.worm_range)) {
+                    const overshoot_ratio = Math.abs(vote_total)/this.worm_range;
+                    this.rescale_worm_to(this.worm_range * 1.2, 500/overshoot_ratio);
+                }
+
+                this.push_data(vote_total, this.prev_tick + (Math.random() - 0.5) * this.update_delay);
+            }
+        };
+
+        // Generate fake data.
+        this.update_functions.add_fake_point = this.add_fake_point;
+
         // RELEASE THE WORM
         this.run = this.run.bind(this);
         this.run()
@@ -102,26 +127,11 @@ class Worm {
 
     /* Update the state of the worm by a tick. */
     update() {
-        let now = Date.now();
+        const now = Date.now();
         this.delta = now - this.prev_tick;
         this.prev_tick = now;
 
-        // Add a fake data point to the end of the worm every update_delay milliseconds
-        this.update_timer += this.delta;
-        if (this.update_timer > this.update_delay) {
-            this.update_timer = 0;
-
-            const vote_trend_duration = 3000;
-            const trend = Math.cos(now / vote_trend_duration);
-            const vote_total = this.data[this.data.length - 1].y + (this.users * this.lerp(2 * Math.random() - 1, trend, 0.15));
-
-            if (this.auto_rescale && (Math.abs(vote_total) * 1.2 > this.worm_range)) {
-                const overshoot_ratio = Math.abs(vote_total)/this.worm_range;
-                this.rescale_worm_to(this.worm_range * 1.2, 500/overshoot_ratio);
-            }
-
-            this.push_data(vote_total, now + (Math.random() - 0.5) * this.update_delay);
-        }
+        Object.keys(this.update_functions).forEach((key) => {this.update_functions[key]()})
     }
 
 
@@ -219,7 +229,7 @@ class Worm {
         // Set up the styles.
         this.fg_context.save();
         this.fg_context.beginPath();
-        this.fg_context.strokeStyle = this.worm_gradient;
+        this.fg_context.strokeStyle = this.worm_style;
         this.fg_context.lineWidth = 4;
         this.fg_context.lineCap = 'round';
         // Change lineJoin to "round" for rounder corners.
@@ -232,8 +242,8 @@ class Worm {
         const slice = this.data.slice(start_index, end_index);
 
         // Initialise the first point to the first datum in the range or else 0.
-        let x = (slice.length > 0) ? slice[0].ts : 0;
-        let y = (slice.length > 0) ? this.scale_worm_height(slice[0].y) : 0;
+        let x = (slice.length > 0) ? this.timestep_to_screen_space(slice[0].ts) : 0;
+        let y = (slice.length > 0) ? this.scale_worm_height(slice[0].y, y_range, y_offset_pixels) : 0;
         this.fg_context.moveTo(x, y);
 
         // Draw the actual body of the worm.
@@ -281,8 +291,10 @@ class Worm {
 
     /* Given an object containing style directives, update the worm render settings. */
     set_worm_style(style) {
-        if (style.smoothing) {
-            if (style.smoothing == "quadratic") {
+        // If the argument is "quadratic", smooth the worm out nicely.
+        // Otherwise worm segments will be straight lines between data points.
+        if (style.hasOwnProperty("smoothing")) {
+            if (style.smoothing === "quadratic") {
                 this.draw_segment = (x, y, mx, my) => {this.fg_context.quadraticCurveTo(x, y, mx, my)}
             }
             else {
@@ -290,22 +302,45 @@ class Worm {
             }
         }
 
-        if (style.gradient) {
-            if (style.gradient = "GoodToBad") {
-                this.worm_gradient = this.fg_context.createLinearGradient(0, 0, 0, this.fg_canvas.height);
-                this.worm_gradient.addColorStop(0, "rgb(0,255,100)");
-                this.worm_gradient.addColorStop(0.2, "rgb(0,255,0)");
-                this.worm_gradient.addColorStop(0.5, "rgb(200,200,0)");
-                this.worm_gradient.addColorStop(0.8, "rgb(255,0,0)");
-                this.worm_gradient.addColorStop(1, "rgb(180,0,0)");
+        // Draw the worm with a nice gradient.
+        if (style.hasOwnProperty("gradient")) {
+            if (style.gradient === "GoodToBad") {
+                this.worm_style = this.fg_context.createLinearGradient(0, 0, 0, this.fg_canvas.height);
+                this.worm_style.addColorStop(0, "rgb(0,255,100)");
+                this.worm_style.addColorStop(0.2, "rgb(0,255,0)");
+                this.worm_style.addColorStop(0.5, "rgb(200,200,0)");
+                this.worm_style.addColorStop(0.8, "rgb(255,0,0)");
+                this.worm_style.addColorStop(1, "rgb(180,0,0)");
             }
             else {
                 this.set_worm_style({gradient: "GoodToBad"})
             }
         }
 
-        if (style.color) {
-            this.worm_gradient = style.color;
+        // Draw the worm with a solid colour.
+        if (style.hasOwnProperty("color")) {
+            this.worm_style = style.color;
+        }
+
+        // Rainbow mode makes the worm pulsate rainbow colours.
+        // If the value of rainbow_mode is numeric, it sets the frequency.
+        if (style.hasOwnProperty("rainbow_mode")) {
+            if (style.rainbow_mode === false) {
+                if (this.update_functions.rainbow) {
+                    delete this.update_functions.rainbow;
+                    this.set_worm_style({gradient: "GoodToBad"});
+                }
+            }
+            else if (style.rainbow_mode === true) {
+                this.set_worm_style({rainbow_mode: 0.5});
+            }
+            else {
+                /* Set the worm's colour depending on the current timestep and the given frequency. */
+                const freq = style.rainbow_mode;
+                this.update_functions.rainbow = () => {this.set_worm_style({color: "hsl(" + (this.prev_tick * freq * 360 / 1000) % 360 + ", 90%, 60%)"})};
+            }
         }
     }
+
+
 }
