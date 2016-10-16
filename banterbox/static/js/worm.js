@@ -7,8 +7,7 @@
 // TODO: Better names (especially 'y' and 'ts')
 // TODO: give the worm an end cap now that we're just lopping it.
 // TODO: Comment rendering.
-// TODO: scrolling
-// TODO: Mouse stuff
+// TODO: scrolling + zooming when not tracking
 
 class Worm {
 
@@ -30,17 +29,31 @@ class Worm {
             this.bg_canvas.width = window.innerWidth;
             this.bg_canvas.height = window.innerHeight;
 
-            this.set_worm_style({gradient: "GoodToBad"})
+            this.set_worm_style({gradient: "mood"})
         });
 
-        window.addEventListener('wheel', (event) => {
-            this.render_duration *= Math.pow(1.01, event.deltaY);
+        // Zoom the time slice viewed when the mouse wheel is scrolled.
+        this.fg_canvas.addEventListener('wheel', (event) => {
+            if (this.mouse_on_canvas) {
+                this.render_duration *= Math.pow(1.01, event.deltaY);
+                event.preventDefault();
+                return false;
+            }
         });
+
+        // Determine when the mouse is or is not on the canvas.
+        this.mouse_on_canvas = false;
+        this.fg_canvas.addEventListener('mouseenter', () => {this.mouse_on_canvas = true;});
+        this.fg_canvas.addEventListener('mouseleave', () => {this.mouse_on_canvas = false;});
+
+        // Whenever the mouse IS on the canvas, capture its position.
+        this.mouse_x = 0;
+        this.fg_canvas.addEventListener('mousemove', (event) => {this.mouse_x = event.clientX;});
 
         const now = Date.now();
 
         // The actual worm data itself.
-        this.data = [{y: 0, ts: now - 100}, {y: 0, ts: now}];
+        this.data = [{y: 0, ts: now - 100, received: now - 100}, {y: 0, ts: now, received: now}];
 
         // Render the last render_duration milliseconds.
         this.render_duration = 20000;
@@ -84,7 +97,7 @@ class Worm {
         // Render settings and parameters.
         this.worm_thickness = 1;
         this.set_worm_style({smoothing: "quadratic",
-                             gradient: "GoodToBad",
+                             gradient: "mood",
                              thickness: 4});
 
         // Set up functions to run every update step.
@@ -130,6 +143,10 @@ class Worm {
         this.draw_zero_line();
         this.draw_time_slice_indicators();
 
+        if (this.mouse_on_canvas) {
+            this.draw_mouse_line(this.mouse_x);
+        }
+
         this.fg_context.clearRect(0, 0, this.fg_canvas.width, this.fg_canvas.height);
         if (this.auto_track) {
             this.draw_worm_end(this.render_duration, this.pad_duration);
@@ -162,7 +179,7 @@ class Worm {
     /* Given an absolute worm value, and the magnitude of the range it should
      * be rendered in, return the vertical position it would be rendered at. */
     scale_worm_height(val, range, offset_pixels) {
-        return (val * this.fg_canvas.height / (range * 2)) + (this.fg_canvas.height / 2) + offset_pixels;
+        return (-val * this.fg_canvas.height / (range * 2)) + (this.fg_canvas.height / 2) + offset_pixels;
     }
 
 
@@ -217,10 +234,11 @@ class Worm {
         this.bg_context.restore();
     }
 
+
     /* Draw the indicators of the displayed time slice. */
     draw_time_slice_indicators() {
-        const start_indicator = this.hours_mins_secs_string(this.rendered_time_slice.start - this.start_timestamp)
-        const end_indicator = this.hours_mins_secs_string(this.rendered_time_slice.end - this.start_timestamp)
+        const start_indicator = this.hours_mins_secs_string(this.rendered_time_slice.start - this.start_timestamp);
+        const end_indicator = this.hours_mins_secs_string(this.rendered_time_slice.end - this.start_timestamp);
 
         this.bg_context.save();
         this.bg_context.fillStyle = "#FFFFFF";
@@ -228,6 +246,47 @@ class Worm {
         this.bg_context.fillText(start_indicator, 5, this.bg_canvas.height - 5);
         this.bg_context.textAlign = "right";
         this.bg_context.fillText(end_indicator, this.bg_canvas.width - 5, this.bg_canvas.height - 5);
+        this.bg_context.restore();
+    }
+
+
+    /* Draw the mouse line and its associated time + value indicators. */
+    draw_mouse_line(x) {
+        const mouse_time = this.screen_space_to_timestep(x)
+        const time_indicator = this.hours_mins_secs_string(mouse_time - this.start_timestamp);
+        const prior = _.findLast(this.data, (e) => {return e.ts <= mouse_time});
+        const posterior = _.find(this.data, (e) => {return e.ts >= mouse_time && e.ts < Date.now() - this.buffer_duration});
+
+        let val_string = ""
+        if (prior && posterior) {
+            let fractional_position = (mouse_time - prior.ts) / (posterior.ts - prior.ts);
+            val_string = "" + Math.round(this.lerp(prior.y, posterior.y, fractional_position));
+        }
+
+        this.bg_context.save();
+        this.bg_context.lineWidth = 1;
+        this.bg_context.strokeStyle = "#FFFFFF";
+        this.bg_context.beginPath();
+        this.bg_context.moveTo(x, 0);
+        this.bg_context.lineTo(x, this.bg_canvas.height);
+        this.bg_context.stroke();
+        this.fg_context.closePath();
+
+        this.bg_context.fillStyle = "#FFFFFF";
+        this.bg_context.font = "20px sans-serif";
+
+        let pad = 5;
+
+        if (x > this.bg_canvas.width / 2) {
+            this.bg_context.textAlign = "right";
+            pad = -5;
+        }
+        else {
+            this.bg_context.textAlign = "left";
+        }
+
+        this.bg_context.fillText(time_indicator, x + pad, 20);
+        this.bg_context.fillText(val_string, x + pad, 40);
         this.bg_context.restore();
     }
 
@@ -316,6 +375,7 @@ class Worm {
         return time_since_update / last_update_delta;
     }
 
+
     /* Given a duration in milliseconds, return the equivalent H*:MM:SS string */
     hours_mins_secs_string(d) {
         const sign = Math.sign(d);
@@ -361,7 +421,7 @@ class Worm {
 
         // Draw the worm with a nice gradient.
         if (style.hasOwnProperty("gradient")) {
-            if (style.gradient === "GoodToBad") {
+            if (style.gradient === "mood") {
                 this.worm_style = this.fg_context.createLinearGradient(0, 0, 0, this.fg_canvas.height);
                 this.worm_style.addColorStop(0, "rgb(0,255,100)");
                 this.worm_style.addColorStop(0.2, "rgb(0,255,0)");
@@ -370,7 +430,7 @@ class Worm {
                 this.worm_style.addColorStop(1, "rgb(180,0,0)");
             }
             else {
-                this.set_worm_style({gradient: "GoodToBad"})
+                this.set_worm_style({gradient: "mood"})
             }
         }
 
@@ -390,7 +450,7 @@ class Worm {
             if (style.rainbow_mode === false) {
                 if (this.update_functions.rainbow) {
                     delete this.update_functions.rainbow;
-                    this.set_worm_style({gradient: "GoodToBad"});
+                    this.set_worm_style({gradient: "mood"});
                 }
             }
             else if (style.rainbow_mode === true) {
