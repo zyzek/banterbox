@@ -72,10 +72,6 @@ require('socketio-auth')(io, {
  * Checks if user is allowed to access resource, and authenticates them if so.
  */
 function authenticate(socket, data, next) {
-  let token_id = data.token_id;
-  let room_id  = data.room_id;
-  let client   = socket.client
-
   // Check against their token they sent
   DB.connection().one({
     name  : 'get-user-from-token',
@@ -84,7 +80,7 @@ function authenticate(socket, data, next) {
            INNER JOIN auth_user U 
             ON U.id = A.user_id 
            WHERE A.key = $1`,
-    values: [token_id]
+    values: [data.token_id]
   }).then(found => {
     return next(null, !!found)
   }, error => {
@@ -197,8 +193,14 @@ function setupEventListeners(socket) {
    * Broadcast a comment to the room's chat channel , and persist it to the database.
    */
   socket.on('comment', data => {
-
     const client = socket.client
+
+    // Abort early if there is no room or the room isn't running
+    if(!room_states[client.room_id]  || room_states[client.room_id].status !== 'running'){
+      socket.emit('message', 'You cannot leave a comment in a closed room.')
+      return
+    }
+
     const now    = Date.now()
 
     // Anonymous comment system. Grab the user's room alias
@@ -504,9 +506,17 @@ function closeRoom(room_id) {
   room_states[room_id].is_broadcasting = false
 
   // Detach all sockets from the room
-  const clients = io.sockets.adapter.rooms[room_id].sockets;
+  console.log({rooms:io.sockets.adapter.rooms})
+  let clients = io.sockets.adapter.rooms[room_id]
+  if(!clients){
+    clients = []
+  }else{
+    clients = clients.sockets
+  }
   for (const id in clients) {
     const socket = io.sockets.connected[id];
+    socket.emit('room_status','closed')
+    console.log(`Socket ${socket.id} leaving room`)
     socket.leave(room_id);
   }
 

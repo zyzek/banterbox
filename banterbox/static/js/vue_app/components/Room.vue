@@ -178,7 +178,9 @@
                 <div class="col-xs-8">
 
                     <div id="comments-panel">
-
+                        <div v-if="!socket">
+                            Not connected to server
+                        </div>
                         <div class="comment" :id="comment.id" v-for="comment in comments">
                             <span class="comment-hash"><i
                                     class="fa fa-{{comment.icon}}">  </i>  @{{ comment.author }}</span>
