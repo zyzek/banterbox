@@ -331,12 +331,15 @@ class Worm {
         this.bg_context.restore();
     }
 
+
+    /* Draw a single comment, becoming more prominent as distance approaches 0. */
     draw_comment(comment, distance) {
         this.bg_context.save()
         const opacity = this.ease_interp(0, 1, Math.min((this.comment_max_dist - distance) / (this.comment_max_dist - this.comment_min_dist), 1));
         const elevation = this.bg_canvas.height - this.comment_min_height - (this.comment_max_height - this.comment_min_height)*opacity;
 
         const x = this.timestep_to_screen_space(comment.timestamp);
+        this.bg_context.textAlign = "center";
         this.bg_context.fillStyle = "rgba(255, 255, 255, " + opacity + ")";
         this.bg_context.font = "18px sans-serif";
         this.bg_context.fillText(comment.author + ": \"" + comment.text + "\"", x, elevation);
