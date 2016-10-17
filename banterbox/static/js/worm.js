@@ -313,7 +313,7 @@ class Worm {
         this.bg_context.strokeStyle = "#8855EE"
 
         const slice_comments = _.takeWhile(_.dropWhile(this.comments, (c) => (c.timestamp < this.rendered_time_slice.start)), (c) => (c.timestamp <= this.rendered_time_slice.end));
-
+        let num_displayed_comments = 0;
         for (let comment of slice_comments) {
             this.bg_context.beginPath();
             const x = this.timestep_to_screen_space(comment.timestamp);
@@ -323,7 +323,8 @@ class Worm {
 
             const mouse_dist = Math.abs(this.mouse_x - x);
             if (this.mouse_on_canvas && mouse_dist <= this.comment_max_dist) {
-                this.draw_comment(comment, mouse_dist);
+                this.draw_comment(comment, mouse_dist, num_displayed_comments);
+                num_displayed_comments++;
             }
             this.bg_context.closePath();
         }
@@ -333,16 +334,18 @@ class Worm {
 
 
     /* Draw a single comment, becoming more prominent as distance approaches 0. */
-    draw_comment(comment, distance) {
+    draw_comment(comment, distance, index) {
         this.bg_context.save()
         const opacity = this.ease_interp(0, 1, Math.min((this.comment_max_dist - distance) / (this.comment_max_dist - this.comment_min_dist), 1));
-        const elevation = this.bg_canvas.height - this.comment_min_height - (this.comment_max_height - this.comment_min_height)*opacity;
+        const elevation = this.bg_canvas.height - this.comment_min_height - (this.comment_max_height - this.comment_min_height)*opacity*(index+1);
 
-        const x = this.timestep_to_screen_space(comment.timestamp);
         this.bg_context.textAlign = "center";
         this.bg_context.fillStyle = "rgba(255, 255, 255, " + opacity + ")";
         this.bg_context.font = "18px sans-serif";
-        this.bg_context.fillText(comment.author + ": \"" + comment.text + "\"", x, elevation);
+        let font_height = 18*1.5
+        let txt = comment.author + ": \"" + comment.text + "\""
+        const x = Math.max(this.bg_context.measureText(txt).width/2,this.timestep_to_screen_space(comment.timestamp));
+        this.bg_context.fillText(txt, x, elevation);
         this.bg_context.restore()
     }
 
@@ -379,6 +382,8 @@ class Worm {
         this.fg_context.lineCap = 'round';
         // Change lineJoin to "round" for rounder corners.
         this.fg_context.lineJoin = 'bevel';
+        this.fg_context.shadowBlur = 10
+        this.fg_context.shadowColor = "yellow"
 
         // Draw the part of the worm that fits in the camera.
         let start_index = Math.max(0, _.findLastIndex(this.data, (t) => {return t.timestamp < time_start}));
@@ -416,7 +421,7 @@ class Worm {
 
         // The last worm segment interpolates smoothly between data points.
         // We achieve this by hiding the last this.buffer_duration milliseconds before the present time of worm data.
-        this.fg_context.clearRect(this.timestep_to_screen_space(Date.now() - this.buffer_duration), 0, this.fg_canvas.width, this.fg_canvas.height)
+        //this.fg_context.clearRect(this.timestep_to_screen_space(Date.now() - this.buffer_duration), 0, this.fg_canvas.width, this.fg_canvas.height)
         this.fg_context.restore();
     }
 
