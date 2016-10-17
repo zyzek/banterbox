@@ -20,15 +20,14 @@
 
 </head>
     <body>
-        <button onclick="toggleComments()">Show Comments</button>
 
-    <canvas id="worm" style="position: absolute; left: 0; top: 0; z-index: 1"></canvas>
-    <canvas id="bg" style="position: absolute; left: 0; top: 0; z-index: 0"></canvas>
+    <canvas id="fg" style="position: absolute; left: 0; top: 0; z-index: 1"></canvas>
+    <canvas id="bg" style="position: absolute; left: 0; top: 0; z-index: 0; background-color: darkslategray"></canvas>
 
     </body>
 
 
     <script>
-        var w = new Worm(document.getElementById('worm'), document.getElementById('bg'))
+        var w = new Worm(document.getElementById('fg'), document.getElementById('bg'))
     </script>
 </html>
