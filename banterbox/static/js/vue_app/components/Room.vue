@@ -591,7 +591,7 @@
 
                         // Step is a broadcast
                         socket.on('step', (data) => {
-                            this.worm.push_data(100 * (data.votes.yes - data.votes.no), data.timestamp)
+                            this.worm.push_data((data.votes.yes - data.votes.no), data.timestamp)
                         });
                         this.socket = socket;
                     });
