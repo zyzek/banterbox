@@ -64,6 +64,8 @@ class Worm {
         // Defines the size of empty space on the right side of the worm.
         this.pad_duration = 0;
         // Defines a buffer of updates not to be rendered.
+        // This should be at least twice the length of the update duration.
+        // The lower the more responsive. The higher, the more robust to missing data.
         this.buffer_duration = 2000;
         // Defines the maximum number of worm segments to render.
         this.max_render_segments = 100;
@@ -112,35 +114,12 @@ class Worm {
 
         // Used for fake data generation (but could be handy at some point)
         this.random_users = 50;
-
         /* Function to add a fake data point to the end of the worm every update_delay milliseconds. */
-        this.add_fake_point = () => {
-            if (Date.now() - this.last_updated > this.update_delay) {
-                const vote_trend_duration_duration = 60000;
-                const vote_trend_duration = 4000*(2.5*Math.sin(this.prev_tick / vote_trend_duration_duration) + 0.5);
-                const trend = Math.cos(this.prev_tick / vote_trend_duration);
-                const vote_total = this.data[this.data.length - 1].value + (this.random_users * this.lerp(2 * Math.random() - 1, trend, 0.15));
-
-                if (this.auto_rescale && (Math.abs(vote_total) * 1.2 > this.worm_range)) {
-                    const overshoot_ratio = Math.abs(vote_total)/this.worm_range;
-                    this.rescale_worm_to(this.worm_range * 1.2, 500/overshoot_ratio);
-                }
-
-                this.push_data(vote_total, this.prev_tick + (Math.random() - 0.5) * this.update_delay);
-            }
-        };
+        this.add_fake_point = this.add_fake_point.bind(this);
 
         this.comment_delay = 5000;
         this.next_comment_time = now + 5000;
-
-        /* A function to add a fake comment every little while. */
-        this.add_fake_comment = () => {
-            const now = Date.now();
-            if (now > this.next_comment_time) {
-                this.push_comment("Boo Sucks", "Your mother was a great big black dog and I hated her guts, you idiot.", now);
-                this.next_comment_time = now + (1.2*Math.random() + 0.5)*this.comment_delay;
-            }
-        };
+        this.add_fake_comment = this.add_fake_comment.bind(this);
 
         // Generate fake data.
         this.update_functions.add_fake_point = this.add_fake_point;
@@ -543,6 +522,34 @@ class Worm {
             }
         }
     }
+
+
+    /* A function to add fake data points to the worm that will vary handsomely. */
+    add_fake_point() {
+        if (Date.now() - this.last_updated > this.update_delay) {
+            const vote_trend_duration_duration = 60000;
+            const vote_trend_duration = 4000*(2.5*Math.sin(this.prev_tick / vote_trend_duration_duration) + 0.5);
+            const trend = Math.cos(this.prev_tick / vote_trend_duration);
+            const vote_total = this.data[this.data.length - 1].value + (this.random_users * this.lerp(2 * Math.random() - 1, trend, 0.15));
+
+            if (this.auto_rescale && (Math.abs(vote_total) * 1.2 > this.worm_range)) {
+                const overshoot_ratio = Math.abs(vote_total)/this.worm_range;
+                this.rescale_worm_to(this.worm_range * 1.2, 500/overshoot_ratio);
+            }
+
+            this.push_data(vote_total, this.prev_tick + (Math.random() - 0.5) * this.update_delay);
+        }
+    }
+
+
+    /* A function to add a fake comment every little while. */
+    add_fake_comment() {
+        const now = Date.now();
+        if (now > this.next_comment_time) {
+            this.push_comment("Boo Sucks", "Your mother was a great big black dog and I hated her guts, you idiot.", now);
+            this.next_comment_time = now + (1.2*Math.random() + 0.5)*this.comment_delay;
+        }
+    };
 
 
 }
