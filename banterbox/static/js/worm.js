@@ -382,8 +382,7 @@ class Worm {
         this.fg_context.lineCap = 'round';
         // Change lineJoin to "round" for rounder corners.
         this.fg_context.lineJoin = 'bevel';
-        this.fg_context.shadowBlur = 10
-        this.fg_context.shadowColor = "yellow"
+
 
         // Draw the part of the worm that fits in the camera.
         let start_index = Math.max(0, _.findLastIndex(this.data, (t) => {return t.timestamp < time_start}));
@@ -400,7 +399,7 @@ class Worm {
         // TODO: in order to fix this, move the slice indices to multiples of the stride,
         //       otherwise the worm wiggles unpleasantly. Also always render the endpoints.
         const stride = 1
-
+        let last_x, last_y;
         // Draw the actual body of the worm.
         for (let i = 0; i < slice.length - stride; i += stride) {
             const point = slice[i];
@@ -410,18 +409,34 @@ class Worm {
             y = this.value_to_screen_space(point.value, value_range, y_offset_pixels);
             let next_x = this.timestep_to_screen_space(next_point.timestamp);
             let next_y = this.value_to_screen_space(next_point.value, value_range, y_offset_pixels);
-
+            if (i == slice.length - stride - 7) {
+                last_x = next_x
+                last_y = next_y
+            }
             let mid = {x: (x + next_x)/2, y: (y + next_y)/2};
 
             this.draw_segment(x, y, mid.x, mid.y);
         }
-
         this.fg_context.stroke();
         this.fg_context.closePath();
 
         // The last worm segment interpolates smoothly between data points.
         // We achieve this by hiding the last this.buffer_duration milliseconds before the present time of worm data.
         //this.fg_context.clearRect(this.timestep_to_screen_space(Date.now() - this.buffer_duration), 0, this.fg_canvas.width, this.fg_canvas.height)
+
+        this.fg_context.save();
+
+        this.fg_context.shadowBlur = 10
+        this.fg_context.shadowColor = "yellow"
+        let base_image = new Image();
+        base_image.src = 'http://i.imgur.com/38o6wTH.png';
+        this.fg_context.translate(last_x, last_y)
+        this.fg_context.rotate(2*Math.sin(Date.now()/500)*Math.PI);
+
+        this.fg_context.drawImage(base_image, -50, -50, 100, 100);
+        //this.fg_context.translate(last_x-base_image.width/2, last_y-base_image.height/2)
+
+        this.fg_context.restore();
         this.fg_context.restore();
     }
 
