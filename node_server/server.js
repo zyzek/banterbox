@@ -181,13 +181,18 @@ function setupEventListeners(socket) {
 
   socket.on('vote', data => {
     acceptVote(client.user_id, client.room_id, data.value)
-  });
+  })
+
+
+  socket.on('timestamp', () => {
+    socket.emit('timestamp', {timestamp: Date.now()})
+  })
+
 
   socket.on('leave_room', id => {
     socket.leave(id)
     socket.emit('message', 'Room leave success')
   })
-
 
   /**
    * Broadcast a comment to the room's chat channel , and persist it to the database.
@@ -196,12 +201,12 @@ function setupEventListeners(socket) {
     const client = socket.client
 
     // Abort early if there is no room or the room isn't running
-    if(!room_states[client.room_id]  || room_states[client.room_id].status !== 'running'){
+    if (!room_states[client.room_id] || room_states[client.room_id].status !== 'running') {
       socket.emit('message', 'You cannot leave a comment in a closed room.')
       return
     }
 
-    const now    = Date.now()
+    const now = Date.now()
 
     // Anonymous comment system. Grab the user's room alias
     rclient.hgetAsync(`room:${client.room_id}:alias`, `user:${client.user_id}`)
@@ -506,16 +511,17 @@ function closeRoom(room_id) {
   room_states[room_id].is_broadcasting = false
 
   // Detach all sockets from the room
-  console.log({rooms:io.sockets.adapter.rooms})
+  console.log({rooms: io.sockets.adapter.rooms})
   let clients = io.sockets.adapter.rooms[room_id]
-  if(!clients){
+  if (!clients) {
     clients = []
-  }else{
+  }
+  else {
     clients = clients.sockets
   }
   for (const id in clients) {
     const socket = io.sockets.connected[id];
-    socket.emit('room_status','closed')
+    socket.emit('room_status', 'closed')
     console.log(`Socket ${socket.id} leaving room`)
     socket.leave(room_id);
   }

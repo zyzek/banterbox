@@ -136,13 +136,13 @@
 
 
             <canvas v-show="!mute_background" id="fg_canvas"
-                        style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2">
+                    style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2">
 
             </canvas>
-                <canvas v-show="!mute_background" id="bg_canvas"
-                        style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray">
+            <canvas v-show="!mute_background" id="bg_canvas"
+                    style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray">
 
-                </canvas>
+            </canvas>
 
             <!-- This div is a dud to stop the parent from collapsing -->
             <div id="dud" style="width:100%; height:350px;"></div>
@@ -431,9 +431,9 @@
 
                 // Set up the people who are to be blacklisted/removed from blacklist
                 this.settings.users.forEach(x => {
-                    if(x.blacklisted){
+                    if (x.blacklisted) {
                         blacklist.push(x.id)
-                    }else{
+                    } else {
                         whitelist.push(x.id)
                     }
                 })
@@ -534,13 +534,14 @@
                 })
             },
 
-
             /**
              * Submits a comment
              */
             submitComment(){
-                this.socket.emit('comment', {comment: this.comment})
-                this.comment = ''
+                if (this.comment.trim().length > 0) {
+                    this.socket.emit('comment', {comment: this.comment})
+                    this.comment = ''
+                }
             },
 
 
@@ -565,15 +566,20 @@
                     console.log({room: this.room, id: this.room.id})
                     socket.on('authenticated', (e) => {
 
+                        this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket)
+
+
                         console.log('authenticated', {e})
 
                         socket.on('comment_history', comments => {
                             this.comments = [...comments]
                         })
 
+
                         socket.on('comment', comment => {
                             console.log({comment})
                             this.comments.unshift(comment)
+                            this.worm.push_comment(comment.author, comment.content, comment.timestamp)
                         })
 
                         socket.on('message', data => {
@@ -637,7 +643,6 @@
                             // Dependency on Worm.js to be loaded in the header.
                             // When we get closer to launch I will turn this
                             // into an ES6 module
-                            this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'))
                         })
                         .catch(error => {
                             if (error.status === 403) {
@@ -671,9 +676,7 @@
          * After the page has loaded, init the socket.
          */
         ready(){
-
             this.initSocket()
-
         }
     }
 </script>
