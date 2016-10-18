@@ -78,7 +78,7 @@ class Worm {
         this.start_timestamp = now;
 
         // Used for vertical scaling.
-        this.worm_range = 150;
+        this.worm_range = 10;
         this.rescale_target_range = 150;
         this.rescale_start_range = 150;
         this.rescale_start_time = now;
@@ -143,8 +143,8 @@ class Worm {
         };
 
         // Generate fake data.
-        this.update_functions.add_fake_point = this.add_fake_point;
-        this.update_functions.add_fake_comment = this.add_fake_comment;
+        // this.update_functions.add_fake_point = this.add_fake_point;
+        // this.update_functions.add_fake_comment = this.add_fake_comment;
 
         // RELEASE THE WORM
         this.run = this.run.bind(this);

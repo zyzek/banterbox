@@ -554,7 +554,7 @@
              *
              */
             initSocket(){
-                const socket = io('http://localhost:3000');
+                const socket = io(`//${window.location.hostname}:3000`);
 
 
                 socket.on('unauthorized', function (err) {
@@ -591,7 +591,7 @@
 
                         // Step is a broadcast
                         socket.on('step', (data) => {
-                            this.worm.push_data(100 * (data.votes.yes - data.votes.no), data.timestamp)
+                            this.worm.push_data((data.votes.yes - data.votes.no), data.timestamp)
                         });
                         this.socket = socket;
                     });
