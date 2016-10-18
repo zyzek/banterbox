@@ -19,20 +19,13 @@ class Worm {
 
         this.fg_canvas = container_fg;
         this.fg_context = this.fg_canvas.getContext('2d');
-        this.fg_canvas.width = window.innerWidth;
-        this.fg_canvas.height = window.innerHeight;
         this.bg_canvas = container_bg;
         this.bg_context = this.bg_canvas.getContext('2d');
-        this.bg_canvas.width = window.innerWidth;
-        this.bg_canvas.height = window.innerHeight;
+        this.update_dimensions()
 
         // Make the canvas resize with the window.
         window.addEventListener('resize', () => {
-            this.fg_canvas.width = window.innerWidth;
-            this.fg_canvas.height = window.innerHeight;
-            this.bg_canvas.width = window.innerWidth;
-            this.bg_canvas.height = window.innerHeight;
-
+            this.update_dimensions()
             this.set_worm_style({gradient: "mood"})
         });
 
@@ -52,7 +45,7 @@ class Worm {
 
         // Whenever the mouse IS on the canvas, capture its position.
         this.mouse_x = 0;
-        this.fg_canvas.addEventListener('mousemove', (event) => {this.mouse_x = event.clientX;});
+        this.fg_canvas.addEventListener('mousemove', (event) => {this.mouse_x = event.offsetX;});
 
         const now = Date.now();
 
@@ -96,7 +89,7 @@ class Worm {
         })
 
         // Used for vertical scaling.
-        this.worm_range = 150;
+        this.worm_range = 5;
         this.rescale_target_range = 150;
         this.rescale_start_range = 150;
         this.rescale_start_time = now;
@@ -116,7 +109,7 @@ class Worm {
         this.worm_thickness = 1;
         this.set_worm_style({smoothing: "quadratic",
                              gradient: "mood",
-                             thickness: 4});
+                             thickness: 2});
 
         // Comment rendering / pop-in parameters.
         this.comment_blip_radius = 15;
@@ -217,6 +210,16 @@ class Worm {
         this.comments.splice(index, 0, {author: author, text: text, timestamp: timestamp});
     }
 
+    update_dimensions() {
+        const fg_rect = this.fg_canvas.parentElement.getBoundingClientRect();
+        const bg_rect = this.bg_canvas.parentElement.getBoundingClientRect();
+        this.fg_canvas.width = fg_rect.width;
+        this.fg_canvas.height = fg_rect.height;
+        this.bg_canvas.width = bg_rect.width;
+        this.bg_canvas.height = bg_rect.height;
+        this.set_worm_style({gradient: "mood"})
+    }
+
 
     /* Map linearly from the range [0,1] to [x1, x2]. */
     lerp(x1, x2, t) {
@@ -292,7 +295,7 @@ class Worm {
 
         let val_string = "";
         let worm_val = this.worm_value_at_time(mouse_time);
-        if (worm_val) {
+        if (typeof worm_val !== "undefined") {
             val_string = val_string + worm_val;
         }
 
@@ -436,7 +439,8 @@ class Worm {
 
         // The last worm segment interpolates smoothly between data points.
         // We achieve this by hiding the last this.buffer_duration milliseconds before the present time of worm data.
-        this.fg_context.clearRect(this.timestamp_to_screen_space(Date.now() - this.buffer_duration), 0, this.fg_canvas.width, this.fg_canvas.height)
+        let clear_x = this.timestamp_to_screen_space(Date.now() - this.buffer_duration);
+        this.fg_context.clearRect(clear_x, 0, this.fg_canvas.width + clear_x, this.fg_canvas.height)
 
         this.fg_context.restore();
     }
@@ -597,7 +601,7 @@ class Worm {
                 this.set_worm_style({luke: true, rainbow: -2, thickness: 8});
             }
             else {
-                this.set_worm_style({luke: false, rainbow: false, thickness: 4, gradient: "mood", glow: false});
+                this.set_worm_style({luke: false, rainbow: false, thickness: 2, gradient: "mood", glow: false});
             }
         }
 
