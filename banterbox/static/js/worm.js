@@ -14,7 +14,9 @@
 class Worm {
 
 
-    constructor(container_fg, container_bg) {
+    constructor(container_fg, container_bg, socket) {
+        this.socket = socket;
+
         this.fg_canvas = container_fg;
         this.fg_context = this.fg_canvas.getContext('2d');
         this.fg_canvas.width = window.innerWidth;
@@ -78,6 +80,20 @@ class Worm {
         this.update_delay = 150;
         this.last_updated = now;
         this.start_timestamp = now;
+
+        // Time synchronisation
+        this.serv_time_diff = 0;
+        this.sync_time = now;
+        setInterval(() => {
+            this.sync_time = Date.now();
+            this.socket.emit('timestamp');
+            }, 10000)
+
+        this.socket.on('timestamp', (data) => {
+            let serv_time = data.timestamp;
+            let client_time = Date.now();
+            this.serv_time_diff = serv_time - (this.sync_time + client_time)/2;
+        })
 
         // Used for vertical scaling.
         this.worm_range = 150;
@@ -387,7 +403,6 @@ class Worm {
         // Change lineJoin to "round" for rounder corners.
         this.fg_context.lineJoin = 'bevel';
 
-
         // Draw the part of the worm that fits in the camera.
         let start_index = Math.max(0, _.findLastIndex(this.data, (t) => {return t.timestamp < time_start}));
         let end_index = _.findIndex(this.data, (t) => {return t.timestamp > time_end});
@@ -615,6 +630,7 @@ class Worm {
             this.next_comment_time = now + (1.2*Math.random() + 0.5)*this.comment_delay;
         }
     };
+
 
    /* Draw a nice little spinning Luke. */
    draw_luke() {
