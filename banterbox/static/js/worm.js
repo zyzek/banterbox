@@ -66,12 +66,11 @@ class Worm {
             let serv_time = data.timestamp;
             let client_time = Date.now();
             this.serv_time_diff = serv_time - (this.sync_time + client_time)/2;
-            console.log(this.serv_time_diff)
         });
 
         setInterval(() => {
             this.sync_time = Date.now();
-            this.socket.emit('ti mestamp');
+            this.socket.emit('timestamp');
         }, 1000);
 
         this.socket.emit('timestamp');
