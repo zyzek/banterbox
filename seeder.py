@@ -187,8 +187,8 @@ def run_step(func, args, pre_string=None, fail_string=None):
         print(pre_string, end=" ")
     sys.stdout.flush()
    
+    func(*args)
     try:
-        func(*args)
         print("OK")
     except Exception as e:
         if fail_string is None:
@@ -209,8 +209,9 @@ def hard_reset_db():
             if not os.path.isdir(filename) and filename != "__init__.py":
               os.remove(filename)
 
-    run_step(os.remove, ["db.sqlite3"], "Removing database.")
-    run_step(remove_migrations, [], "Removing all migrations.")
+    #run_step(os.remove, ["db.sqlite3"], "Removing database.")
+    #run_step(remove_migrations, [], "Removing all migrations.")
+    run_step(manage.passthrough, [['manage.py', 'migrate', 'banterbox', 'zero']], "Removing all migrations.")
     run_step(manage.passthrough, [['manage.py', 'makemigrations']], "Making migrations...\n")
     run_step(manage.passthrough, [['manage.py', 'migrate']], "Migrating...\n")
     print("Database purged.")
