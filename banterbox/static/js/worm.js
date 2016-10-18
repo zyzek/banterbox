@@ -78,7 +78,7 @@ class Worm {
         this.start_timestamp = now;
 
         // Used for vertical scaling.
-        this.worm_range = 150;
+        this.worm_range = 10;
         this.rescale_target_range = 150;
         this.rescale_start_range = 150;
         this.rescale_start_time = now;

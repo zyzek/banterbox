@@ -554,7 +554,7 @@
              *
              */
             initSocket(){
-                const socket = io('http://localhost:3000');
+                const socket = io(`//${window.location.hostname}:3000`);
 
 
                 socket.on('unauthorized', function (err) {
