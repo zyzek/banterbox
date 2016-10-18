@@ -40,9 +40,11 @@ class Worm {
         });
 
         // Zoom the time slice viewed when the mouse wheel is scrolled.
+        // The duration is clamped to between 5 seconds and 2 hours.
+        this.zoom_speed = 1.001;
         this.fg_canvas.addEventListener('wheel', (event) => {
             if (this.mouse_on_canvas) {
-                this.render_duration *= Math.pow(1.01, event.deltaY);
+                this.render_duration = Math.min(1000 * 60 * 60 * 2 + 1000, Math.max(5000, this.render_duration * Math.pow(this.zoom_speed, event.deltaY)));
                 event.preventDefault();
                 return false;
             }
