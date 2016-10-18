@@ -739,7 +739,7 @@ exports.default = {
                 console.log({ room: _this5.room, id: _this5.room.id });
                 socket.on('authenticated', function (e) {
 
-                    _this5.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'));
+                    _this5.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket);
 
                     console.log('authenticated', { e: e });
 
