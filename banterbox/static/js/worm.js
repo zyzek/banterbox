@@ -212,7 +212,7 @@ class Worm {
         // Most of the time they'll be arriving in order, so this should be low-overhead, if we search backwards.
         // Since comments are more meaningful and individual than data points,
         // we choose expend more effort to insert them into our array.
-        let index = _.findLastIndex(this.comments, (c) => {c.timestamp < timestamp});
+        let index = _.findLastIndex(this.comments, (c) => c.timestamp < timestamp);
         index = index >= 0 ? index + 1 : 0;
         this.comments.splice(index, 0, {author: author, text: text, timestamp: timestamp});
     }
