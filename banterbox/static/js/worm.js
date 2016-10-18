@@ -138,8 +138,8 @@ class Worm {
         this.add_fake_comment = this.add_fake_comment.bind(this);
 
         // Generate fake data.
-        this.update_functions.add_fake_point = this.add_fake_point;
-        this.update_functions.add_fake_comment = this.add_fake_comment;
+        //this.update_functions.add_fake_point = this.add_fake_point;
+        //this.update_functions.add_fake_comment = this.add_fake_comment;
 
         // And functions to run every rendered frame.
         this.render_functions = {};
