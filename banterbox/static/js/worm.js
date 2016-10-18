@@ -10,6 +10,8 @@
 // TODO: scrolling + zooming when not tracking
 // TODO: add toggles for automatic comment/data generation.
 // TODO: refactor to handle raw yes/no counts and render attendance as well as rating.
+// TODO: Worm end rendering at correct posish.
+
 
 class Worm {
 
@@ -49,6 +51,31 @@ class Worm {
 
         const now = Date.now();
 
+        // Timer information
+        this.prev_tick = now;
+        this.delta = 0;
+        this.update_delay = 150;
+        this.last_updated = now;
+        this.start_timestamp = now;
+
+        // Time synchronisation
+        this.serv_time_diff = 0;
+        this.sync_time = now;
+
+        this.socket.on('timestamp', (data) => {
+            let serv_time = data.timestamp;
+            let client_time = Date.now();
+            this.serv_time_diff = serv_time - (this.sync_time + client_time)/2;
+            console.log(this.serv_time_diff)
+        });
+
+        setInterval(() => {
+            this.sync_time = Date.now();
+            this.socket.emit('ti mestamp');
+        }, 1000);
+
+        this.socket.emit('timestamp');
+
         // The actual worm data itself. Initialise these arrays with dummy data to facilitate functions that assume
         // that they are non-empty.
         this.data = [{value: 0, timestamp: now - 100, received: now - 100}, {value: 0, timestamp: now, received: now}];
@@ -66,27 +93,6 @@ class Worm {
         this.max_render_segments = 100;
         // Whether to automatically track the end of the worm or not.
         this.auto_track = true;
-
-        // Timer information
-        this.prev_tick = now;
-        this.delta = 0;
-        this.update_delay = 150;
-        this.last_updated = now;
-        this.start_timestamp = now;
-
-        // Time synchronisation
-        this.serv_time_diff = 0;
-        this.sync_time = now;
-        setInterval(() => {
-            this.sync_time = Date.now();
-            this.socket.emit('timestamp');
-            }, 10000)
-
-        this.socket.on('timestamp', (data) => {
-            let serv_time = data.timestamp;
-            let client_time = Date.now();
-            this.serv_time_diff = serv_time - (this.sync_time + client_time)/2;
-        })
 
         // Used for vertical scaling.
         this.worm_range = 5;
@@ -126,13 +132,7 @@ class Worm {
         /* Function to add a fake data point to the end of the worm every update_delay milliseconds. */
         this.add_fake_point = this.add_fake_point.bind(this);
 
-        this.comment_delay = 5000;
-        this.next_comment_time = now + 5000;
         this.add_fake_comment = this.add_fake_comment.bind(this);
-
-        // Generate fake data.
-        //this.update_functions.add_fake_point = this.add_fake_point;
-        //this.update_functions.add_fake_comment = this.add_fake_comment;
 
         // And functions to run every rendered frame.
         this.render_functions = {};
@@ -210,6 +210,7 @@ class Worm {
         this.comments.splice(index, 0, {author: author, text: text, timestamp: timestamp});
     }
 
+    /* Update the current canvas dimensions. */
     update_dimensions() {
         const fg_rect = this.fg_canvas.parentElement.getBoundingClientRect();
         const bg_rect = this.bg_canvas.parentElement.getBoundingClientRect();
@@ -218,6 +219,11 @@ class Worm {
         this.bg_canvas.width = bg_rect.width;
         this.bg_canvas.height = bg_rect.height;
         this.set_worm_style({gradient: "mood"})
+    }
+
+    /* Return the approximate server time. */
+    approx_server_time() {
+        return Date.now() + this.serv_time_diff;
     }
 
 
@@ -373,17 +379,18 @@ class Worm {
     }
 
 
-    /* Draw the last num_points points of the worm, padding with space for
-     * end_pad_size imaginary points on the right hand side.
-     * If num_points exceeds the available data, the worm should draw from left
+    /* Draw the last milliseconds of the worm, padding with space for
+     * pad_milliseconds worth of imaginary data on the right hand side.
+     * If the region exceeds the available data, the worm should draw from left
      * to right until it reaches the right border, minus padding,
      * and then it should scroll. */
     draw_worm_end(milliseconds, pad_milliseconds) {
         const worm_start_time = this.data[0].timestamp;
         const worm_end_time = this.data[this.data.length - 1].timestamp;
 
-        const start = Math.max(worm_start_time, Date.now() - milliseconds);
-        const end = Math.max(worm_start_time + milliseconds, Date.now()) + pad_milliseconds;
+        const serv_time = this.approx_server_time()
+        const start = Math.max(worm_start_time, serv_time - milliseconds);
+        const end = Math.max(worm_start_time + milliseconds, serv_time) + pad_milliseconds;
 
         this.rendered_time_slice.start = start;
         this.rendered_time_slice.end = end;
@@ -439,7 +446,7 @@ class Worm {
 
         // The last worm segment interpolates smoothly between data points.
         // We achieve this by hiding the last this.buffer_duration milliseconds before the present time of worm data.
-        let clear_x = this.timestamp_to_screen_space(Date.now() - this.buffer_duration);
+        let clear_x = this.timestamp_to_screen_space(this.worm_end_x());
         this.fg_context.clearRect(clear_x, 0, this.fg_canvas.width + clear_x, this.fg_canvas.height)
 
         this.fg_context.restore();
@@ -453,6 +460,11 @@ class Worm {
         const last_update_delta = this.data[this.data.length - 1].timestamp - this.data[this.data.length - 2].timestamp
         const time_since_update = Date.now() - this.data[this.data.length - 1].received;
         return time_since_update / last_update_delta;
+    }
+
+    /* Return the timestamp of the last rendered worm point. */
+    worm_end_x() {
+        return this.approx_server_time() - this.buffer_duration;
     }
 
 
@@ -496,7 +508,7 @@ class Worm {
     /* At a timestamp t, return the value of the worm at that time, if it exists. */
     worm_value_at_time(t) {
         const prior = _.findLast(this.data, (e) => {return e.timestamp <= t});
-        const posterior = _.find(this.data, (e) => {return e.timestamp >= t && e.timestamp <= Date.now() - this.buffer_duration + 400});
+        const posterior = _.find(this.data, (e) => {return e.timestamp >= t && e.timestamp <= this.worm_end_x() + 1000});
         if (prior && posterior) {
             let fractional_position = (t - prior.timestamp) / (posterior.timestamp - prior.timestamp);
             return Math.round(this.lerp(prior.value, posterior.value, fractional_position));
@@ -599,9 +611,11 @@ class Worm {
         if (style.hasOwnProperty("party")) {
             if (style.party == true) {
                 this.set_worm_style({luke: true, rainbow: -2, thickness: 8});
+                this.demo_mode(true);
             }
             else {
                 this.set_worm_style({luke: false, rainbow: false, thickness: 2, gradient: "mood", glow: false});
+                this.demo_mode(false);
             }
         }
 
@@ -628,7 +642,15 @@ class Worm {
 
     /* A function to add a fake comment every little while. */
     add_fake_comment() {
-        const now = Date.now();
+        if (!this.comment_delay) {
+            this.comment_delay = 5000;
+        }
+
+        if (!this.next_comment_time) {
+            this.next_comment_time = this.approx_server_time() + 5000;
+        }
+
+        const now = this.approx_server_time();
         if (now > this.next_comment_time) {
             this.push_comment("Boo Sucks", "Your mother was a great big black dog and I hated her guts, you idiot.", now);
             this.next_comment_time = now + (1.2*Math.random() + 0.5)*this.comment_delay;
@@ -641,7 +663,7 @@ class Worm {
         this.fg_context.save();
         let base_image = new Image();
         base_image.src = 'http://i.imgur.com/PGSwOSh.png';
-        let end_time = Date.now() - this.buffer_duration;
+        let end_time = this.worm_end_x();
 
         let x = this.timestamp_to_screen_space(end_time);
         let worm_val = this.worm_value_at_time(end_time);
@@ -652,6 +674,18 @@ class Worm {
         this.fg_context.scale(scale_val, scale_val);
         this.fg_context.drawImage(base_image, -50, -50, 100, 100);
         this.fg_context.restore();
+    }
+
+
+    /* Generate fake data. */
+    demo_mode(activated) {
+        if (activated) {
+            this.update_functions.add_fake_point = this.add_fake_point;
+            this.update_functions.add_fake_comment = this.add_fake_comment;
+        } else {
+            delete this.update_functions.add_fake_point;
+            delete this.update_functions.add_fake_comment;
+        }
     }
 
 
