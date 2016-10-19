@@ -189,6 +189,14 @@ function setupEventListeners(socket) {
   })
 
 
+  socket.on('start_time', () => {
+    rclient.hgetAsync(`room:${client.room_id}`, 'start_time')
+      .then(start_time => {
+        socket.emit('start_time', {start_time});
+      });
+  })
+
+
   socket.on('leave_room', id => {
     socket.leave(id)
     socket.emit('message', 'Room leave success')
@@ -490,6 +498,9 @@ function sendVotes(room_id) {
  */
 function openRoom(room_id) {
   console.log(`\n* Starting broadcast for room : ${room_id}\n`)
+
+  rclient.hsetAsync(`room:${room_id}`, 'start_time', Date.now())
+
   room_states[room_id].is_broadcasting = true
   room_states[room_id].interval_id     = setInterval(function () {
     sendVotes(room_id);

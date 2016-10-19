@@ -1,4 +1,5 @@
 // TODO: Historic data on join
+//       limit to
 // TODO: scrolling + zooming when not tracking
 // TODO: Worm end rendering at correct posish.
 
@@ -60,11 +61,6 @@ class Worm {
     /* Set up all the listeners and emitters on the socket, and emit the first sync
      * message. Make sure the socket is actually initialised before calling this. */
     set_up_socket() {
-        this.socket.on('timestamp', (data) => {
-            let serv_time = data.timestamp;
-            let client_time = Date.now();
-            this.serv_time_diff = serv_time - (this.sync_time + client_time)/2;
-        });
 
         this.socket.on('votes', (data) => {
             this.push_data((data.votes.yes - data.votes.no), data.timestamp)
@@ -84,12 +80,20 @@ class Worm {
         });
         */
 
+        this.socket.on('start_time', (data) => {
+            this.start_timestamp = data.start_time;
+        });
+
+        this.socket.on('timestamp', (data) => {
+            let serv_time = data.timestamp;
+            let client_time = Date.now();
+            this.serv_time_diff = serv_time - (this.sync_time + client_time)/2;
+        });
+
         setInterval(() => {
             this.sync_time = Date.now();
             this.socket.emit('timestamp');
         }, 10000);
-
-        this.socket.emit('timestamp');
     }
 
 
@@ -204,8 +208,11 @@ class Worm {
         this.prev_tick = now;
         this.delta = 0;
         this.start_timestamp = now;
+        this.socket.emit('start_time');
+
         this.serv_time_diff = 0;
         this.sync_time = now;
+        this.socket.emit('timestamp');
 
         // The actual worm and comment data itself. Initialise these arrays with
         // dummy data to facilitate functions that assume that they are non-empty.
