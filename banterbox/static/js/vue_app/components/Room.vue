@@ -405,7 +405,6 @@
                 worm: null,
                 comment: '',
                 comments: [],
-                vote_data: [],
                 vote_direction: 0,
                 unit_code: null,
                 unit_icon: null,
@@ -568,37 +567,21 @@
 
                         this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket)
 
-
                         console.log('authenticated', {e})
 
                         socket.on('comment_history', comments => {
                             this.comments = [...comments]
                         })
 
-
                         socket.on('comment', comment => {
                             console.log({comment})
                             this.comments.unshift(comment)
-                            this.worm.push_comment(comment.author, comment.content, comment.timestamp)
                         })
 
                         socket.on('message', data => {
                             console.log({data})
                         })
 
-                        socket.on('vote_history', data => {
-                            data.sort((x, y) => {
-                                return x.timestamp - y.timestamp
-                            })
-
-                            // TODO : Fix up this to send to worm all proper
-//                            this.vote_data.push(...data)
-                        });
-
-                        // Step is a broadcast
-                        socket.on('step', (data) => {
-                            this.worm.push_data((data.votes.yes - data.votes.no), data.timestamp)
-                        });
                         this.socket = socket;
                     });
 

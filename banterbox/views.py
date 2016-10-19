@@ -1,17 +1,13 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
-from django.template import loader
-from random import random
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.request import Request
-from banterbox.models import *
 from banterbox.serializers import *
 from django.db import IntegrityError
 from django.utils import timezone
 from datetime import timedelta, datetime
 import calendar
-from .icons import Icons
+from .icons import icons
 
 '''
 ---------------------------------------------------- /api/room/blacklist ------------------------------------------
@@ -115,7 +111,7 @@ def get_room_settings(request, room_id):
         'icon'              : room.unit.icon,
         'unit_name'         : room.unit.name,
         'enrolled'          : enrolled_users,
-        'icons'             : Icons.icons
+        'icons'             : icons
     }
 
     return Response(result)

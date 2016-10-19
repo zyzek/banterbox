@@ -16,6 +16,7 @@ from datetime import date, datetime, timedelta, time
 
 import manage
 from banterbox import models
+from banterbox import icons
 
 UNITS = 10
 LECTURES_PER_UNIT = 5
@@ -29,20 +30,6 @@ euro_fakers = [Factory.create(locale) for locale in \
 
 user_password = make_password("password", salt=fake.bothify("#?#?#?#?#?#"))
 
-fa_icons = []
-icons_loaded = False
-
-def load_icons():
-    global fa_icons
-    with open("resources/fa_icons.txt", 'r') as icon_file:
-        fa_icons = [icon[:-1] for icon in icon_file.readlines()] # [:-1] to remove trailing \n
-        icons_loaded = True
-
-def get_icon():
-    if not icons_loaded:
-        load_icons()
-
-    return choice(fa_icons)
 
 def sample_with_dupes(population, num_items):
     remaining = num_items
@@ -53,18 +40,21 @@ def sample_with_dupes(population, num_items):
         out_list += sample(population, to_remove)
     return out_list
 
+
 def add_statuses():
     for status in models.Statuses:
         m = models.RoomStatus()
         m.name = status.value
         m.save()
 
+
 def add_roles():
     for role in models.Roles:
         m = models.UserRole()
         m.name = role.value
         m.save()
-    
+
+
 def make_superuser():
     admin = models.User()
     admin.username = "admin"
@@ -74,10 +64,12 @@ def make_superuser():
     admin.is_staff = True
     admin.save()
 
+
 def make_unikey(fname, lname):
     unikey_stub = fname[:1].lower() + lname[:3].lower() \
                   + "?"*(4 - (len(fname) + len(lname))) + "####"
     return fake.bothify(unikey_stub)
+
 
 def make_users(num):
     for _ in range(num):
@@ -92,8 +84,9 @@ def make_users(num):
         # Profile is now auto generator when a user is created
         # profile = models.Profile()
         # profile.user = user
-        # profile.icon = get_icon()
+        # profile.icon = choice(icons.icons)
         # profile.save()
+
 
 def make_units(num):
     all_users = list(models.User.objects.all())
@@ -116,7 +109,7 @@ def make_units(num):
         unit.name = fake.catch_phrase()
         unit.code = fake.bothify("????####").upper()
         unit.lecturer = lecturer
-        unit.icon = get_icon()
+        unit.icon = choice(icons.icons)
         unit.save()
         
         # Attach the lecturer to the unit
@@ -142,6 +135,7 @@ def make_units(num):
             s_role.role = tutor_role if i < 5 else student_role
             s_role.save()
 
+
 def make_schedules(lecs_per_unit):
     for unit in models.Unit.objects.all():
         for _ in range(lecs_per_unit):
@@ -152,6 +146,7 @@ def make_schedules(lecs_per_unit):
             room.end_time = (datetime.combine(date.today(), room.start_time) \
                              + timedelta(minutes=15*randint(1, 12))).time()
             room.save()
+
 
 def make_rooms(comments_per_room):
     statuses = list(models.RoomStatus.objects.all())
@@ -179,6 +174,7 @@ def make_rooms(comments_per_room):
             comment.content = fake.text()
             comment.private = choice([True, False])
             comment.save()
+
 
 def run_step(func, args, pre_string=None, fail_string=None):
     if pre_string is None:
@@ -209,11 +205,13 @@ def hard_reset_db():
             if not os.path.isdir(filename) and filename != "__init__.py":
               os.remove(filename)
 
-    run_step(os.remove, ["db.sqlite3"], "Removing database.")
-    run_step(remove_migrations, [], "Removing all migrations.")
+    #run_step(os.remove, ["db.sqlite3"], "Removing database.")
+    #run_step(remove_migrations, [], "Removing all migrations.")
+    run_step(manage.passthrough, [['manage.py', 'migrate', 'banterbox', 'zero']], "Removing all migrations.")
     run_step(manage.passthrough, [['manage.py', 'makemigrations']], "Making migrations...\n")
     run_step(manage.passthrough, [['manage.py', 'migrate']], "Migrating...\n")
     print("Database purged.")
+
 
 def populate_db():
     run_step(manage.passthrough, [['manage.py', 'flush']], "Flushing database...\n")
@@ -227,6 +225,7 @@ def populate_db():
     run_step(make_rooms, [COMMENTS_PER_ROOM], \
              "Adding a room per unit with {} comments each...".format(COMMENTS_PER_ROOM))
     print("All Done.")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
