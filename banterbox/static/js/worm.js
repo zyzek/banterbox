@@ -29,7 +29,6 @@ class Worm {
 
 
     constructor(container_fg, container_bg, socket) {
-
         // Initialise the canvases and contexts.
         this.fg_canvas = container_fg;
         this.fg_context = this.fg_canvas.getContext('2d');
@@ -212,7 +211,6 @@ class Worm {
         // dummy data to facilitate functions that assume that they are non-empty.
         this.data = [{value: 0, timestamp: now - 100}, {value: 0, timestamp: now}];
         this.comments = [{author: "Charon", text:"Scylla and Charybdis hunger for thee...", timestamp: now - 10000000}];
-
     }
 
 
@@ -290,9 +288,6 @@ class Worm {
     }
 
 
-
-
-
 /* ==================== Rendering ==================== */
 
 
@@ -367,6 +362,7 @@ class Worm {
     /* Draw a horizontal rule denoting the 0 vote level. */
     draw_zero_line() {
         this.bg_context.save();
+
         this.bg_context.beginPath();
         this.bg_context.lineWidth = 1;
         this.bg_context.strokeStyle = "#777777";
@@ -374,6 +370,7 @@ class Worm {
         this.bg_context.moveTo(0, zero_height);
         this.bg_context.lineTo(this.bg_canvas.width, zero_height);
         this.bg_context.stroke();
+
         this.bg_context.restore();
     }
 
@@ -384,11 +381,13 @@ class Worm {
         const end_indicator = this.hours_mins_secs_string(this.rendered_time_slice.end - this.start_timestamp);
 
         this.bg_context.save();
+
         this.bg_context.fillStyle = "#FFFFFF";
         this.bg_context.font = "20px sans-serif";
         this.bg_context.fillText(start_indicator, 5, this.bg_canvas.height - 5);
         this.bg_context.textAlign = "right";
         this.bg_context.fillText(end_indicator, this.bg_canvas.width - 5, this.bg_canvas.height - 5);
+
         this.bg_context.restore();
     }
 
@@ -405,6 +404,7 @@ class Worm {
         }
 
         this.bg_context.save();
+
         this.bg_context.lineWidth = 1;
         this.bg_context.strokeStyle = "#FFFFFF";
         this.bg_context.beginPath();
@@ -428,6 +428,7 @@ class Worm {
 
         this.bg_context.fillText(time_indicator, x + pad, 20);
         this.bg_context.fillText(val_string, x + pad, 40);
+
         this.bg_context.restore();
     }
 
@@ -548,12 +549,14 @@ class Worm {
         this.fg_context.restore();
     }
 
+
     /* Generate a gradient ranging over worm-value space, where the provided value has maximum magnitude. */
     gradient_over_range() {
         const above = this.value_to_screen_space(this.max_magnitude, this.display_range, 0);
         const below = this.value_to_screen_space(-this.max_magnitude, this.display_range, 0);
         return this.fg_context.createLinearGradient(0, above, 0, below);
     }
+
 
     /* Given an object containing style directives, update the worm render settings. */
     set_style(style) {
@@ -745,9 +748,8 @@ class Worm {
     }
 
 
-        /* A function to add fake data points to the worm that will vary handsomely. */
+    /* A function to add fake data points to the worm that will vary handsomely. */
     add_fake_point() {
-
         if (typeof this.last_updated == "undefined") {
             this.last_updated = 0;
         }
