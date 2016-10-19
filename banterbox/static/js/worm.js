@@ -661,10 +661,12 @@ class Worm {
         if (style.hasOwnProperty("luke")) {
             if (style.luke === true) {
                 this.render_functions.luke = this.draw_luke;
+                this.end_render_position = 0.8;
             }
-            else if (style.luke === false) {
+            else {
                 if (this.render_functions.luke) {
                     delete this.render_functions.luke;
+                    this.end_render_position = 1;
                 }
             }
         }
