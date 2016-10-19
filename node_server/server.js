@@ -466,7 +466,7 @@ function sendVotes(room_id) {
     const votes = {votes: {yes, no}, timestamp: now};
 
     //broadcast the votes
-    io.to(room_id).emit('step', votes);
+    io.to(room_id).emit('votes', votes);
 
     votes.connected = connected_users;
     let history     = JSON.stringify(votes);

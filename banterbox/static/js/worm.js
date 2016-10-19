@@ -1,7 +1,6 @@
 // TODO: Historic data on join
 // TODO: scrolling + zooming when not tracking
 // TODO: Worm end rendering at correct posish.
-// TODO: Manage socket connection from here, not the page
 
 // TODO: Make the comments look half-decent.
 //       Better blips
@@ -14,6 +13,7 @@
 //       E.G. stop autoscrolling if too far past worm end
 // TODO: If worm updates lag behind current time, move the clearing rectangle back
 //       to make it catch up to realtime faster, and not be jerky
+// TODO: Render gridlines
 
 // TODO: give the worm an end cap now that we're just lopping it.
 // TODO: Make comments etc. more parametric
@@ -75,6 +75,24 @@ class Worm {
             let client_time = Date.now();
             this.serv_time_diff = serv_time - (this.sync_time + client_time)/2;
         });
+
+        socket.on('votes', (data) => {
+            this.push_data((data.votes.yes - data.votes.no), data.timestamp)
+        });
+
+        socket.on('comment', comment => {
+            this.push_comment(comment.author, comment.content, comment.timestamp);
+        });
+
+        // TODO: get the historical data integrating properly into the worm.
+        /*socket.on('vote_history', data => {
+            // Data might come unsorted?
+        });
+        socket.on('comment_history', data => {
+
+        });
+        */
+
 
         setInterval(() => {
             this.sync_time = Date.now();
