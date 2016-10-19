@@ -1,5 +1,4 @@
 // TODO: Historic data on join
-//       limit to
 // TODO: scrolling + zooming when not tracking
 // TODO: Worm end rendering at correct posish.
 
@@ -15,6 +14,7 @@
 // TODO: If worm updates lag behind current time, move the clearing rectangle back
 //       to make it catch up to realtime faster, and not be jerky
 // TODO: Render gridlines
+// TODO: Limit redis to storing a couple of hours (or something) of historical data at most before dumping to DB
 
 // TODO: give the worm an end cap now that we're just lopping it.
 // TODO: Make comments etc. more parametric
@@ -133,7 +133,8 @@ class Worm {
         this.update_functions = {};
 
         this.rescale_to_max_in_view = this.rescale_to_max_in_view.bind(this);
-        this.update_functions.rescale = this.rescale_to_max_in_view;
+        this.rescale_to_max = this.rescale_to_max.bind(this);
+        this.update_functions.rescale = this.rescale_to_max;
 
         // Used for fake data generation (but could be handy at some point)
         this.random_users = 50;
@@ -168,12 +169,12 @@ class Worm {
         this.min_range = 5;
         this.display_range = this.min_range;
         this.y_offset_pixels = 0;
-        this.rescale_target_range = 150;
-        this.rescale_start_range = 150;
+        this.rescale_target_range = 5;
+        this.rescale_start_range = 5;
         this.rescale_start_time = 0;
-        this.rescale_duration = 0;
+        this.rescale_duration = 1000;
+        this.rescale_remaining_duration = 0;
         this.rescale_threshold = 1.2;
-        this.rescale_duration = 500;
         this.rescaling = false;
         this.auto_rescale = true;
         this.update_dimensions()
@@ -320,7 +321,7 @@ class Worm {
         this.rescale_start_time = Date.now();
         this.rescale_start_range = this.display_range;
         this.rescale_target_range = Math.max(this.min_range, target_range);
-        this.rescale_duration = duration;
+        this.rescale_remaining_duration = duration;
         this.rescaling = true;
     }
 
@@ -330,12 +331,13 @@ class Worm {
     smooth_rescale() {
         const now = Date.now();
 
-        if (this.rescale_start_time + this.rescale_duration < now) {
+        if (this.rescale_start_time + this.rescale_remaining_duration < now) {
+            this.display_range = this.rescale_target_range;
             this.rescaling = false;
         }
 
         if (this.rescaling) {
-            const fraction_elapsed = (now - this.rescale_start_time) / this.rescale_duration;
+            const fraction_elapsed = (now - this.rescale_start_time) / this.rescale_remaining_duration;
             this.display_range = this.ease_interp(this.rescale_start_range, this.rescale_target_range, fraction_elapsed);
             this.set_style({gradient: true});
         }
@@ -344,12 +346,18 @@ class Worm {
 
     /* If the provided value is out of the displayed range,
      * rescale so as to be able to display it. */
-    rescale_if_out_of_range(val) {
-        const range = Math.abs(val);
-        const target = range * this.rescale_threshold;
-        if (this.auto_rescale && (target > this.display_range)) {
-                const overshoot_ratio = range/this.display_range;
-                this.rescale_to(target, this.rescale_duration/overshoot_ratio);
+    rescale_to_max() {
+        if (this.auto_rescale && !this.rescaling) {
+            const slice = this.time_slice(this.end_time() - 5000, this.end_time() + 500);
+            if (slice.length > 0) {
+                const max_abs = slice.reduce((prev, curr) => Math.max(prev, Math.abs(curr.value)), 0);
+                const target = max_abs * this.rescale_threshold;
+                if (target > this.display_range) {
+                    const overshoot_ratio = target/this.display_range;
+                    const duration = this.rescale_duration / overshoot_ratio;
+                    this.rescale_to(target, duration);
+                }
+            }
         }
     }
 
@@ -365,6 +373,7 @@ class Worm {
             }
         }
     }
+
 
     /* Draw a horizontal rule denoting the 0 vote level. */
     draw_zero_line() {
