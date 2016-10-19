@@ -1,6 +1,5 @@
 // TODO: Historic data on join
 // TODO: scrolling + zooming when not tracking
-// TODO: Worm end rendering at correct posish.
 
 // TODO: Make the comments look half-decent.
 //       Better blips
@@ -152,14 +151,20 @@ class Worm {
     set_up_rendering_state() {
         // Render the last render_duration milliseconds.
         this.render_duration = 20000;
-        // Defines the size of empty space on the right side of the worm.
-        this.pad_duration = 0;
+
+        // Defines the position that the end of the worm renders at when auto-tracking the worm.
+        // e.g. 0.75 means that the right 25% of the rendered region appears empty.
+        this.end_render_position = 1;
+
         // Defines a buffer of updates not to be rendered.
         // This should be at least twice the length of the update duration.
         // The lower the more responsive. The higher, the more robust to missing data.
+
         this.buffer_duration = 2000;
+
         // Defines the maximum number of worm segments to render.
         this.max_render_segments = 100;
+
         // Whether to automatically track the end of the worm or not.
         this.auto_track = true;
 
@@ -181,10 +186,10 @@ class Worm {
 
         // A structure that contains the actual slice of time being rendered.
         this.rendered_time_slice = {start: 0,
-                                end:10,
-                                duration: () => {return this.rendered_time_slice.end - this.rendered_time_slice.start},
-                                pixels_per_millisecond: () => { return this.fg_canvas.width / this.rendered_time_slice.duration()}
-                               }
+                                    end:10,
+                                    duration: () => {return this.rendered_time_slice.end - this.rendered_time_slice.start},
+                                    pixels_per_millisecond: () => { return this.fg_canvas.width / this.rendered_time_slice.duration()}
+                                   }
 
         // Render settings and parameters.
         this.thickness = 1;
@@ -246,7 +251,7 @@ class Worm {
 
         this.fg_context.clearRect(0, 0, this.fg_canvas.width, this.fg_canvas.height);
         if (this.auto_track) {
-            this.draw_end(this.render_duration, this.pad_duration);
+            this.draw_end(this.render_duration);
         }
         else {
             this.draw_slice(this.rendered_time_slice.start, this.rendered_time_slice.end, this.display_range, this.y_offset_pixels);
@@ -495,19 +500,18 @@ class Worm {
     }
 
 
-    /* Draw the last milliseconds of the worm, padding with space for
-     * pad_milliseconds worth of imaginary data on the right hand side.
+    /* Draw the last milliseconds of the worm, padding on the right back to
+     * up to this.end_render_position of the way along the render area.
      * If the region exceeds the available data, the worm should draw from left
      * to right until it reaches the right border, minus padding,
      * and then it should scroll. */
-    draw_end(milliseconds, pad_milliseconds) {
-        const worm_start_time = this.data[0].timestamp;
-        const worm_end_time = this.data[this.data.length - 1].timestamp;
+    draw_end(milliseconds) {
+        const pad_milliseconds = (1 - this.end_render_position) * this.rendered_time_slice.duration();
+        const start_time = this.data[0].timestamp;
+        const end_time = this.end_time();
 
-        const serv_time = this.approx_server_time()
-        const start = Math.max(worm_start_time, serv_time - milliseconds);
-        const end = Math.max(worm_start_time + milliseconds, serv_time) + pad_milliseconds;
-
+        const start = Math.max(start_time, end_time - milliseconds + pad_milliseconds);
+        const end = Math.max(end_time + pad_milliseconds, start_time + milliseconds);
         this.rendered_time_slice.start = start;
         this.rendered_time_slice.end = end;
 
