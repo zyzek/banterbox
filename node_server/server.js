@@ -480,7 +480,7 @@ function sendVotes(room_id) {
     let history     = JSON.stringify(votes);
 
     //glob the data of this timestep into the redis historical field
-    return rclient.lpushAsync(`room:${room_id}:history`, now)
+    return rclient.rpushAsync(`room:${room_id}:history`, now)
       .then(function () {
         return rclient.hsetAsync(`room:${room_id}`, `timestamp:${now}`, history)
       });

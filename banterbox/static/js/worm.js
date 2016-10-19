@@ -1,4 +1,3 @@
-// TODO: Historic data on join
 // TODO: scrolling + zooming when not tracking
 
 // TODO: Make the comments look half-decent.
@@ -14,6 +13,7 @@
 //       to make it catch up to realtime faster, and not be jerky
 // TODO: Render gridlines
 // TODO: Limit redis to storing a couple of hours (or something) of historical data at most before dumping to DB
+// TODO: MAKE EVERYTHING MILLISECONDS OMG (comments stored in server with second-precision timestamps)
 
 // TODO: give the worm an end cap now that we're just lopping it.
 // TODO: Make comments etc. more parametric
@@ -69,15 +69,27 @@ class Worm {
             this.push_comment(comment.author, comment.content, comment.timestamp);
         });
 
-        // TODO: get the historical data integrating properly into the worm.
-        /*this.socket.on('vote_history', data => {
-            // Data might come unsorted?
-            console.log(data);
+        this.socket.on('vote_history', data => {
+            this.data.splice(0,
+                             Math.min(2, this.data.length),
+                             ...data.map((e) => {
+                                 return {value: e.votes.yes - e.votes.no,
+                                         timestamp: e.timestamp}
+                             })
+            )
         });
-        socket.on('comment_history', data => {
 
+        this.socket.on('comment_history', data => {
+            this.comments.splice(0,
+                                 Math.min(1, this.data.length),
+                                 ...data.map((c) => {
+                                    return {author: c.author,
+                                            text: c.content,
+                                            timestamp: c.timestamp*1000}
+                                 }).reverse()
+            )
         });
-        */
+
 
         this.socket.on('start_time', (data) => {
             this.start_timestamp = data.start_time;
@@ -398,8 +410,8 @@ class Worm {
 
     /* Draw the indicators of the displayed time slice. */
     draw_time_slice_indicators() {
-        const start_indicator = this.hours_mins_secs_string(this.rendered_time_slice.start - this.start_timestamp);
-        const end_indicator = this.hours_mins_secs_string(this.rendered_time_slice.end - this.start_timestamp);
+        const start_indicator = this.hours_mins_secs_string(this.rendered_time_slice.start - this.data[0].timestamp);
+        const end_indicator = this.hours_mins_secs_string(this.rendered_time_slice.end - this.data[0].timestamp);
 
         this.bg_context.save();
 
@@ -416,7 +428,7 @@ class Worm {
     /* Draw the mouse line and its associated time + value indicators. */
     draw_mouse_line(x) {
         const mouse_time = this.screen_space_to_timestamp(x)
-        const time_indicator = this.hours_mins_secs_string(mouse_time - this.start_timestamp);
+        const time_indicator = this.hours_mins_secs_string(mouse_time - this.data[0].timestamp);
 
         let val_string = "";
         let val = this.value_at_time(mouse_time);
