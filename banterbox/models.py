@@ -65,7 +65,8 @@ class Room(models.Model):
     commenced_at = models.DateTimeField(auto_now_add=True)
     concluded_at = models.DateTimeField(null=True)
     closed_at = models.DateTimeField(null=True)
-    
+    history = models.TextField(default="{}")
+
     def __str__(self):
         return self.name
 '''

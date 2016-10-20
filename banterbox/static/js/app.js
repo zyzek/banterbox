@@ -509,16 +509,12 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"../app":1,"../auth":2,"../store":12,"sweetalert2":118,"vue":123,"vue-hot-reload-api":120,"vueify/lib/insert-css":124}],9:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 4, stdin */\n.vote-icon-container {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 9, stdin */\n  .vote-icon-container .vote-icon {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    padding: 20px;\n    border-radius: 1000px;\n    width: 100px;\n    height: 100px;\n    border: 2px solid #b4b4b4;\n    margin: 10px;\n    -webkit-transition: all 0.25s ease;\n    transition: all 0.25s ease;\n    box-shadow: 0px 2px 0 0 #3b3b3b; }\n    /* line 24, stdin */\n    .vote-icon-container .vote-icon:hover {\n      box-shadow: 0px 6px 0 0 #3b3b3b;\n      -webkit-transform: translateY(-3px);\n              transform: translateY(-3px); }\n    /* line 29, stdin */\n    .vote-icon-container .vote-icon.red {\n      background-color: red;\n      border: 2px solid transparent; }\n    /* line 34, stdin */\n    .vote-icon-container .vote-icon.green {\n      background-color: #23cd23;\n      border: 2px solid transparent; }\n\n/* line 42, stdin */\n#comments-panel {\n  max-height: 250px;\n  overflow-x: hidden;\n  overflow-y: scroll; }\n  /* line 47, stdin */\n  #comments-panel .comment {\n    background-color: white;\n    padding: 5px;\n    margin-bottom: 5px;\n    border-radius: 2px;\n    margin-right: 3px; }\n    /* line 54, stdin */\n    #comments-panel .comment .comment-username {\n      font-weight: 600; }\n    /* line 58, stdin */\n    #comments-panel .comment .comment-time {\n      font-size: 0.7rem; }\n    /* line 62, stdin */\n    #comments-panel .comment .comment-text {\n      padding: 5px;\n      font-size: 0.95rem; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 4, stdin */\n#icon-preview-container {\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n\n/* line 10, stdin */\n#settings-icon-container {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  width: 100%;\n  height: 195px;\n  overflow: auto;\n  -ms-flex-wrap: wrap;\n      flex-wrap: wrap;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  border-radius: 3px;\n  border: 1px solid gainsboro; }\n  /* line 21, stdin */\n  #settings-icon-container i {\n    padding: 5px;\n    margin: 3px;\n    width: 50px;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    height: 50px;\n    border: 1px solid gainsboro;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    color: #464646;\n    -webkit-transition: all 0.15s ease-out;\n    transition: all 0.15s ease-out; }\n    /* line 33, stdin */\n    #settings-icon-container i:hover {\n      -webkit-transform: scale(1.1);\n              transform: scale(1.1); }\n    /* line 37, stdin */\n    #settings-icon-container i.selected {\n      box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.67);\n      color: gainsboro;\n      background-color: #464646;\n      -webkit-transform: scale(1.2);\n              transform: scale(1.2); }\n\n/* line 46, stdin */\n#blacklist-controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column; }\n  /* line 52, stdin */\n  #blacklist-controls button {\n    font-weight: bold;\n    color: white;\n    margin: 10px 0;\n    background-color: #323e4c; }\n\n/* line 60, stdin */\n*:disabled {\n  cursor: not-allowed; }\n\n/* line 65, stdin */\n#blacklist-row select {\n  overflow-y: scroll;\n  height: 250px; }\n\n/* line 71, stdin */\n#modal {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.6);\n  top: 0;\n  left: 0;\n  z-index: 1000000;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 83, stdin */\n  #modal #modal-content {\n    overflow: auto;\n    padding: 10px;\n    width: 80%;\n    max-height: 90%;\n    background-color: white;\n    border-radius: 3px;\n    box-shadow: 0 7px 8px -3px rgba(0, 0, 0, 0.78); }\n\n/* line 94, stdin */\n.settings-button {\n  margin-left: 10px; }\n  /* line 95, stdin */\n  .settings-button i {\n    padding-right: 5px; }\n\n/* line 102, stdin */\n#comments-form {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin-bottom: 10px; }\n  /* line 106, stdin */\n  #comments-form input {\n    padding: 3px 3px 3px 10px;\n    -webkit-box-flex: 1;\n        -ms-flex: 1;\n            flex: 1;\n    margin-right: 10px; }\n  /* line 112, stdin */\n  #comments-form .btn {\n    background-color: #323e4c; }\n\n/* line 117, stdin */\n.vote-icon-container {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 122, stdin */\n  .vote-icon-container .vote-icon {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    padding: 20px;\n    border-radius: 1000px;\n    width: 100px;\n    height: 100px;\n    border: 2px solid #b4b4b4;\n    margin: 10px;\n    -webkit-transition: all 0.25s ease;\n    transition: all 0.25s ease;\n    box-shadow: 0px 2px 0 0 #3b3b3b; }\n    /* line 137, stdin */\n    .vote-icon-container .vote-icon:hover {\n      box-shadow: 0px 6px 0 0 #3b3b3b;\n      -webkit-transform: translateY(-3px);\n              transform: translateY(-3px); }\n    /* line 142, stdin */\n    .vote-icon-container .vote-icon.red {\n      background-color: red;\n      border: 2px solid transparent; }\n    /* line 147, stdin */\n    .vote-icon-container .vote-icon.green {\n      background-color: #23cd23;\n      border: 2px solid transparent; }\n\n/* line 155, stdin */\n#comments-panel {\n  max-height: 250px;\n  overflow-x: hidden;\n  overflow-y: scroll; }\n  /* line 160, stdin */\n  #comments-panel .comment {\n    background-color: white;\n    padding: 5px;\n    margin-bottom: 5px;\n    border-radius: 2px;\n    margin-right: 3px; }\n    /* line 167, stdin */\n    #comments-panel .comment .comment-username {\n      font-weight: 600; }\n    /* line 171, stdin */\n    #comments-panel .comment .comment-time {\n      font-size: 0.7rem; }\n    /* line 175, stdin */\n    #comments-panel .comment .comment-text {\n      padding: 5px;\n      font-size: 0.95rem; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-
-var _from = require('babel-runtime/core-js/array/from');
-
-var _from2 = _interopRequireDefault(_from);
 
 var _assign = require('babel-runtime/core-js/object/assign');
 
@@ -527,6 +523,10 @@ var _assign2 = _interopRequireDefault(_assign);
 var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
 
 var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _auth = require('../auth');
+
+var _auth2 = _interopRequireDefault(_auth);
 
 var _store = require('../store');
 
@@ -538,230 +538,308 @@ var _socket = require('socket.io-client');
 
 var _socket2 = _interopRequireDefault(_socket);
 
+var _sweetalert = require('sweetalert2');
+
+var _sweetalert2 = _interopRequireDefault(_sweetalert);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
     data: function data() {
         return {
             store: _store.store,
+            settings: {
+                unit_name: null,
+                unit_icon: null,
+                password_protected: false,
+                password: null,
+                users: [],
+                icons: []
+
+            },
             socket: null,
             canvas_running: false,
-            mute_background: false,
+            worm: null,
+            comment: '',
             comments: [],
-            vote_data: [],
             vote_direction: 0,
             unit_code: null,
             unit_icon: null,
             unit_name: null,
+            modal: false,
             room: {
+                authorized: true,
                 id: null,
-                is_loaded: false
+                is_loaded: false,
+                role: null
             }
         };
     },
     methods: {
-        initSocket: function initSocket() {
+
+        /**
+         * Send updated settings to the server
+         */
+        submitSettingsForm: function submitSettingsForm() {
             var _this = this;
 
-            var room_id = "roomy";
-            var socket = (0, _socket2.default)('http://localhost:3002');
-            socket.on('message', console.log);
+            var blacklist = [];
+            var whitelist = [];
 
-            socket.on('data', function (data) {
-                var _vote_data;
+            // Set up the people who are to be blacklisted/removed from blacklist
+            this.settings.users.forEach(function (x) {
+                if (x.blacklisted) {
+                    blacklist.push(x.id);
+                } else {
+                    whitelist.push(x.id);
+                }
+            });
 
-                data.sort(function (x, y) {
-                    return x.ts - y.ts;
+            // Send the request, and on return - adjust values of the room data.
+            this.$http.put('/api/room/' + this.room.id + '/settings', {
+                unit_name: this.settings.unit_name,
+                unit_icon: this.settings.unit_icon,
+                password_protected: this.settings.password_protected,
+                password: this.settings.password,
+                blacklist: blacklist,
+                whitelist: whitelist
+            }).then(function () {
+                _this.unit_icon = _this.settings.unit_icon;
+                _this.unit_name = _this.settings.unit_name;
+                var global_unit = _this.store.units.units.find(function (x) {
+                    return x.code === _this.unit_code;
+                });
+                global_unit && (global_unit.icon = _this.unit_icon);
+            }).then(function () {
+                _this.closeModal();
+            }).then(function () {
+                (0, _sweetalert2.default)({
+                    title: 'Saved!',
+                    text: 'Your settings have been udpated',
+                    type: 'success',
+                    confirmButtonColor: '#17b000',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                });
+            }).catch(function (error) {
+                return console.log({ error: error });
+            });
+        },
+
+
+        /**
+         * Choose the icon in the settings page.
+         */
+        setIcon: function setIcon(icon) {
+            this.settings.unit_icon = icon;
+        },
+
+
+        /**
+         * Change selected users to blacklisted on the settings page
+         */
+        setUsersBlacklisted: function setUsersBlacklisted() {
+            var _this2 = this;
+
+            [].concat((0, _toConsumableArray3.default)(document.getElementById('allowed-users').options)).forEach(function (x) {
+                if (x.selected) {
+                    _this2.settings.users.find(function (u) {
+                        return u.id == x.value;
+                    }).blacklisted = true;
+                }
+            });
+        },
+
+
+        /**
+         * Change selected users to allowed on the settings page
+         */
+        setUsersAllowed: function setUsersAllowed() {
+            var _this3 = this;
+
+            [].concat((0, _toConsumableArray3.default)(document.getElementById('blacklisted-users').options)).forEach(function (x) {
+                if (x.selected) {
+                    _this3.settings.users.find(function (u) {
+                        return u.id == x.value;
+                    }).blacklisted = false;
+                }
+            });
+        },
+
+
+        /**
+         * Open the settings modal.
+         * Before opening it will fetch the settings data from the server and set it up.
+         */
+        openModal: function openModal() {
+            var _this4 = this;
+
+            this.$http.get('/api/room/' + this.room.id + '/settings').then(function (response) {
+                console.log({ response: response });
+
+                _this4.settings.users = [].concat((0, _toConsumableArray3.default)(response.data.enrolled));
+                _this4.settings.unit_icon = response.data.icon;
+                _this4.settings.unit_name = response.data.unit_name;
+                _this4.settings.password_protected = response.data.password_protected;
+                _this4.settings.password = response.data.password;
+                _this4.settings.icons = [].concat((0, _toConsumableArray3.default)(response.data.icons));
+
+                _this4.modal = true;
+            });
+        },
+
+
+        /**
+         * Closes the modal and cleans up after itself.
+         */
+        closeModal: function closeModal() {
+            this.modal = false;
+            (0, _assign2.default)(this.settings, {
+                unit_name: null,
+                unit_icon: null,
+                password_protected: false,
+                password: null,
+                users: [],
+                icons: []
+            });
+        },
+
+
+        /**
+         * Submits a comment
+         */
+        submitComment: function submitComment() {
+            if (this.comment.trim().length > 0) {
+                this.socket.emit('comment', { comment: this.comment });
+                this.comment = '';
+            }
+        },
+
+
+        /**
+         * Initialises a socket and attempts to authenticate.
+         *
+         * If the socket authenticates, it then proceeds to add all the listeners required to communicate
+         * with the room.
+         *
+         * Otherwise it will just fail.
+         *
+         */
+        initSocket: function initSocket() {
+            var _this5 = this;
+
+            var socket = (0, _socket2.default)('//' + window.location.hostname + ':3000');
+
+            socket.on('unauthorized', function (err) {
+                console.log("There was an error with the authentication:", err.message);
+            });
+
+            socket.on('connect', function () {
+                console.log({ room: _this5.room, id: _this5.room.id });
+                socket.on('authenticated', function (e) {
+
+                    _this5.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket);
+
+                    console.log('authenticated', { e: e });
+
+                    socket.on('comment_history', function (comments) {
+                        _this5.comments = [].concat((0, _toConsumableArray3.default)(comments));
+                    });
+
+                    socket.on('comment', function (comment) {
+                        console.log({ comment: comment });
+                        _this5.comments.unshift(comment);
+                    });
+
+                    socket.on('message', function (data) {
+                        console.log({ data: data });
+                    });
+
+                    _this5.socket = socket;
                 });
 
-                (_vote_data = _this.vote_data).push.apply(_vote_data, (0, _toConsumableArray3.default)(data));
+                socket.emit('authentication', { token_id: _auth2.default.getToken(), room_id: _this5.room.id });
             });
-
-            // Step is a broadcast
-            socket.on('step', function (data) {
-                return _this.vote_data.push(data);
-            });
-
-            this.socket = socket;
         },
+
+
+        /**
+         * Sets the value of the user's current vote.
+         * If they click the same button it will cancel their vote and they will be in a neutral state
+         * @param value
+         */
         changeVote: function changeVote(value) {
             if (this.vote_direction === value) {
-                this.vote_direction = 0;
+                this.vote_direction = 'cancel';
             } else {
                 this.vote_direction = value;
             }
+
+            this.socket.emit('vote', { value: this.vote_direction, timestamp: Date.now() });
         }
     },
     route: {
+        /**
+         * On route activation, collect page data to load the room and activate the worm.
+         * If they are unauthorized, nothing will be loaded.
+         */
         activate: function activate() {
-            var _this2 = this;
+            var _this6 = this;
 
-            this.room.id = this.$route.params.id.replace(/-/g, '');
+            this.room.id = this.$route.params.id;
             this.$http.get('/api/room/' + this.room.id).then(function (response) {
-                response.data.comments.map(function (comment) {
-                    var _comment = (0, _assign2.default)({}, comment);
-                    _comment.date = (0, _moment2.default)(comment.timestamp * 1000).format('DD/MM/YYYY');
-                    _comment.time = (0, _moment2.default)(comment.timestamp * 1000).format('HH:mm:ss');
-                    _this2.comments.push(_comment);
-                });
-                _this2.unit_code = response.data.unit_code;
-                _this2.unit_icon = response.data.unit_icon;
-                _this2.unit_name = response.data.unit_name;
-                _this2.room.is_loaded = true;
+                _this6.unit_code = response.data.unit_code;
+                _this6.unit_icon = response.data.unit_icon;
+                _this6.unit_name = response.data.unit_name;
+                _this6.room.role = response.data.role;
+                _this6.room.is_loaded = true;
                 console.log(response);
+
+                // Dependency on Worm.js to be loaded in the header.
+                // When we get closer to launch I will turn this
+                // into an ES6 module
             }).catch(function (error) {
-                console.log(error);
+                if (error.status === 403) {
+                    // user forbidden
+                    _this6.room.authorized = false;
+                }
+                console.log({ error: error });
             });
 
             this.canvas_running = true;
             console.log('starting canvas');
         },
+
+
+        /**
+         * On page leave, clean up running objects
+         */
         deactivate: function deactivate() {
+
             this.canvas_running = false;
+            this.worm = null;
+            //                this.socket.emit('leave_room', this.room.id)
+            this.socket && this.socket.close();
+            this.socket = null;
             console.log('stopping canvas');
         }
     },
 
+    /**
+     * After the page has loaded, init the socket.
+     */
     ready: function ready() {
-        var _this3 = this;
-
-        var worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'));
-
-        // Uhhhhh I got a bit distracted.
-        // ...Just a bit
-
-
-        // Demo an animating canvas.
-        // Making sure it cleans up after itself when  page unloads since its technically still in memory
-
-
-        if (false) {
-            (function () {
-                var renderUguu = function renderUguu() {
-
-                    if (this.is_growing) {
-                        this.size++;
-                        if (this.size > 120) {
-                            this.is_growing = false;
-                        }
-                    } else {
-                        this.size--;
-                        if (this.size < 80) {
-                            this.is_growing = true;
-                        }
-                    }
-
-                    this.x += this.speed * delta;
-                    this.y += this.speed * delta;
-
-                    if (this.y > canvas.height + 5) {
-                        this.y = 0 - this.size;
-                    }
-
-                    if (this.x > canvas.width + 5) {
-                        this.x = 0 - this.size;
-                    }
-
-                    this.rotation += this.speed * delta * (Math.PI / 180);
-
-                    context.save();
-                    context.textBaseline = 'top';
-                    context.translate(this.x + this.size / 2, this.y + this.size / 2);
-                    context.scale(this.size / 100, this.size / 100);
-                    context.rotate(this.rotation);
-                    context.drawImage(this.texture, 0, 0);
-                    context.restore();
-                };
-
-                var canvas = document.getElementById('fg_canvas');
-                var context = canvas.getContext('2d');
-
-                var delta = 0;
-                var old_time = Date.now();
-
-                window.addEventListener('resize', function (e) {
-                    canvas.width = canvas.parentElement.clientWidth;
-                });
-
-                canvas.height = 350;
-                canvas.width = 800;
-
-                // Cache that shit
-                var textures = function () {
-
-                    var out = [];
-
-                    ['💋 ', '💄', '💪', '😂', '👁', '👅', '🍌', '🍆', '🌽', '🍗', '🎷', '💉', '💊', '💣', '🔮', '🕎', '☪', '✝️', '🐍', '🌚', '⌚️', '📱', '📲', '💻', '⌨', '🖥', '🖨', '🖱', '🖲', '🕹', '🗜', '💽', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽', '🎞', '📞', '☎️', '📟', '📠', '📺', '📻', '🎙', '🎚', '🎛', '⏱', '⏲', '⏰', '🕰', '⏳', '⌛️', '📡', '🔋', '🔌', '💡', '🔦', '🕯', '🗑', '🛢', '💸', '💵', '💴', '💶', '💷', '💰', '💳', '💎', '⚖', '🔧', '🔨', '⚒', '🛠', '⛏', '🔩', '⚙', '⛓', '🔫', '💣', '🔪', '🗡', '⚔', '🛡', '🚬', '☠', '⚰', '⚱', '🏺', '🔮', '📿', '💈', '⚗', '🔭', '🔬', '🕳', '💊', '💉', '🌡', '🏷', '🔖', '🚽', '🚿', '🛁', '🔑', '🗝', '🛋', '🛌', '🛏', '🚪', '🛎', '🖼', '🗺', '⛱', '🗿', '🛍', '🎈', '🎏', '🎀', '🎁', '🎊', '🎉', '🎎', '🎐', '🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🍍', '🍅', '🍆', '🌶', '🌽', '🍠', '🍯', '🍞', '🧀', '🍗', '🍖', '🍤', '🍳', '🍔', '🍟', '🌭', '🍕', '🍝', '🌮', '🌯', '🍜', '🍲', '🍥', '🍣', '🍱', '🍛', '🍙', '🍚', '🍘', '🍢', '🍡', '🍧', '🍨', '🍦', '🍰', '🎂', '🍮', '🍬', '🍭', '🍫', '🍿', '🍩', '🍪', '🍺', '🍻', '🍷', '🍸', '🍹', '🍾', '🍶', '🍵', '☕️', '🍼', '🍴', '🍽', '🐶', '🐱', '🐭', '🐹', '🐰', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐽', '🐸', '🐙', '🐵', '🙈', '🙉', '🙊', '🐒', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🐺', '🐗', '🐴', '🦄', '🐝', '🐛', '🐌', '🐞', '🐜', '🕷', '🦂', '🦀', '🐍', '🐢', '🐠', '🐟', '🐡', '🐬', '🐳', '🐋', '🐊', '🐆', '🐅', '🐃', '🐂', '🐄', '🐪', '🐫', '🐘', '🐐', '🐏', '🐑', '🐎', '🐖', '🐀', '🐁', '🐓', '🦃', '🕊', '🐕', '🐩', '🐈', '🐇', '🐿', '🐾', '🐉', '🐲', '🌵', '🎄', '🌲', '🌳', '🌴', '🌱', '🌿', '☘', '🍀', '🎍', '🎋', '🍃', '🍂', '🍁', '🌾', '🌺', '🌻', '🌹', '🌷', '🌼', '🌸', '💐', '🍄', '🌰', '🎃', '🐚', '🕸', '🌎', '🌍', '🌏', '🌕', '🌖', '🌗', '🌘', '🌑', '🌒', '🌓', '🌔', '🌚', '🌝', '🌛', '🌜', '🌞', '🌙', '⭐️', '🌟', '💫', '✨', '☄', '☀️', '🌤', '⛅️', '🌥', '🌦', '☁️', '🌧', '⛈', '🌩', '⚡️', '🔥', '💥', '❄️', '🌨', '🔥', '💥', '❄️', '🌨', '☃️', '⛄️', '🌬', '💨', '🌪', '🌫', '☂️', '☔️', '💧', '💦', '🌊'].map(function (em) {
-
-                        var can = document.createElement('canvas');
-                        var ctx = can.getContext('2d');
-                        can.width = can.height = 100;
-                        ctx.font = '100px Arial';
-                        ctx.textBaseline = 'top';
-                        ctx.fillText(em, 0, 0);
-                        out.push(can);
-                    });
-
-                    return out;
-                }();
-
-                var uguu = {
-                    x: 0,
-                    y: 0,
-                    speed: 15,
-                    size: 100,
-                    is_growing: true,
-                    rotation: 0,
-                    texture: null
-
-                };
-
-                var uguus = [];
-
-                (0, _from2.default)({ length: 333 }).map(function (unused) {
-                    var a = (0, _assign2.default)({}, uguu);
-                    a.render = renderUguu;
-                    a.x = Math.random() * canvas.width;
-                    a.y = Math.random() * canvas.height;
-                    a.size = Math.random() * 100 + 50;
-                    a.speed = Math.random() * 25;
-                    a.rotation = Math.random() * 360 * (Math.PI / 180);
-                    a.texture = textures[Math.floor(Math.random() * textures.length)];
-                    uguus.push(a);
-                });
-
-                var run = function run() {
-                    var new_time = Date.now();
-                    delta = (new_time - old_time) / 100;
-                    old_time = new_time;
-
-                    // Don't play if muted
-                    if (!_this3.mute_background) {
-                        uguus.map(function (x) {
-                            return x.render();
-                        });
-                    }
-
-                    // Stop running
-                    if (_this3.canvas_running) {
-                        requestAnimationFrame(run);
-                    }
-                };
-                run();
-            })();
-        }
-
         this.initSocket();
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <div v-if=\"!room.is_loaded\">\n        <h5>\n            If you are seeing this, the room's data has not loaded or auth fail, or some other crap.\n\n            Check console and see if something shit itself\n        </h5>\n    </div>\n\n    <div class=\"col-xs-12\" v-show=\"room.is_loaded\">\n        <div class=\"col-xs-12\">\n            <div><h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}</h1></div>\n            <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n        </div>\n\n        <div class=\"col-xs-12\" style=\"margin-bottom:20px;\">\n            <canvas v-show=\"!mute_background\" id=\"fg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2\"></canvas>\n            <canvas v-show=\"!mute_background\" id=\"bg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray\"></canvas>\n            <!--<canvas v-show=\"mute_background\" id=\"muted-canvas\"-->\n                    <!--style=\"width:100%; height:350px; background-color: darkslategray\"></canvas>-->\n            <!---->\n            <!---->\n            <div id=\"worm-comments\">\n\n            </div>\n            <div>\n                <h5 style=\"display:inline-block\">Background: </h5>\n                <label><input type=\"radio\" v-model=\"mute_background\" :value=\"false\">Play</label>\n                <label><input type=\"radio\" v-model=\"mute_background\" :value=\"true\">Mute </label>\n                <span style=\"padding-left:15px;font-size:0.7rem\"><i>Note: This option won't be in the final product, unless there's a good reason to add it</i></span>\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <div class=\"row\">\n                <div class=\"col-xs-4\">\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote(1)\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 1}\"></i>\n                    </span>\n                    </div>\n                    <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote(-1)\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === -1}\"></i>\n                    </span>\n                    </div>\n                </div>\n                <div class=\"col-xs-8\">\n\n                    <div id=\"comments-panel\">\n\n                        <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                            <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                            <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                            <div class=\"comment-text\">{{ comment.content }}</div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\n    <div v-if=\"!room.is_loaded &amp;&amp; room.authorized\">\n        <h5>\n            If you are seeing this, the room's data has not loaded or auth fail, or some other crap.\n            Check console and see if something shit itself\n        </h5>\n    </div>\n\n    <div v-if=\"!room.is_loaded &amp;&amp; !room.authorized\">\n        <h5>You have been blacklisted from this room :(</h5>\n        <h5>Sorry sweaty~</h5>\n    </div>\n\n\n    <div id=\"modal\" v-if=\"modal\" transition=\"fade\">\n        <div id=\"modal-content\">\n\n\n            <div autocomplete=\"off\">\n                <div class=\"container\">\n                    <h2>Edit Settings</h2>\n\n                    <div class=\"form-group row\">\n                        <label class=\"col-xs-3 col-form-label\">Icon</label>\n                        <div class=\"col-xs-2\" id=\"icon-preview-container\"><i class=\"fa fa-4x fa-{{settings.unit_icon}}\"></i></div>\n                        <div class=\"col-xs-7\">\n\n                            <div id=\"settings-icon-container\">\n                                <i v-for=\"icon in settings.icons\" class=\"fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}\" :title=\"icon\" @click=\"setIcon(icon)\"></i>\n                            </div>\n                        </div>\n                    </div>\n\n                    <div class=\"form-group row\">\n                        <label for=\"description\" class=\"col-xs-3 col-form-label\">Unit Name</label>\n                        <div class=\"col-xs-9\">\n                            <input type=\"text\" v-model=\"settings.unit_name\" class=\"form-control\" id=\"description\" name=\"description\">\n                        </div>\n                    </div>\n\n\n                    <div class=\"form-group row\">\n                        <label class=\"col-xs-3 col-form-label\">Password Protected</label>\n                        <div class=\"col-xs-9\">\n                            <!-- Radio Buttons -->\n                            <label class=\"form-check-inline\">\n                                <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"true\">\n                                Yes\n                            </label>\n                            <label class=\"form-check-inline\">\n                                <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"false\" checked=\"\"> No\n                            </label>\n                        </div>\n                    </div>\n\n                    <div class=\"form-group row\">\n                        <label class=\"col-xs-3 col-form-label\">Password</label>\n                        <div class=\"col-xs-9\">\n                            <input type=\"text\" class=\"form-control\" v-model=\"settings.password\" :disabled=\"!settings.password_protected\">\n                        </div>\n                    </div>\n\n                    <div class=\"form-group row\" id=\"blacklist-row\">\n                        <label class=\"col-xs-3 col-form-label\">Blacklist</label>\n                        <div class=\"col-xs-9\">\n                            <div class=\"row\">\n                                <div class=\"col-xs-5\">\n                                    <label>Allowed</label>\n                                    <select multiple=\"\" class=\"form-control\" id=\"allowed-users\">\n                                        <option v-for=\"user in settings.users\" v-if=\"!user.blacklisted\" :value=\"user.id\">\n                                            {{ user.username }}\n                                        </option>\n                                    </select>\n                                </div>\n                                <div class=\"col-xs-2\" id=\"blacklist-controls\">\n                                    <button class=\"btn btn-sm\" @click.prevent()=\"setUsersBlacklisted()\"> &gt;&gt;</button>\n                                    <button class=\"btn btn-sm\" @click.prevent()=\"setUsersAllowed()\"> &lt;&lt;</button>\n                                </div>\n                                <div class=\"col-xs-5\">\n                                    <label>Blacklisted</label>\n                                    <select multiple=\"\" class=\"form-control\" id=\"blacklisted-users\">\n                                        <option v-for=\"user in settings.users\" v-if=\"user.blacklisted\" :value=\"user.id\">\n                                            {{ user.username }}\n                                        </option>\n                                    </select>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <div class=\"form-group row\">\n                        <div class=\"offset-xs-3 col-xs-9\">\n                            <button type=\"submit\" class=\"btn btn-success\" @click.prevent=\"submitSettingsForm()\">\n                                Submit\n                            </button>\n                            <button type=\"submit\" class=\"btn btn-danger\" @click.prevent=\"closeModal()\" style=\"margin-left: 20px;\">Cancel\n                            </button>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n\n<div class=\"col-xs-12\" v-show=\"room.is_loaded\">\n    <div class=\"col-xs-12\">\n        <div>\n            <h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}\n                <button @click=\"openModal()\" v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-cog\"></i>Room Settings\n                </button>\n            </h1>\n        </div>\n        <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n    </div>\n\n    <div class=\"col-xs-12\" style=\"margin-bottom:20px; position: relative\">\n\n\n        <canvas v-show=\"!mute_background\" id=\"fg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2\">\n\n        </canvas>\n        <canvas v-show=\"!mute_background\" id=\"bg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray\">\n\n        </canvas>\n\n        <!-- This div is a dud to stop the parent from collapsing -->\n        <div id=\"dud\" style=\"width:100%; height:350px;\"></div>\n\n        <div id=\"worm-comments\">\n\n        </div>\n    </div>\n\n\n    <div class=\"col-xs-12\">\n        <div class=\"row\">\n            <div class=\"col-xs-12\">\n                <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                    <input type=\"text\" v-model=\"comment\" placeholder=\"Add a comment\" :disabled=\"!socket\">\n                    <button class=\"btn btn-primary\" :disabled=\"!socket\">SUBMIT</button>\n                </form>\n            </div>\n            <div class=\"col-xs-4\">\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                </div>\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                </div>\n            </div>\n            <div class=\"col-xs-8\">\n\n                <div id=\"comments-panel\">\n                    <div v-if=\"!socket\">\n                        Not connected to server\n                    </div>\n                    <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                        <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                        <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                        <div class=\"comment-text\">{{ comment.content }}</div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 4, stdin */\n.vote-icon-container {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 9, stdin */\n  .vote-icon-container .vote-icon {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    padding: 20px;\n    border-radius: 1000px;\n    width: 100px;\n    height: 100px;\n    border: 2px solid #b4b4b4;\n    margin: 10px;\n    -webkit-transition: all 0.25s ease;\n    transition: all 0.25s ease;\n    box-shadow: 0px 2px 0 0 #3b3b3b; }\n    /* line 24, stdin */\n    .vote-icon-container .vote-icon:hover {\n      box-shadow: 0px 6px 0 0 #3b3b3b;\n      -webkit-transform: translateY(-3px);\n              transform: translateY(-3px); }\n    /* line 29, stdin */\n    .vote-icon-container .vote-icon.red {\n      background-color: red;\n      border: 2px solid transparent; }\n    /* line 34, stdin */\n    .vote-icon-container .vote-icon.green {\n      background-color: #23cd23;\n      border: 2px solid transparent; }\n\n/* line 42, stdin */\n#comments-panel {\n  max-height: 250px;\n  overflow-x: hidden;\n  overflow-y: scroll; }\n  /* line 47, stdin */\n  #comments-panel .comment {\n    background-color: white;\n    padding: 5px;\n    margin-bottom: 5px;\n    border-radius: 2px;\n    margin-right: 3px; }\n    /* line 54, stdin */\n    #comments-panel .comment .comment-username {\n      font-weight: 600; }\n    /* line 58, stdin */\n    #comments-panel .comment .comment-time {\n      font-size: 0.7rem; }\n    /* line 62, stdin */\n    #comments-panel .comment .comment-text {\n      padding: 5px;\n      font-size: 0.95rem; }\n"] = false
+    __vueify_insert__.cache["/* line 4, stdin */\n#icon-preview-container {\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n\n/* line 10, stdin */\n#settings-icon-container {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  width: 100%;\n  height: 195px;\n  overflow: auto;\n  -ms-flex-wrap: wrap;\n      flex-wrap: wrap;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  border-radius: 3px;\n  border: 1px solid gainsboro; }\n  /* line 21, stdin */\n  #settings-icon-container i {\n    padding: 5px;\n    margin: 3px;\n    width: 50px;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    height: 50px;\n    border: 1px solid gainsboro;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    color: #464646;\n    -webkit-transition: all 0.15s ease-out;\n    transition: all 0.15s ease-out; }\n    /* line 33, stdin */\n    #settings-icon-container i:hover {\n      -webkit-transform: scale(1.1);\n              transform: scale(1.1); }\n    /* line 37, stdin */\n    #settings-icon-container i.selected {\n      box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.67);\n      color: gainsboro;\n      background-color: #464646;\n      -webkit-transform: scale(1.2);\n              transform: scale(1.2); }\n\n/* line 46, stdin */\n#blacklist-controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column; }\n  /* line 52, stdin */\n  #blacklist-controls button {\n    font-weight: bold;\n    color: white;\n    margin: 10px 0;\n    background-color: #323e4c; }\n\n/* line 60, stdin */\n*:disabled {\n  cursor: not-allowed; }\n\n/* line 65, stdin */\n#blacklist-row select {\n  overflow-y: scroll;\n  height: 250px; }\n\n/* line 71, stdin */\n#modal {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.6);\n  top: 0;\n  left: 0;\n  z-index: 1000000;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 83, stdin */\n  #modal #modal-content {\n    overflow: auto;\n    padding: 10px;\n    width: 80%;\n    max-height: 90%;\n    background-color: white;\n    border-radius: 3px;\n    box-shadow: 0 7px 8px -3px rgba(0, 0, 0, 0.78); }\n\n/* line 94, stdin */\n.settings-button {\n  margin-left: 10px; }\n  /* line 95, stdin */\n  .settings-button i {\n    padding-right: 5px; }\n\n/* line 102, stdin */\n#comments-form {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin-bottom: 10px; }\n  /* line 106, stdin */\n  #comments-form input {\n    padding: 3px 3px 3px 10px;\n    -webkit-box-flex: 1;\n        -ms-flex: 1;\n            flex: 1;\n    margin-right: 10px; }\n  /* line 112, stdin */\n  #comments-form .btn {\n    background-color: #323e4c; }\n\n/* line 117, stdin */\n.vote-icon-container {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 122, stdin */\n  .vote-icon-container .vote-icon {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    padding: 20px;\n    border-radius: 1000px;\n    width: 100px;\n    height: 100px;\n    border: 2px solid #b4b4b4;\n    margin: 10px;\n    -webkit-transition: all 0.25s ease;\n    transition: all 0.25s ease;\n    box-shadow: 0px 2px 0 0 #3b3b3b; }\n    /* line 137, stdin */\n    .vote-icon-container .vote-icon:hover {\n      box-shadow: 0px 6px 0 0 #3b3b3b;\n      -webkit-transform: translateY(-3px);\n              transform: translateY(-3px); }\n    /* line 142, stdin */\n    .vote-icon-container .vote-icon.red {\n      background-color: red;\n      border: 2px solid transparent; }\n    /* line 147, stdin */\n    .vote-icon-container .vote-icon.green {\n      background-color: #23cd23;\n      border: 2px solid transparent; }\n\n/* line 155, stdin */\n#comments-panel {\n  max-height: 250px;\n  overflow-x: hidden;\n  overflow-y: scroll; }\n  /* line 160, stdin */\n  #comments-panel .comment {\n    background-color: white;\n    padding: 5px;\n    margin-bottom: 5px;\n    border-radius: 2px;\n    margin-right: 3px; }\n    /* line 167, stdin */\n    #comments-panel .comment .comment-username {\n      font-weight: 600; }\n    /* line 171, stdin */\n    #comments-panel .comment .comment-time {\n      font-size: 0.7rem; }\n    /* line 175, stdin */\n    #comments-panel .comment .comment-text {\n      padding: 5px;\n      font-size: 0.95rem; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -770,7 +848,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-da4a30ba", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":12,"babel-runtime/core-js/array/from":15,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":103,"socket.io-client":109,"vue":123,"vue-hot-reload-api":120,"vueify/lib/insert-css":124}],10:[function(require,module,exports){
+},{"../auth":2,"../store":12,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":103,"socket.io-client":109,"sweetalert2":118,"vue":123,"vue-hot-reload-api":120,"vueify/lib/insert-css":124}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
