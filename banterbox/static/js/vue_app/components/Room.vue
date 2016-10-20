@@ -1,6 +1,5 @@
 <template>
-    <div class="row">
-
+    <div class="row" v-if="store.units.units.length > 0">
         <div v-if="!room.is_loaded && room.authorized">
             <h5>
                 If you are seeing this, the room's data has not loaded or auth fail, or some other crap.
