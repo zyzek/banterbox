@@ -13,7 +13,7 @@ from .icons import icons
 ---------------------------------------------------- /api/room/blacklist ------------------------------------------
 '''
 
-
+#TODO : Make this actually work
 @api_view(['GET', 'POST'])
 def blacklist(request, room_id):
     # get the room 
@@ -27,12 +27,12 @@ def blacklist(request, room_id):
     elif request.method == "POST":
         return blacklist_POST(request, room)
 
-
+#TODO : Make this actually work
 def blacklist_GET(request, room):
     return {
         'blacklisted_users': 'TBI'}  # return {'blacklisted_users' : [User.objects.get(id = UserRoomBlacklist.user_id).id for UserRoomBlacklist in UserRoomBlacklist.objects.filter(room_id=room.id)]}
 
-
+#TODO : Make this actually work
 def blacklist_POST(request, room):
     # check if admin
     user = request.user
@@ -252,34 +252,38 @@ def get_next_session(unit):
                    or next((x for x in scheduled_rooms if x.day > today), None) \
                    or next((x for x in scheduled_rooms if x.day < today), None)
 
+
+    if next_session is None:
+        return {'time': None, 'day': None}
+
     return {'time': next_session.start_time.strftime('%H:%M'), 'day': calendar.day_name[next_session.day]}
 
 
 @api_view(['GET'])
-def get_rooms(request):
+def get_units(request):
     try:
         user = request.user
     except:
         return Response({'message': "no user."}, status=400)
 
-    rooms = []
+    out_units = []
     for user_enrolment in UserUnitEnrolment.objects.filter(user_id=user.id):
         unit = Unit.objects.get(id=user_enrolment.unit_id)
-        room = Room.objects.get(unit_id=unit.id)
+        # room = Room.objects.get(unit_id=unit.id)
         result = {
-            "id"          : room.id,
+            # "id"          : room.id,
             "lecturer"    : {"email": unit.lecturer.email,
                              "name" : '{0} {1}'.format(unit.lecturer.first_name, unit.lecturer.last_name)},
-            "created_at"  : room.created_at,
-            "name"        : room.name,
+            # "created_at"  : room.created_at,
+            # "name"        : room.name,
             "code"        : unit.code,
             "icon"        : unit.icon,
-            "status"      : room.status.name,
+            # "status"      : room.status.name,
             "next_session": get_next_session(unit)
         }
 
-        rooms.append(result)
-    return Response({'rooms': rooms})
+        out_units.append(result)
+    return Response({'units': out_units})
 
 
 '''
@@ -355,16 +359,22 @@ def index(request):
     return render(request, 'index.html')
 
 
+#TODO : Rename to get unit(singular)
 @api_view(['GET'])
-def enter_room(request, room_id):
+def enter_room(request, unit_code):
     """
     Collects initial data for the display of a room.
     """
     # First, check the existence of the room
     try:
-        room = Room.objects.get(id=room_id)
-    except Room.DoesNotExist:
-        return Response({'message': 'The room you are trying to access does not exist'}, status=404)
+        unit = Unit.objects.get(code=unit_code)
+        # room = Room.objects.get(id=unit_code)
+    except Unit.DoesNotExist:
+        return Response({'message': 'The unit you are trying to access does not exist'}, status=404)
+
+
+    # Collect a correct room
+    room = unit.room_set.first()
 
     # TODO: Turn this into a decorator
     # Check authorization, if they're not allowed to enter we let them know they're unauthorized
@@ -382,8 +392,9 @@ def enter_room(request, room_id):
     #   1. The Room's unit info : name,code
 
     return Response({
-        'unit_code': room.unit.code,
-        'unit_name': room.unit.name,
-        'unit_icon': room.unit.icon,
-        'role'     : role
+        'unit_code': unit.code,
+        'unit_name': unit.name,
+        'unit_icon': unit.icon,
+        'role'     : role,
+        'room_id' : room.id
     })

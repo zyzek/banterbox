@@ -32,10 +32,10 @@ router.map({
     '/login': {
         component: Login
     },
-    '/rooms': {
+    '/units': {
         component: RoomSelection,
     },
-    '/rooms/:id': {
+    '/units/:id': {
         component: Room,
     },
     '/404': {

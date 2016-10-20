@@ -110,7 +110,7 @@
                             })
 
                             setTimeout(() => {
-                                router.go('/rooms')
+                                router.go('/units')
                             }, 1500)
                         })
 

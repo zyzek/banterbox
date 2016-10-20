@@ -49,10 +49,10 @@
                 this.store.ui.main_centered = true;
 
                 if (store.units.units.length === 0) {
-                    this.$http.get('/api/rooms').then(response => {
+                    this.$http.get('/api/units').then(response => {
 
                         console.log({response})
-                        store.units.units.push(...response.data.rooms)
+                        store.units.units.push(...response.data.units)
                         this.room_loading = false
                     }, reject => {
                         console.log({reject})

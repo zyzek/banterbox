@@ -438,7 +438,7 @@
 
 
                 // Send the request, and on return - adjust values of the room data.
-                this.$http.put(`/api/room/${this.room.id}/settings`, {
+                this.$http.put(`/api/unit/${this.room.id}/settings`, {
                     unit_name: this.settings.unit_name,
                     unit_icon: this.settings.unit_icon,
                     password_protected: this.settings.password_protected,
@@ -501,7 +501,7 @@
              * Before opening it will fetch the settings data from the server and set it up.
              */
             openModal(){
-                this.$http.get(`/api/room/${this.room.id}/settings`)
+                this.$http.get(`/api/unit/${this.room.id}/settings`)
                         .then(response => {
                             console.log({response})
 
@@ -611,9 +611,9 @@
              * If they are unauthorized, nothing will be loaded.
              */
             activate() {
-                this.room.id = this.$route.params.id
-                this.$http.get(`/api/room/${this.room.id}`)
+                this.$http.get(`/api/unit/${this.$route.params.id}`)
                         .then(response => {
+                            this.room.id = response.data.room_id
                             this.unit_code = response.data.unit_code
                             this.unit_icon = response.data.unit_icon
                             this.unit_name = response.data.unit_name

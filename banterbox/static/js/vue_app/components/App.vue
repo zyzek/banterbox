@@ -8,7 +8,7 @@
                     <div style="color: #eaeae5; padding:5px; font-size:1.6rem">BanterBox</div>
                     <ul id="header-links">
                         <li v-link-active><a v-link="{ path : '/home'}">Home</a></li>
-                        <li v-link-active><a v-link="{ path : '/rooms' }">Rooms</a></li>
+                        <li v-link-active><a v-link="{ path : '/units' }">Units</a></li>
                         <li v-link-active><a v-link="{ path : '/404' }">404</a></li>
                     </ul>
                 </div>
@@ -115,7 +115,7 @@
         },
         computed: {
             centered: function () {
-                return this.$route.path === '/rooms'
+                return this.$route.path === '/units'
             }
         }
     }

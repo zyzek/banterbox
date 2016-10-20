@@ -17,11 +17,9 @@ const createStore = () => {
                 return `${this.first_name} ${this.last_name}`
             }
         },
-        rooms: {
-            current_room: {},
-            hovered: null
-        },
         units: {
+            current_unit: {},
+            hovered: null,
             units: [],
         },
         ui: {
