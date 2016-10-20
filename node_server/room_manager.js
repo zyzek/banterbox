@@ -53,11 +53,11 @@ function updateRooms() {
     // Collect the room schedules
     .then(() => {
       return DB.connection().any({
-        name: "collect-room-schedule",
-        text: `SELECT
+        name  : "collect-room-schedule",
+        text  : `SELECT
                  U.*,
                  SC.*,
-                 R.id, R.status_id, R.status_name
+                 R.id AS room_id, R.status_id, R.status_name
                FROM banterbox_scheduledroom SC
                  LEFT JOIN
                  (SELECT  banterbox_room.*, COALESCE(banterbox_roomstatus.name, 'unopened') AS status_name
@@ -80,59 +80,71 @@ function updateRooms() {
 
       rows.map(row => {
         if (row.status_name === null) {
-            console.log("Creating room.")
-            promises.push(DB.connection().any({
-                name: "create-room",
-                text: `INSERT INTO banterbox_room (id, name, created_at, lecturer_id, status_id, unit_id)
+          console.log("Creating room.")
+          promises.push(DB.connection().any({
+            name  : "create-room",
+            text  : `INSERT INTO banterbox_room (id, name, created_at, lecturer_id, status_id, unit_id, private, password_protected)
                        VALUES (
                          $1,
                          $2,
                          NOW(),
                          $3,
                          NULL,
-                         $4
+                         $4,
+                         false,
+                         false
                        );`,
-                values: [uuid.v4(), `${row.code} lecture`, row.lecturer_id, row.unit_id]
-            }))
+            values: [uuid.v4(), `${row.code} lecture`, row.lecturer_id, row.unit_id]
+          }))
         }
       })
-
-      return Promise.join(promises).then(() => {return rows})
-
-      .then(rows => { rows.filter(row => row.status_name != null).map(row => {
-          const statements = []
-
-          const start_time = moment(row.start_time, 'HH:mm')
-          const end_time   = moment(row.end_time, 'HH:mm')
-
-          const diff_start = time_now.diff(start_time, 'minutes')
-          const diff_end   = time_now.diff(end_time, 'minutes')
-          const length     = end_time.diff(start_time, 'minutes')
-
-          /*
-           * Room Lifecycle:
-           *  Commencing --> Running --> Concluding --> Closed
-           */
-
-          if (diff_start >= -10 && diff_start < 0) {
-            statements.push(updateRoomStatement(row.room_id, statuses['commencing'], 'commencing'))
-          }
-          else if (diff_start >= 0) {
-            if (diff_end >= 0 && diff_end < 10) {
-              statements.push(updateRoomStatement(row.room_id, statuses['concluding'], 'concluding'))
-            }
-            else if (diff_end >= 10) {
-              statements.push(updateRoomStatement(row.room_id, statuses['closed'], 'closed'))
-            }
-            else {
-              statements.push(updateRoomStatement(row.room_id, statuses['running'], 'running'))
-            }
-          }
-
-          })
+      return Promise.join(...promises).then(() => {
+        return rows
       })
+    })
+
+
+    .then(rows => {
+      const statements = []
+
+        rows = rows.filter(x => !!x.status_name)
+
+
+        rows.map(row => {
+        const start_time = moment(row.start_time, 'HH:mm')
+        const end_time   = moment(row.end_time, 'HH:mm')
+
+        const diff_start = time_now.diff(start_time, 'minutes')
+        const diff_end   = time_now.diff(end_time, 'minutes')
+        const length     = end_time.diff(start_time, 'minutes')
+
+
+
+        /*
+         * Room Lifecycle:
+         *  Commencing --> Running --> Concluding --> Closed
+         */
+
+        if (diff_start >= -10 && diff_start < 0) {
+          statements.push(updateRoomStatement(row.room_id, statuses['commencing'], 'commencing'))
+        }
+        else if (diff_start >= 0) {
+          if (diff_end >= 0 && diff_end < 10) {
+            statements.push(updateRoomStatement(row.room_id, statuses['concluding'], 'concluding'))
+          }
+          else if (diff_end >= 10) {
+            statements.push(updateRoomStatement(row.room_id, statuses['closed'], 'closed'))
+          }
+          else {
+            statements.push(updateRoomStatement(row.room_id, statuses['running'], 'running'))
+          }
+        }
+
+      })
+
       return statements
     })
+
 
     /*
      *  Push and send all the statements together in a transaction instead of one by one.
