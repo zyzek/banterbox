@@ -1,6 +1,7 @@
 const Promise = require('bluebird')
 const DB      = require('./database')
 const moment  = require('moment')
+const uuid    = require('uuid')
 
 const room_states = {}
 
@@ -36,6 +37,10 @@ function updateRoomStatement(room, status_id, status_verbose) {
 function updateRooms() {
 
   const statuses = {}
+  const time_now = moment(Date.now())
+  // negative modulo fix & JS <-> Python day int conversion.
+  // Magic number 7 for days in a week
+  const day = (((time_now.day() - 1) % 7) + 7) % 7;
   return DB.connection()
     .any('SELECT * FROM banterbox_roomstatus;')
     .then(rows => {
@@ -47,14 +52,23 @@ function updateRooms() {
 
     // Collect the room schedules
     .then(() => {
-      return DB.connection().any(`SELECT U.*, S.*, R.id AS room_id, R.status_id, ST.name as status_name
-      FROM banterbox_scheduledroom S
-        INNER JOIN banterbox_unit U
-          ON S.unit_id = U.id
-      LEFT JOIN banterbox_room R
-          ON U.id = R.unit_id
-        INNER JOIN banterbox_roomstatus ST
-          ON R.status_id = ST.id`)
+      return DB.connection().any({
+        name: "collect-room-schedule",
+        text: `SELECT
+                 U.*,
+                 SC.*,
+                 R.id, R.status_id, R.status_name
+               FROM banterbox_scheduledroom SC
+                 LEFT JOIN
+                 (SELECT  banterbox_room.*, COALESCE(banterbox_roomstatus.name, 'unopened') AS status_name
+                  FROM banterbox_room LEFT JOIN banterbox_roomstatus
+                      ON banterbox_room.status_id = banterbox_roomstatus.id) R
+                   ON R.unit_id = SC.unit_id
+                   AND (R.status_id != 5 OR R.status_id IS NULL )
+                 INNER JOIN banterbox_unit U ON SC.unit_id = U.id
+               WHERE day = $1;`,
+        values: [day]
+      })
     })
 
     /* Iterate through the schedule and if the day matches with the current day,
@@ -62,14 +76,31 @@ function updateRooms() {
      * the room states.
      */
     .then(rows => {
-      const time_now   = moment(Date.now())
-      // negative modulo fix & JS <-> Python day int conversion.
-      // Magic number 7 for days in a week
-      const day        = (((time_now.day() - 1) % 7) + 7) % 7;
-      const statements = []
+      const promises = []
 
       rows.map(row => {
-        if (row.day === day) {
+        if (row.status_name === null) {
+            console.log("Creating room.")
+            promises.push(DB.connection().any({
+                name: "create-room",
+                text: `INSERT INTO banterbox_room (id, name, created_at, lecturer_id, status_id, unit_id)
+                       VALUES (
+                         $1,
+                         $2,
+                         NOW(),
+                         $3,
+                         NULL,
+                         $4
+                       );`,
+                values: [uuid.v4(), `${row.code} lecture`, row.lecturer_id, row.unit_id]
+            }))
+        }
+      })
+
+      return Promise.join(promises).then(() => {return rows})
+
+      .then(rows => { rows.filter(row => row.status_name != null).map(row => {
+          const statements = []
 
           const start_time = moment(row.start_time, 'HH:mm')
           const end_time   = moment(row.end_time, 'HH:mm')
@@ -77,8 +108,6 @@ function updateRooms() {
           const diff_start = time_now.diff(start_time, 'minutes')
           const diff_end   = time_now.diff(end_time, 'minutes')
           const length     = end_time.diff(start_time, 'minutes')
-
-
 
           /*
            * Room Lifecycle:
@@ -99,10 +128,8 @@ function updateRooms() {
               statements.push(updateRoomStatement(row.room_id, statuses['running'], 'running'))
             }
           }
-        }
-        else {
-          statements.push(updateRoomStatement(row.room_id, statuses['closed'], 'closed'))
-        }
+
+          })
       })
       return statements
     })

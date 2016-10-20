@@ -62,10 +62,10 @@ class Room(models.Model):
     password_protected = models.BooleanField(default=False)
     password = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    commenced_at = models.DateTimeField(auto_now_add=True)
+    commenced_at = models.DateTimeField(auto_now_add=True, null=True)
     concluded_at = models.DateTimeField(null=True)
     closed_at = models.DateTimeField(null=True)
-    history = models.TextField(default="{}")
+    history = models.TextField(null=True)
 
     def __str__(self):
         return self.name

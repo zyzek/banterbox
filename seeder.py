@@ -227,6 +227,49 @@ def populate_db():
     print("All Done.")
 
 
+def add_dummy_unit():
+    lecturer = models.User()
+    lecturer.first_name = "Wikus"
+    lecturer.last_name = "van der Merwe"
+    lecturer.username = "wikus"
+    lecturer.password = "popcorn"
+    lecturer.email = "wikus@d9.co.za"
+    lecturer.save()
+
+    unit = models.Unit()
+    unit.name = "District 9"
+    unit.code = "PRWN9001"
+    unit.lecturer = lecturer
+    unit.icon = "braille"
+    unit.save()
+
+    for i in range(7):
+        room = models.ScheduledRoom()
+        room.day = i
+        room.unit = unit
+        room.start_time = time(hour=0, minute=0, second=0)
+        room.end_time = time(hour=23, minute=59, second=59)
+
+    role = models.UserUnitRole()
+    role.user = lecturer
+    role.unit = unit
+    role.role = models.UserRole.objects.get(name=models.Roles.owner.value)
+    role.save()
+
+
+
+
+
+    lecture_name = "The Prawn Hole"
+    users = ["anton", "dominic", "patrick", "roy", "wafik"]
+    user_pass = "corn"
+
+
+
+
+
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Flags:")
