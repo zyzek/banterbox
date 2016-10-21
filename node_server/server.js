@@ -542,7 +542,7 @@ function closeRoom(room_id) {
       return rclient.hgetAsync(`room:${room_id}`, `timestamp:${timestamp}`);
     })
     .then(function (histories) {
-      //send to reldb
+
       const json = JSON.stringify({value: histories});
 
       return DB.connection().none({

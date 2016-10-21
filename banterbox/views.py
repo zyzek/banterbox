@@ -367,13 +367,54 @@ def index(request):
     return render(request, 'index.html')
 
 
-#TODO : Rename to get unit(singular)
 @api_view(['GET'])
-def enter_room(request, unit_code):
+def enter_unit(request, unit_code):
     """
-    Collects initial data for the display of a room.
+    Collects initial data for the display of a unit.
     """
     # First, check the existence of the room
+
+
+
+    # TODO : Implement this process
+    #
+    # If there is a room in the querystring:
+    # - attempt to find a unit_code <--> room_id match
+    # - If one is found,
+    #   - collect data and return
+    # - else
+    #   - return a 404
+    #
+    # Otherwise:
+    # Try to get current running room.
+    # If one does not exist, return a list of all prior rooms in history
+    # If that doesn't exist, there's either no data for it in the past (unlikely), or it's fresh (likely)
+    # Either way, return a message back with the right stuff
+
+
+
+
+
+    room_id = request.GET.get('room_id',None)
+
+    if room_id is not None:
+        try:
+            room = Room.objects.get(unit__code=unit_code, id=room_id)
+        except Room.DoesNotExist:
+            room = None # Todo : return list of prior rooms. See above
+            return Response({'message' : 'Room not found.'},status=404)
+
+    else:
+        try:
+            room = Room.objects.get(unit__code=unit_code, status__name='running')
+        except Room.DoesNotExist:
+            room = None # Todo : return list of prior rooms. See above
+            return Response({'message' : 'No running rooms found.'},status=404)
+
+
+
+
+
     try:
         unit = Unit.objects.get(code=unit_code)
     except Unit.DoesNotExist:
@@ -403,5 +444,6 @@ def enter_room(request, unit_code):
         'unit_name': unit.name,
         'unit_icon': unit.icon,
         'role'     : role,
-        'room_id' : room.id
+        'room_id' : room.id,
+        'room_status' : room.status.name
     })
