@@ -120,12 +120,11 @@ function postAuth(socket, data) {
          AND BLACKLIST.user_id = EN.user_id
     LEFT JOIN auth_user U on EN.user_id = U.id
   WHERE EN.user_id = (SELECT user_id FROM authtoken_token WHERE key = $1)
-        AND ROOM.id = $2;`,
+        AND ROOM.id = $2 LIMIT 1;`,
     values: [data.token_id, data.room_id]
   }).then(result => {
 
 
-    console.log(result)
     // If a user is blacklisted, do not register socket event listeners, return a message to the user.
     client.blacklisted = result.blacklisted
     if (client.blacklisted) {
@@ -133,19 +132,12 @@ function postAuth(socket, data) {
       return Promise.reject('User is blacklisted')
     }
 
-    console.log('here')
 
     // Otherwise continue with assignment
     client.user_id  = result.user_id
     client.role     = result.role
     client.room_id  = result.id
     client.username = result.username
-
-    console.log({result, client})
-
-
-  },error => {
-    console.log({error})
   })
 
   /*
