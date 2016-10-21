@@ -71,36 +71,37 @@ function updateRooms() {
       })
     })
 
-    /* Iterate through the schedule and if the day matches with the current day,
-     * perform calculations to see if the times are within current bounds and update
-     * the room states.
-     */
     .then(rows => {
-      const promises = []
+      return DB.connection().task(t => {
+        const queries = []
+        rows.forEach(row => {
 
-      rows.map(row => {
-        if (row.status_name === null) {
-          console.log("Creating room.")
-          promises.push(DB.connection().any({
-            name  : "create-room",
-            text  : `INSERT INTO banterbox_room (id, name, created_at, lecturer_id, status_id, unit_id, private, password_protected)
+          // If a unit has no room, there will be no status name on the row.
+          // Therefore we create the room and assign the ID to the row immediately.
+
+          if (row.status_name === null) {
+            const room_id = uuid.v4()
+            console.log(`Creating room for Unit ${row.code} as :: .${room_id}`)
+            queries.push(DB.connection().any({
+              name  : "create-room",
+              text  : `INSERT INTO banterbox_room (id, name, created_at, lecturer_id, status_id, unit_id, private, password_protected)
                        VALUES ($1,$2,NOW(),$3,NULL,$4,false,false);`,
-            values: [uuid.v4(), `${row.code} lecture`, row.lecturer_id, row.unit_id]
-          }))
-        }
-      })
-      return Promise.join(...promises).then(() => {
+              values: [room_id, `${row.code} lecture`, row.lecturer_id, row.unit_id]
+            }).then(() => row.room_id = room_id))
+          }
+        })
+        return t.batch(queries)
+      }).then(() => {
         return rows
       })
     })
 
+    // Iterate through the schedule and if the day matches with the current day,
+    // perform calculations to see if the times are within current bounds and update
+    // the room states.
 
     .then(rows => {
       const statements = []
-
-        rows = rows.filter(x => !!x.status_name)
-
-
         rows.map(row => {
         const start_time = moment(row.start_time, 'HH:mm')
         const end_time   = moment(row.end_time, 'HH:mm')
@@ -154,9 +155,6 @@ function updateRooms() {
       return DB.connection().tx(function (t) {
         return this.sequence(source)
       })
-    })
-    .then(sequence => {
-      console.log({sequence})
     })
     .catch(error => {
       console.log({error})

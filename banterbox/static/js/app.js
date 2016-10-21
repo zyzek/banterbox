@@ -91,19 +91,13 @@ var free_routes = ['/login', '/404'];
 router.beforeEach(function (transition) {
     // if path is safe, continue
 
-    console.log('going to: ', transition.to.path);
 
     if (free_routes.indexOf(transition.to.path) !== -1) {
-        console.log('free route');
         transition.next();
     } else {
-        console.log('trying profile');
         _auth2.default.retrieveProfile().then(function (success) {
-            console.log('profile success', { success: success });
-
             transition.next();
         }, function (error) {
-            console.log('profile error', { error: error });
             _auth2.default.logout().then(function () {
                 // Set the alert to unauthorized
                 _store.store.alerts.addAlert({ message: 'You must be logged in to visit that page', type: 'danger' });
@@ -165,10 +159,9 @@ exports.default = {
         return Promise.resolve();
     },
     retrieveProfile: function retrieveProfile() {
-        return _vue2.default.http.get('/api/user').then(function (profile_response) {
+        return _vue2.default.http.get('/api/user').then(function (response) {
             _store.store.user.profile_loaded = true;
-            Object.assign(_store.store.user, profile_response.data);
-            console.log({ profile_response: profile_response });
+            Object.assign(_store.store.user, response.data);
         }, function (error) {
             return Promise.reject(error);
         });
