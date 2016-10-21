@@ -18,7 +18,7 @@ urlpatterns = [
     url(r'^api/unit/' + unit_pattern + r'/blacklist/?$', views.blacklist),
     url(r'^api/unit/' + unit_pattern + r'/settings/?$', views.room_settings),
     url(r'^api/unit/' + unit_pattern + r'/run/?$', views.run),
-    url(r'^api/unit/' + unit_pattern, views.enter_room),
+    url(r'^api/unit/' + unit_pattern, views.enter_unit),
 
     url(r'^$', views.index, name='index'),
     url(r'^api/', include(router.urls)),

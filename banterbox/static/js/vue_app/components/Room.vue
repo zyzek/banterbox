@@ -1,13 +1,22 @@
 <template>
-    <div class="row" v-if="store.units.units.length > 0">
-        <div v-if="!room.is_loaded && room.authorized">
-            <h5>
-                If you are seeing this, the room's data has not loaded or auth fail, or some other crap.
-                Check console and see if something shit itself
-            </h5>
-        </div>
 
-        <div v-if="!room.is_loaded && !room.authorized">
+
+                <div v-if="!room.found && !room.loading">
+                <h5 style="color:red;background-color: black;padding:30px;">Oh noes! Database Sez : no available rooms for this
+                    unit. </h5>
+            </div>
+    <div class="row" v-if="store.units.units.length > 0">
+
+
+        <!--<div v-if="!room.loading && room.authorized">-->
+
+            <!--<h5>-->
+                <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->
+                <!--Check console and see if something shit itself-->
+            <!--</h5>-->
+        <!--</div>-->
+
+        <div v-if="!room.loading && !room.authorized">
             <h5>You have been blacklisted from this room :(</h5>
             <h5>Sorry sweaty~</h5>
         </div>
@@ -119,7 +128,7 @@
     </div>
 
 
-    <div class="col-xs-12" v-show="room.is_loaded">
+    <div class="col-xs-12" v-show="!room.loading && room.found">
         <div class="col-xs-12">
             <div>
                 <h1><i class="unit-icon fa  fa-{{ unit_icon }}"> </i> {{ unit_code }}
@@ -127,6 +136,7 @@
                             class="settings-button btn btn-danger btn-sm"><i class="fa fa-cog"></i>Room Settings
                     </button>
                 </h1>
+                <h5>Status : {{ room.status }}</h5>
             </div>
             <div style="color:dimgray;"><h3 style="font-weight: 200;">{{ unit_name }}</h3></div>
         </div>
@@ -156,8 +166,10 @@
             <div class="row">
                 <div class="col-xs-12">
                     <form @submit.prevent="submitComment()" id="comments-form">
-                        <input type="text" v-model="comment" placeholder="Add a comment" :disabled="!socket">
-                        <button class="btn btn-primary" :disabled="!socket">SUBMIT</button>
+                        <input type="text" v-model="comment"
+                               :placeholder="room.status == 'running' ? Add a comment : 'You may only post a comment to a running room.'"
+                               :disabled="!socket || room.status != 'running'">
+                        <button class="btn btn-primary" :disabled="!socket || room.status != 'running'">SUBMIT</button>
                     </form>
                 </div>
                 <div class="col-xs-4">
@@ -412,8 +424,10 @@
                 room: {
                     authorized: true,
                     id: null,
-                    is_loaded: false,
-                    role: null
+                    loading: true,
+                    role: null,
+                    status: null,
+                    found: false
                 }
             }
         },
@@ -438,7 +452,7 @@
 
 
                 // Send the request, and on return - adjust values of the room data.
-                this.$http.put(`/api/unit/${this.room.id}/settings`, {
+                this.$http.put(`/api/unit/${this.unit_code}/settings`, {
                     unit_name: this.settings.unit_name,
                     unit_icon: this.settings.unit_icon,
                     password_protected: this.settings.password_protected,
@@ -611,29 +625,41 @@
              * If they are unauthorized, nothing will be loaded.
              */
             activate() {
-                this.$http.get(`/api/unit/${this.$route.params.id}`)
+
+                const room_id = this.$route.query.room_id
+                const query_string = room_id ? `?room_id=${room_id}` : ''
+
+                this.$http.get(`/api/unit/${this.$route.params.id}${query_string}`)
                         .then(response => {
+                            this.room.found = true
                             this.room.id = response.data.room_id
                             this.unit_code = response.data.unit_code
                             this.unit_icon = response.data.unit_icon
                             this.unit_name = response.data.unit_name
                             this.room.role = response.data.role
-                            this.room.is_loaded = true
+                            this.room.loading = false
+                            this.room.found = true
+                            this.room.status = response.data.room_status
                             console.log(response)
 
                             this.initSocket()
 
-                        })
-                        .catch(error => {
-                            if (error.status === 403) {
+                            this.canvas_running = true
+                            console.log('starting canvas')
+
+                        }, error => {
+
+                            this.room.loading = false
+
+                            if (error.status === 404) {
+                                this.room.found = false
+                            } else if (error.status === 403) {
+
                                 // user forbidden
                                 this.room.authorized = false
                             }
                             console.log({error})
                         })
-
-                this.canvas_running = true
-                console.log('starting canvas')
 
 
             },
