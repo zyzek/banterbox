@@ -5,11 +5,9 @@
             <div id="header-main"
                  style="display:flex; justify-content: space-between; align-items: baseline; width:100%; flex-wrap: wrap">
                 <div style="display:flex;align-items: baseline">
-                    <div style="color: #eaeae5; padding:5px; font-size:1.6rem">BanterBox</div>
+                    <div style="color: #eaeae5; padding:5px; font-size:1.6rem"><a v-link="{ path : '/units'}">BanterBox</a></div>
                     <ul id="header-links">
-                        <li v-link-active><a v-link="{ path : '/home'}">Home</a></li>
                         <li v-link-active><a v-link="{ path : '/units' }">Units</a></li>
-                        <li v-link-active><a v-link="{ path : '/404' }">404</a></li>
                     </ul>
                 </div>
 
@@ -47,6 +45,12 @@
         display: flex;
         align-items: baseline;
         flex-direction: column;
+
+                a {
+            color: inherit;
+            text-decoration: inherit;
+        }
+
     }
 
     #content-wrapper {
@@ -75,10 +79,6 @@
 
         color: $header-link-default;
 
-        a {
-            color: inherit;
-            text-decoration: inherit;
-        }
 
         li {
             padding: 0px 15px;
