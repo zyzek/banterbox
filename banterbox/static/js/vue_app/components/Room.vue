@@ -566,7 +566,7 @@
 
                         this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket)
 
-                        console.log('authenticated', {e})
+                        console.log('authenticated')
 
                         socket.on('comment_history', comments => {
                             this.comments = [...comments]
