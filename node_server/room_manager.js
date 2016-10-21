@@ -84,16 +84,7 @@ function updateRooms() {
           promises.push(DB.connection().any({
             name  : "create-room",
             text  : `INSERT INTO banterbox_room (id, name, created_at, lecturer_id, status_id, unit_id, private, password_protected)
-                       VALUES (
-                         $1,
-                         $2,
-                         NOW(),
-                         $3,
-                         NULL,
-                         $4,
-                         false,
-                         false
-                       );`,
+                       VALUES ($1,$2,NOW(),$3,NULL,$4,false,false);`,
             values: [uuid.v4(), `${row.code} lecture`, row.lecturer_id, row.unit_id]
           }))
         }

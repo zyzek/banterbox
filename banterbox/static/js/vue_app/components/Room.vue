@@ -621,10 +621,8 @@
                             this.room.is_loaded = true
                             console.log(response)
 
+                            this.initSocket()
 
-                            // Dependency on Worm.js to be loaded in the header.
-                            // When we get closer to launch I will turn this
-                            // into an ES6 module
                         })
                         .catch(error => {
                             if (error.status === 403) {
@@ -658,7 +656,6 @@
          * After the page has loaded, init the socket.
          */
         ready(){
-            this.initSocket()
         }
     }
 </script>

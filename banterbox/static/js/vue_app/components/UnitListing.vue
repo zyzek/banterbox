@@ -58,6 +58,8 @@
                         console.log({reject})
 
                     })
+                }else{
+                    this.room_loading = false
                 }
             },
             deactivate: function () {

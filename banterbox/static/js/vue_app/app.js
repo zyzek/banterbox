@@ -4,7 +4,7 @@ import Resource from 'vue-resource'
 import NotFound from './components/NotFound.vue'
 import Home from './components/Home.vue'
 
-import RoomSelection from './components/RoomListing.vue'
+import RoomSelection from './components/UnitListing.vue'
 import Room from './components/Room.vue'
 
 import App from './components/App.vue'
@@ -52,18 +52,21 @@ const free_routes = ['/login', '/404']
 
 // Check auth before travelling to the next route
 router.beforeEach(function (transition) {
-    if (free_routes.indexOf(transition.to.path) === -1 && !store.user.authenticated) {
-
-        // Set the alert to unauthorized
-        store.alerts.addAlert({
-            message: 'You must be logged in to visit that page',
-            type: 'danger'
-        })
+    // if path is safe, continue
 
 
-        transition.redirect('/login')
-    } else {
+    if (free_routes.indexOf(transition.to.path) !== -1) {
         transition.next()
+    } else {
+        Auth.retrieveProfile().then(success => {
+            transition.next()
+        }, error => {
+            Auth.logout().then(() => {
+                // Set the alert to unauthorized
+                store.alerts.addAlert({message: 'You must be logged in to visit that page', type: 'danger'})
+                transition.redirect('/login')
+            })
+        })
     }
 })
 

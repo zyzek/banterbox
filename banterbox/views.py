@@ -269,18 +269,26 @@ def get_units(request):
     out_units = []
     for user_enrolment in UserUnitEnrolment.objects.filter(user_id=user.id):
         unit = Unit.objects.get(id=user_enrolment.unit_id)
-        # room = Room.objects.get(unit_id=unit.id)
+        room = unit.room_set.first()
+
+        if room and room.status:
+            room_status = room.status.name
+            room_id = room.id
+        else:
+            room_id = '---'
+            room_status = 'unknown'
+
+
         result = {
-            # "id"          : room.id,
+            "id"          : room_id,
             "lecturer"    : {"email": unit.lecturer.email,
                              "name" : '{0} {1}'.format(unit.lecturer.first_name, unit.lecturer.last_name)},
-            # "created_at"  : room.created_at,
-            # "name"        : room.name,
             "code"        : unit.code,
             "icon"        : unit.icon,
-            # "status"      : room.status.name,
+            "status"      : room_status,
             "next_session": get_next_session(unit)
         }
+
 
         out_units.append(result)
     return Response({'units': out_units})
@@ -368,7 +376,6 @@ def enter_room(request, unit_code):
     # First, check the existence of the room
     try:
         unit = Unit.objects.get(code=unit_code)
-        # room = Room.objects.get(id=unit_code)
     except Unit.DoesNotExist:
         return Response({'message': 'The unit you are trying to access does not exist'}, status=404)
 

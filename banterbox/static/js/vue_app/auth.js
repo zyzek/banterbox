@@ -27,22 +27,18 @@ export default {
     },
 
     logout(){
-        let auth = store.user.authenticated
         store.reset()
         this.removeToken()
-
-        if (auth) {
-            return Promise.resolve()
-        } else {
-            return Promise.reject()
-        }
+        return Promise.resolve()
     },
 
     retrieveProfile(){
-        Vue.http.get('/api/user').then(response => {
+        return Vue.http.get('/api/user').then(response => {
             store.user.profile_loaded = true
             Object.assign(store.user, response.data)
-        }, err => console.log({err_2: err}))
+        }, error => {
+            return Promise.reject(error)
+        })
     },
 
     removeToken(){
