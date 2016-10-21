@@ -438,7 +438,7 @@
 
 
                 // Send the request, and on return - adjust values of the room data.
-                this.$http.put(`/api/room/${this.room.id}/settings`, {
+                this.$http.put(`/api/unit/${this.room.id}/settings`, {
                     unit_name: this.settings.unit_name,
                     unit_icon: this.settings.unit_icon,
                     password_protected: this.settings.password_protected,
@@ -501,7 +501,7 @@
              * Before opening it will fetch the settings data from the server and set it up.
              */
             openModal(){
-                this.$http.get(`/api/room/${this.room.id}/settings`)
+                this.$http.get(`/api/unit/${this.room.id}/settings`)
                         .then(response => {
                             console.log({response})
 
@@ -566,7 +566,7 @@
 
                         this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket)
 
-                        console.log('authenticated', {e})
+                        console.log('authenticated')
 
                         socket.on('comment_history', comments => {
                             this.comments = [...comments]
@@ -611,9 +611,9 @@
              * If they are unauthorized, nothing will be loaded.
              */
             activate() {
-                this.room.id = this.$route.params.id
-                this.$http.get(`/api/room/${this.room.id}`)
+                this.$http.get(`/api/unit/${this.$route.params.id}`)
                         .then(response => {
+                            this.room.id = response.data.room_id
                             this.unit_code = response.data.unit_code
                             this.unit_icon = response.data.unit_icon
                             this.unit_name = response.data.unit_name
@@ -621,10 +621,8 @@
                             this.room.is_loaded = true
                             console.log(response)
 
+                            this.initSocket()
 
-                            // Dependency on Worm.js to be loaded in the header.
-                            // When we get closer to launch I will turn this
-                            // into an ES6 module
                         })
                         .catch(error => {
                             if (error.status === 403) {
@@ -658,7 +656,6 @@
          * After the page has loaded, init the socket.
          */
         ready(){
-            this.initSocket()
         }
     }
 </script>

@@ -97,7 +97,6 @@ function authenticate(socket, data, next) {
  * @param data
  */
 function postAuth(socket, data) {
-
   let client = socket.client
 
   DB.connection().one({
@@ -121,7 +120,7 @@ function postAuth(socket, data) {
          AND BLACKLIST.user_id = EN.user_id
     LEFT JOIN auth_user U on EN.user_id = U.id
   WHERE EN.user_id = (SELECT user_id FROM authtoken_token WHERE key = $1)
-        AND ROOM.id = $2;`,
+        AND ROOM.id = $2 LIMIT 1;`,
     values: [data.token_id, data.room_id]
   }).then(result => {
 
@@ -133,13 +132,12 @@ function postAuth(socket, data) {
       return Promise.reject('User is blacklisted')
     }
 
+
     // Otherwise continue with assignment
     client.user_id  = result.user_id
     client.role     = result.role
     client.room_id  = result.id
     client.username = result.username
-
-
   })
 
   /*
@@ -206,6 +204,7 @@ function setupEventListeners(socket) {
    * Broadcast a comment to the room's chat channel , and persist it to the database.
    */
   socket.on('comment', data => {
+    console.log({COMMENT: data})
     const client = socket.client
 
     // Abort early if there is no room or the room isn't running

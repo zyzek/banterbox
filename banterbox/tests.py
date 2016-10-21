@@ -56,7 +56,7 @@ class RoomModelTests(APITestCase):
         view = ProfileViewSet.as_view({'get', 'list'})
 
         # Make an authenticated request to the view...
-        request = factory.get('/api/user/rooms')
+        request = factory.get('/api/user/units')
         force_authenticate(request, user=user)
         response = view(request)
         print(response)

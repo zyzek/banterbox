@@ -1,6 +1,7 @@
 const Promise = require('bluebird')
 const DB      = require('./database')
 const moment  = require('moment')
+const uuid    = require('uuid')
 
 const room_states = {}
 
@@ -36,6 +37,10 @@ function updateRoomStatement(room, status_id, status_verbose) {
 function updateRooms() {
 
   const statuses = {}
+  const time_now = moment(Date.now())
+  // negative modulo fix & JS <-> Python day int conversion.
+  // Magic number 7 for days in a week
+  const day = (((time_now.day() - 1) % 7) + 7) % 7;
   return DB.connection()
     .any('SELECT * FROM banterbox_roomstatus;')
     .then(rows => {
@@ -47,65 +52,91 @@ function updateRooms() {
 
     // Collect the room schedules
     .then(() => {
-      return DB.connection().any(`SELECT U.*, S.*, R.id AS room_id, R.status_id, ST.name as status_name
-      FROM banterbox_scheduledroom S
-        INNER JOIN banterbox_unit U
-          ON S.unit_id = U.id
-      LEFT JOIN banterbox_room R
-          ON U.id = R.unit_id
-        INNER JOIN banterbox_roomstatus ST
-          ON R.status_id = ST.id`)
+      return DB.connection().any({
+        name  : "collect-room-schedule",
+        text  : `SELECT
+                 U.*,
+                 SC.*,
+                 R.id AS room_id, R.status_id, R.status_name
+               FROM banterbox_scheduledroom SC
+                 LEFT JOIN
+                 (SELECT  banterbox_room.*, COALESCE(banterbox_roomstatus.name, 'unopened') AS status_name
+                  FROM banterbox_room LEFT JOIN banterbox_roomstatus
+                      ON banterbox_room.status_id = banterbox_roomstatus.id) R
+                   ON R.unit_id = SC.unit_id
+                   AND (R.status_id != 5 OR R.status_id IS NULL )
+                 INNER JOIN banterbox_unit U ON SC.unit_id = U.id
+               WHERE day = $1;`,
+        values: [day]
+      })
     })
 
-    /* Iterate through the schedule and if the day matches with the current day,
-     * perform calculations to see if the times are within current bounds and update
-     * the room states.
-     */
     .then(rows => {
-      const time_now   = moment(Date.now())
-      // negative modulo fix & JS <-> Python day int conversion.
-      // Magic number 7 for days in a week
-      const day        = (((time_now.day() - 1) % 7) + 7) % 7;
-      const statements = []
+      return DB.connection().task(t => {
+        const queries = []
+        rows.forEach(row => {
 
-      rows.map(row => {
-        if (row.day === day) {
+          // If a unit has no room, there will be no status name on the row.
+          // Therefore we create the room and assign the ID to the row immediately.
 
-          const start_time = moment(row.start_time, 'HH:mm')
-          const end_time   = moment(row.end_time, 'HH:mm')
-
-          const diff_start = time_now.diff(start_time, 'minutes')
-          const diff_end   = time_now.diff(end_time, 'minutes')
-          const length     = end_time.diff(start_time, 'minutes')
-
-
-
-          /*
-           * Room Lifecycle:
-           *  Commencing --> Running --> Concluding --> Closed
-           */
-
-          if (diff_start >= -10 && diff_start < 0) {
-            statements.push(updateRoomStatement(row.room_id, statuses['commencing'], 'commencing'))
+          if (row.status_name === null) {
+            const room_id = uuid.v4()
+            console.log(`Creating room for Unit ${row.code} as :: .${room_id}`)
+            queries.push(DB.connection().any({
+              name  : "create-room",
+              text  : `INSERT INTO banterbox_room (id, name, created_at, lecturer_id, status_id, unit_id, private, password_protected)
+                       VALUES ($1,$2,NOW(),$3,NULL,$4,false,false);`,
+              values: [room_id, `${row.code} lecture`, row.lecturer_id, row.unit_id]
+            }).then(() => row.room_id = room_id))
           }
-          else if (diff_start >= 0) {
-            if (diff_end >= 0 && diff_end < 10) {
-              statements.push(updateRoomStatement(row.room_id, statuses['concluding'], 'concluding'))
-            }
-            else if (diff_end >= 10) {
-              statements.push(updateRoomStatement(row.room_id, statuses['closed'], 'closed'))
-            }
-            else {
-              statements.push(updateRoomStatement(row.room_id, statuses['running'], 'running'))
-            }
-          }
-        }
-        else {
-          statements.push(updateRoomStatement(row.room_id, statuses['closed'], 'closed'))
-        }
+        })
+        return t.batch(queries)
+      }).then(() => {
+        return rows
       })
+    })
+
+    // Iterate through the schedule and if the day matches with the current day,
+    // perform calculations to see if the times are within current bounds and update
+    // the room states.
+
+    .then(rows => {
+      const statements = []
+        rows.map(row => {
+        const start_time = moment(row.start_time, 'HH:mm')
+        const end_time   = moment(row.end_time, 'HH:mm')
+
+        const diff_start = time_now.diff(start_time, 'minutes')
+        const diff_end   = time_now.diff(end_time, 'minutes')
+        const length     = end_time.diff(start_time, 'minutes')
+
+
+
+        /*
+         * Room Lifecycle:
+         *  Commencing --> Running --> Concluding --> Closed
+         */
+
+        if (diff_start >= -10 && diff_start < 0) {
+          statements.push(updateRoomStatement(row.room_id, statuses['commencing'], 'commencing'))
+        }
+        else if (diff_start >= 0) {
+          if (diff_end >= 0 && diff_end < 10) {
+            statements.push(updateRoomStatement(row.room_id, statuses['concluding'], 'concluding'))
+          }
+          else if (diff_end >= 10) {
+            statements.push(updateRoomStatement(row.room_id, statuses['closed'], 'closed'))
+          }
+          else {
+            statements.push(updateRoomStatement(row.room_id, statuses['running'], 'running'))
+          }
+        }
+
+      })
+
       return statements
     })
+
 
     /*
      *  Push and send all the statements together in a transaction instead of one by one.
@@ -124,9 +155,6 @@ function updateRooms() {
       return DB.connection().tx(function (t) {
         return this.sequence(source)
       })
-    })
-    .then(sequence => {
-      console.log({sequence})
     })
     .catch(error => {
       console.log({error})

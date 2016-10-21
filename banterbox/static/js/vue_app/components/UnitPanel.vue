@@ -18,7 +18,7 @@
                  @mouseenter="onMouseEnter"
                  @mouseleave="onMouseLeave"
             >
-                <a v-link="{ path : '/rooms/' +  unit.id }">
+                <a v-link="{ path : '/units/' +  unit.code }">
                     <div>
                         <div class="unit-icon-container" style="text-align: center; margin:15px 0;">
                             <i :class="'fa fa-5x fa-' + unit.icon" class="unit-icon"></i>
@@ -67,6 +67,7 @@
                 transform: scale(1.25) translateY(-10px);
                 box-shadow: 0px 7px 2px -2px rgba(0, 0, 0, 0.4);
                 transition: all 0.55s ease;
+                background: darkorange;
             }
 
             .unit-button {
@@ -86,8 +87,8 @@
         data: function () {
             return {
                 clicked: false,
-                store,
                 hovered: false,
+                store,
             }
         },
         methods: {
@@ -100,11 +101,11 @@
             },
             onMouseEnter: function () {
                 this.hovered = true;
-                store.rooms.hovered = this.unit.public_id
+                store.units.hovered = this.unit.public_id
             },
             onMouseLeave: function () {
                 this.hovered = false;
-                store.rooms.hovered = null
+                store.units.hovered = null
             }
         },
     }
