@@ -176,6 +176,57 @@ def make_rooms(comments_per_room):
             comment.save()
 
 
+def add_dummy_unit():
+    #lecture_name = "The Prawn Hole"
+
+    lecturer = models.User()
+    lecturer.first_name = "Wikus"
+    lecturer.last_name = "van der Merwe"
+    lecturer.username = "wikus"
+    lecturer.password = "popcorn"
+    lecturer.email = "wikus@d9.co.za"
+    lecturer.save()
+
+    unit = models.Unit()
+    unit.name = "District 9"
+    unit.code = "PRWN9001"
+    unit.lecturer = lecturer
+    unit.icon = "braille"
+    unit.save()
+
+    for i in range(7):
+        room = models.ScheduledRoom()
+        room.day = i
+        room.unit = unit
+        room.start_time = time(hour=0, minute=0, second=0)
+        room.end_time = time(hour=23, minute=59, second=59)
+        room.save()
+
+
+    role = models.UserUnitRole()
+    role.user = lecturer
+    role.unit = unit
+    role.role = models.UserRole.objects.get(name=models.Roles.owner.value)
+    role.save()
+
+    enrolment = models.UserUnitEnrolment()
+    enrolment.unit = unit
+    enrolment.user = lecturer
+    enrolment.save()
+
+
+    for uname in ["anton", "dominic", "patrick", "roy", "wafik"]:
+        user = models.User()
+        user.username = uname
+        user.password = make_password("corn")
+        user.save()
+
+        enrolment = models.UserUnitEnrolment()
+        enrolment.unit = unit
+        enrolment.user = user
+        enrolment.save()
+
+
 def run_step(func, args, pre_string=None, fail_string=None):
     if pre_string is None:
         print("Running {}...".format(func.__name__), end=" ")
@@ -205,7 +256,6 @@ def hard_reset_db():
             if not os.path.isdir(filename) and filename != "__init__.py":
               os.remove(filename)
 
-    #run_step(os.remove, ["db.sqlite3"], "Removing database.")
     #run_step(remove_migrations, [], "Removing all migrations.")
     run_step(manage.passthrough, [['manage.py', 'migrate', 'banterbox', 'zero']], "Removing all migrations.")
     run_step(manage.passthrough, [['manage.py', 'makemigrations']], "Making migrations...\n")
@@ -222,52 +272,8 @@ def populate_db():
     run_step(make_units, [UNITS], "Adding {} units...".format(UNITS))
     run_step(make_schedules, [LECTURES_PER_UNIT], \
              "Adding {} scheduled lectures per unit...".format(LECTURES_PER_UNIT))
-    run_step(make_rooms, [COMMENTS_PER_ROOM], \
-             "Adding a room per unit with {} comments each...".format(COMMENTS_PER_ROOM))
+    run_step(add_dummy_unit, [], "Adding prawns...")
     print("All Done.")
-
-
-def add_dummy_unit():
-    lecturer = models.User()
-    lecturer.first_name = "Wikus"
-    lecturer.last_name = "van der Merwe"
-    lecturer.username = "wikus"
-    lecturer.password = "popcorn"
-    lecturer.email = "wikus@d9.co.za"
-    lecturer.save()
-
-    unit = models.Unit()
-    unit.name = "District 9"
-    unit.code = "PRWN9001"
-    unit.lecturer = lecturer
-    unit.icon = "braille"
-    unit.save()
-
-    for i in range(7):
-        room = models.ScheduledRoom()
-        room.day = i
-        room.unit = unit
-        room.start_time = time(hour=0, minute=0, second=0)
-        room.end_time = time(hour=23, minute=59, second=59)
-
-    role = models.UserUnitRole()
-    role.user = lecturer
-    role.unit = unit
-    role.role = models.UserRole.objects.get(name=models.Roles.owner.value)
-    role.save()
-
-
-
-
-
-    lecture_name = "The Prawn Hole"
-    users = ["anton", "dominic", "patrick", "roy", "wafik"]
-    user_pass = "corn"
-
-
-
-
-
 
 
 if __name__ == "__main__":
