@@ -1,125 +1,122 @@
 <template>
 
 
-                <div v-if="!room.found && !room.loading">
-                <h5 style="color:red;background-color: black;padding:30px;">Oh noes! Database Sez : no available rooms for this
-                    unit. </h5>
-            </div>
+    <div v-if="!room.found && !room.loading">
+        <h5 style="color:red;background-color: black;padding:30px;">Oh noes! Database Sez : no available rooms for this
+            unit. </h5>
+    </div>
     <div class="row" v-if="store.units.units.length > 0">
 
 
         <!--<div v-if="!room.loading && room.authorized">-->
 
-            <!--<h5>-->
-                <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->
-                <!--Check console and see if something shit itself-->
-            <!--</h5>-->
+        <!--<h5>-->
+        <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->
+        <!--Check console and see if something shit itself-->
+        <!--</h5>-->
         <!--</div>-->
 
         <div v-if="!room.loading && !room.authorized">
             <h5>You have been blacklisted from this room :(</h5>
             <h5>Sorry sweaty~</h5>
         </div>
+    </div>
+
+    <div id="modal" v-if="modal" transition="fade">
+        <div id="modal-content">
+            <div autocomplete="off">
+                <div class="container">
+                    <h2>Edit Settings</h2>
+
+                    <div class="form-group row">
+                        <label class="col-xs-3 col-form-label">Icon</label>
+                        <div class="col-xs-2" id="icon-preview-container"><i
+                                class="fa fa-4x fa-{{settings.unit_icon}}"></i></div>
+                        <div class="col-xs-7">
+
+                            <div id="settings-icon-container">
+                                <i v-for="icon in settings.icons"
+                                   class="fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}"
+                                   :title="icon"
+                                   @click="setIcon(icon)"
+                                ></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="description" class="col-xs-3 col-form-label">Unit Name</label>
+                        <div class="col-xs-9">
+                            <input type="text" v-model="settings.unit_name" class="form-control" id="description"
+                                   name="description">
+                        </div>
+                    </div>
 
 
-        <div id="modal" v-if="modal" transition="fade">
-            <div id="modal-content">
+                    <div class="form-group row">
+                        <label class="col-xs-3 col-form-label">Password Protected</label>
+                        <div class="col-xs-9">
+                            <!-- Radio Buttons -->
+                            <label class="form-check-inline">
+                                <input class="form-check-input" type="radio" v-model="settings.password_protected"
+                                       :value="true">
+                                Yes
+                            </label>
+                            <label class="form-check-inline">
+                                <input class="form-check-input" type="radio" v-model="settings.password_protected"
+                                       :value="false"
+                                       checked> No
+                            </label>
+                        </div>
+                    </div>
 
+                    <div class="form-group row">
+                        <label class="col-xs-3 col-form-label">Password</label>
+                        <div class="col-xs-9">
+                            <input type="text" class="form-control" v-model="settings.password"
+                                   :disabled="!settings.password_protected">
+                        </div>
+                    </div>
 
-                <div autocomplete="off">
-                    <div class="container">
-                        <h2>Edit Settings</h2>
-
-                        <div class="form-group row">
-                            <label class="col-xs-3 col-form-label">Icon</label>
-                            <div class="col-xs-2" id="icon-preview-container"><i
-                                    class="fa fa-4x fa-{{settings.unit_icon}}"></i></div>
-                            <div class="col-xs-7">
-
-                                <div id="settings-icon-container">
-                                    <i v-for="icon in settings.icons"
-                                       class="fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}"
-                                       :title="icon"
-                                       @click="setIcon(icon)"
-                                    ></i>
+                    <div class="form-group row" id="blacklist-row">
+                        <label class="col-xs-3 col-form-label">Blacklist</label>
+                        <div class="col-xs-9">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <label>Allowed</label>
+                                    <select multiple class="form-control" id="allowed-users">
+                                        <option v-for="user in settings.users" v-if="!user.blacklisted"
+                                                :value="user.id">
+                                            {{ user.username }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-xs-2" id="blacklist-controls">
+                                    <button class="btn btn-sm" @click.prevent()="setUsersBlacklisted()"> >></button>
+                                    <button class="btn btn-sm" @click.prevent()="setUsersAllowed()"> <<</button>
+                                </div>
+                                <div class="col-xs-5">
+                                    <label>Blacklisted</label>
+                                    <select multiple class="form-control" id="blacklisted-users">
+                                        <option v-for="user in settings.users" v-if="user.blacklisted"
+                                                :value="user.id">
+                                            {{ user.username }}
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="form-group row">
-                            <label for="description" class="col-xs-3 col-form-label">Unit Name</label>
-                            <div class="col-xs-9">
-                                <input type="text" v-model="settings.unit_name" class="form-control" id="description"
-                                       name="description">
-                            </div>
-                        </div>
+                    </div>
 
 
-                        <div class="form-group row">
-                            <label class="col-xs-3 col-form-label">Password Protected</label>
-                            <div class="col-xs-9">
-                                <!-- Radio Buttons -->
-                                <label class="form-check-inline">
-                                    <input class="form-check-input" type="radio" v-model="settings.password_protected"
-                                           :value="true">
-                                    Yes
-                                </label>
-                                <label class="form-check-inline">
-                                    <input class="form-check-input" type="radio" v-model="settings.password_protected"
-                                           :value="false"
-                                           checked> No
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-xs-3 col-form-label">Password</label>
-                            <div class="col-xs-9">
-                                <input type="text" class="form-control" v-model="settings.password"
-                                       :disabled="!settings.password_protected">
-                            </div>
-                        </div>
-
-                        <div class="form-group row" id="blacklist-row">
-                            <label class="col-xs-3 col-form-label">Blacklist</label>
-                            <div class="col-xs-9">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <label>Allowed</label>
-                                        <select multiple class="form-control" id="allowed-users">
-                                            <option v-for="user in settings.users" v-if="!user.blacklisted"
-                                                    :value="user.id">
-                                                {{ user.username }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div class="col-xs-2" id="blacklist-controls">
-                                        <button class="btn btn-sm" @click.prevent()="setUsersBlacklisted()"> >></button>
-                                        <button class="btn btn-sm" @click.prevent()="setUsersAllowed()"> <<</button>
-                                    </div>
-                                    <div class="col-xs-5">
-                                        <label>Blacklisted</label>
-                                        <select multiple class="form-control" id="blacklisted-users">
-                                            <option v-for="user in settings.users" v-if="user.blacklisted"
-                                                    :value="user.id">
-                                                {{ user.username }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="form-group row">
-                            <div class="offset-xs-3 col-xs-9">
-                                <button type="submit" class="btn btn-success" @click.prevent="submitSettingsForm()">
-                                    Submit
-                                </button>
-                                <button type="submit" class="btn btn-danger" @click.prevent="closeModal()"
-                                        style="margin-left: 20px;">Cancel
-                                </button>
-                            </div>
+                    <div class="form-group row">
+                        <div class="offset-xs-3 col-xs-9">
+                            <button type="submit" class="btn btn-success" @click.prevent="submitSettingsForm()">
+                                Submit
+                            </button>
+                            <button type="submit" class="btn btn-danger" @click.prevent="closeModal()"
+                                    style="margin-left: 20px;">Cancel
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -203,7 +200,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 </template>
 
@@ -452,7 +448,7 @@
 
 
                 // Send the request, and on return - adjust values of the room data.
-                this.$http.put(`/api/unit/${this.unit_code}/settings`, {
+                this.$http.put(`/api/room/${this.room.id}/settings`, {
                     unit_name: this.settings.unit_name,
                     unit_icon: this.settings.unit_icon,
                     password_protected: this.settings.password_protected,
@@ -515,7 +511,7 @@
              * Before opening it will fetch the settings data from the server and set it up.
              */
             openModal(){
-                this.$http.get(`/api/unit/${this.room.id}/settings`)
+                this.$http.get(`/api/room/${this.room.id}/settings`)
                         .then(response => {
                             console.log({response})
 

@@ -4,6 +4,7 @@ from rest_framework import routers
 from . import views
 
 unit_pattern = "(?P<unit_code>[a-zA-Z]{4}[0-9]{4})"
+uuid_pattern = "(?P<room_id>[0-9a-f-]{32,})"
 router = routers.DefaultRouter()
 
 urlpatterns = [
@@ -16,9 +17,10 @@ urlpatterns = [
     url(r'^api/unit/' + unit_pattern + r'/comment/?$', views.comment),
     url(r'^api/unit/' + unit_pattern + r'/update/?$', views.get_update),
     url(r'^api/unit/' + unit_pattern + r'/blacklist/?$', views.blacklist),
-    url(r'^api/unit/' + unit_pattern + r'/settings/?$', views.room_settings),
     url(r'^api/unit/' + unit_pattern + r'/run/?$', views.run),
     url(r'^api/unit/' + unit_pattern, views.enter_unit),
+
+    url(r'^api/room/' + uuid_pattern + r'/settings/?$', views.room_settings),
 
     url(r'^$', views.index, name='index'),
     url(r'^api/', include(router.urls)),
