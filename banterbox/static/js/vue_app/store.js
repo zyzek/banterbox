@@ -9,6 +9,7 @@ const createStore = () => {
             first_name: null,
             last_name: null,
             username: null,
+            is_admin : false,
 
             get full_name() {
                 if (!this.first_name || !this.last_name) {

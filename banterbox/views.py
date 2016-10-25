@@ -164,15 +164,17 @@ def update_room_settings(request, room_id):
 
 @api_view(['GET'])
 def current_user(request):
-    profile = request.user.profile
+    user = request.user
+    profile = user.profile
 
     output = {
         'id'        : profile.id,
         'icon'      : profile.icon,
-        'email'     : profile.user.email,
-        'first_name': profile.user.first_name,
-        'last_name' : profile.user.last_name,
-        'username'  : profile.user.username,
+        'email'     : user.email,
+        'first_name': user.first_name,
+        'last_name' : user.last_name,
+        'username'  : user.username,
+        'is_admin' : user.is_staff
     }
     return Response(output)
 

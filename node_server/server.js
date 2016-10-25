@@ -390,7 +390,7 @@ function sendCommentHistory(room_id, socket) {
   DB.connection().any({
     name  : 'grab-comments-for-room',
     text  : `SELECT COMMENT_DATA.*, UR.name as ROLE
-             FROM (SELECT * FROM banterbox_comment C
+             FROM (SELECT C.*, ROLE.role_id FROM banterbox_comment C
                INNER JOIN banterbox_room  ROOM ON C.room_id = ROOM.id
                INNER JOIN auth_user ON C.user_id = auth_user.id
                LEFT JOIN banterbox_userunitrole ROLE ON ROOM.unit_id = ROLE.unit_id  AND ROLE.user_id = C.user_id
@@ -421,17 +421,25 @@ function sendCommentHistory(room_id, socket) {
       // When all aliases are created, set up alias lookup object
       return Promise.join(...promises)
         .then(() => {
-          return rclient.hgetallAsync(`room:${room_id}:alias`).then(aliases => {
+          return rclient.hgetallAsync(`room:${room_id}:alias`)
+            .then(aliases => {
             return {aliases, rows}
           })
-
         })
     })
     .then(data => {
+      console.log({data})
       const rows     = data.rows
       const aliases  = data.aliases
+
+
+
+
       const comments = []
       for (let r of rows) {
+
+        console.log({r})
+
         comments.push({
           content  : r.content,
           timestamp: moment(r.timestamp).unix(),

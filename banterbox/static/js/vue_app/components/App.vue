@@ -7,11 +7,11 @@
                 <div style="display:flex;align-items: baseline">
                     <div style="color: #eaeae5; padding:5px; font-size:1.6rem"><a v-link="{ path : '/units'}">BanterBox</a></div>
                     <ul id="header-links">
+                        <li v-link-active id="schedule-settings" v-if="store.user.is_admin"><a v-link="{ path : '/schedule-settings' }">Schedule Settings</a></li>
                         <li v-link-active><a v-link="{ path : '/units' }">Units</a></li>
                     </ul>
                 </div>
 
-                <!-- TODO: PROFILE GOETH HERETH -->
                 <profile></profile>
             </div>
             <alert-box></alert-box>
@@ -51,6 +51,10 @@
             text-decoration: inherit;
         }
 
+    }
+
+    #schedule-settings{
+        background-color: red;
     }
 
     #content-wrapper {
