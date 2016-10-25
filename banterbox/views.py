@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, throttle_classes, authentication_classes, permission_classes
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.response import Response
 from banterbox.serializers import *
 from django.db import IntegrityError
@@ -77,15 +78,22 @@ def get_room_settings(request, room_id):
     """
     user = request.user
 
-    if user.is_staff != 1:
-        return Response({"message": "permission denied."}, status=403)
-
     # get the room
     try:
         room = Room.objects.get(id=room_id)
-
     except Room.DoesNotExist:
         return Response({"message": "room does not exist."}, status=404)
+
+    # Make sure they're allowed to be here
+    try:
+        user.userunitrole_set.get(unit=room.unit ,role__name='owner')
+    except UserUnitRole.DoesNotExist:
+        return Response({"message": "permission denied."}, status=403)
+    except Exception as e:
+        print(e)
+        return Response(status=403)
+
+
 
     try:
         blacklist_ids = [u.user_id for u in UserRoomBLackList.objects.filter(room_id=room.id)]
@@ -278,7 +286,7 @@ def get_units(request):
             room_id = room.id
         else:
             room_id = '---'
-            room_status = 'unknown'
+            room_status = 'unopened'
 
 
         result = {
@@ -449,3 +457,30 @@ def enter_unit(request, unit_code):
         'room_id' : room.id,
         'room_status' : room.status.name
     })
+
+
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
+def create_demo_user(request):
+    import string
+    import random
+
+    # Make a fake
+    name = ''.join(random.sample(string.ascii_lowercase,4) + random.sample(string.digits,4))
+    user = User(username=name)
+    user.set_password('password')
+    user.save()
+
+    # Enrol them to the best unit in the universe
+    prawnsville = Unit.objects.get(code='PRWN9001')
+    gangland = Unit.objects.get(code='WTUP8876')
+    UserUnitEnrolment(user_id=user.id, unit_id=prawnsville.id).save()
+    UserUnitEnrolment(user_id=user.id, unit_id=gangland.id).save()
+
+
+    print(name,user)
+
+    return Response({'username' : name, 'password' : 'password'})
+

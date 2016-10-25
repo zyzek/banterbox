@@ -1,5 +1,6 @@
 const createStore = () => {
     return {
+        demo : true,
         user: {
             id: null,
             authenticated: false,
@@ -22,9 +23,6 @@ const createStore = () => {
             current_unit: {},
             hovered: null,
             units: [],
-        },
-        ui: {
-            main_centered: false,
         },
         alerts: {
             alerts: [],

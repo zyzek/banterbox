@@ -284,7 +284,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div id=\"content-wrapper\">\n    <div id=\"header\">\n        <div id=\"header-main\" style=\"display:flex; justify-content: space-between; align-items: baseline; width:100%; flex-wrap: wrap\">\n            <div style=\"display:flex;align-items: baseline\">\n                <div style=\"color: #eaeae5; padding:5px; font-size:1.6rem\"><a v-link=\"{ path : '/units'}\">BanterBox</a></div>\n                <ul id=\"header-links\">\n                    <li v-link-active=\"\"><a v-link=\"{ path : '/units' }\">Units</a></li>\n                    <li v-link-active=\"\" id=\"schedule-settings\" v-if=\"store.user.is_admin\"><a v-link=\"{ path : '/schedule-settings' }\">Schedule Settings</a></li>\n                </ul>\n            </div>\n\n            <!-- TODO: PROFILE GOETH HERETH -->\n            <profile></profile>\n        </div>\n        <alert-box></alert-box>\n    </div>\n\n    <div class=\"container\" id=\"main\" :class=\"{centered : store.ui.main_centered}\">\n        <router-view></router-view>\n    </div>\n\n\n    <div id=\"footer\">\n        <div style=\"padding:5px;\">\n            <div style=\"font-size: 0.5rem\">BanterBoys ™ ® {{ year }}</div>\n            <div style=\"font-size: 0.5rem\">By using this site, you agree to give HDs to the creators if you are in a\n                position of marking them.\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div id=\"content-wrapper\">\n    <div id=\"header\">\n        <div id=\"header-main\" style=\"display:flex; justify-content: space-between; align-items: baseline; width:100%; flex-wrap: wrap\">\n            <div style=\"display:flex;align-items: baseline\">\n                <div style=\"color: #eaeae5; padding:5px; font-size:1.6rem\"><a v-link=\"{ path : '/units'}\">BanterBox</a></div>\n                <ul id=\"header-links\">\n                    <li v-link-active=\"\" id=\"schedule-settings\" v-if=\"store.user.is_admin\"><a v-link=\"{ path : '/schedule-settings' }\">Schedule Settings</a></li>\n                    <li v-link-active=\"\"><a v-link=\"{ path : '/units' }\">Units</a></li>\n                </ul>\n            </div>\n\n            <profile></profile>\n        </div>\n        <alert-box></alert-box>\n    </div>\n\n    <div class=\"container\" id=\"main\">\n        <router-view></router-view>\n    </div>\n\n\n    <div id=\"footer\">\n        <div style=\"padding:5px;\">\n            <div style=\"font-size: 0.5rem\">BanterBoys ™ ® {{ year }}</div>\n            <div style=\"font-size: 0.5rem\">By using this site, you agree to give HDs to the creators if you are in a\n                position of marking them.\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -329,7 +329,7 @@ if (module.hot) {(function () {  module.hot.accept()
 })()}
 },{"vue":122,"vue-hot-reload-api":119}],6:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#login-error {\n  overflow: hidden;\n  max-height: 0px;\n  -webkit-transition: all 0.3s ease;\n  transition: all 0.3s ease;\n  color: white; }\n  /* line 9, stdin */\n  #login-error.open {\n    padding: 10px;\n    background-color: red;\n    max-height: 3rem; }\n\n/* line 18, stdin */\n#login-view #remember-me {\n  margin-right: 10px; }\n\n/* line 22, stdin */\n#login-view input {\n  padding: 5px; }\n\n/* line 26, stdin */\n#login-view .large-text {\n  font-size: 2rem; }\n\n/* line 30, stdin */\n#login-view .column-stack {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  margin-bottom: 15px; }\n\n/* line 36, stdin */\n#login-view button {\n  margin-top: 1.5rem;\n  font-size: 1.2rem; }\n")
+var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#login-error {\n  overflow: hidden;\n  max-height: 0px;\n  -webkit-transition: all 0.3s ease;\n  transition: all 0.3s ease;\n  color: white; }\n  /* line 9, stdin */\n  #login-error.open {\n    padding: 10px;\n    background-color: red;\n    max-height: 3rem; }\n\n/* line 16, stdin */\n#login-view {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 22, stdin */\n  #login-view #remember-me {\n    margin-right: 10px; }\n  /* line 26, stdin */\n  #login-view input {\n    padding: 5px; }\n  /* line 30, stdin */\n  #login-view .large-text {\n    font-size: 2rem; }\n  /* line 34, stdin */\n  #login-view .column-stack {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n    margin-bottom: 15px; }\n  /* line 40, stdin */\n  #login-view button {\n    margin-top: 1.5rem;\n    font-size: 1.2rem; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -353,19 +353,40 @@ exports.default = {
             username: '',
             password: '',
             remember_me: true,
-            rejected: false
+            rejected: false,
+            demo: {
+                username: null,
+                password: null,
+                loaded: false
+            }
         };
     },
     methods: {
-        authenticate: function authenticate() {
+        createUser: function createUser() {
             var _this = this;
+
+            if (!window.localStorage.getItem('demo_user')) {
+                this.$http.get('/api/demo/get-user').then(function (response) {
+
+                    var user = response.data;
+                    _this.demo.loaded = true;
+                    _this.demo.username = user.username;
+                    _this.demo.password = user.password;
+
+                    window.localStorage.setItem('demo_user', user.username);
+                    window.localStorage.setItem('demo_password', user.password);
+                });
+            }
+        },
+        authenticate: function authenticate() {
+            var _this2 = this;
 
             this.rejected = false;
             _auth2.default.authenticate(this.username, this.password, this.remember_me)
             // If auth worked
             .then(function (response) {
                 _auth2.default.retrieveProfile();
-                _this.store.alerts.addAlert({
+                _this2.store.alerts.addAlert({
                     message: 'Login successful. Redirecting to room selection',
                     type: 'success',
                     duration: 2000
@@ -379,7 +400,7 @@ exports.default = {
             // If auth failed
             .catch(function (reject) {
                 if (reject.status === 400) {
-                    _this.rejected = true;
+                    _this2.rejected = true;
                 }
                 console.log({ reject: reject });
             });
@@ -387,21 +408,30 @@ exports.default = {
     },
     route: {
         activate: function activate() {
-            this.store.ui.main_centered = true;
+            // Demo purposes only
+            var username = window.localStorage.getItem('demo_user');
+            var password = window.localStorage.getItem('demo_password');
+
+            if (username && password) {
+                this.demo.loaded = true;
+                this.demo.username = username;
+                this.demo.password = password;
+            } else {
+                window.localStorage.removeItem('demo_user');
+                window.localStorage.removeItem('demo_password');
+            }
         },
-        deactivate: function deactivate() {
-            this.store.ui.main_centered = false;
-        }
+        deactivate: function deactivate() {}
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"login-view\">\n    <form class=\"row\" @submit.prevent=\"authenticate\">\n\n\n        <div class=\"col-xs-12 large-text column-stack\">\n            <label>Unikey</label>\n            <input type=\"text\" v-model=\"username\">\n        </div>\n\n        <div class=\"col-xs-12 large-text column-stack\">\n            <label>Password</label>\n            <input type=\"password\" v-model=\"password\">\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <input type=\"checkbox\" v-model=\"remember_me\" id=\"remember-me\"> <label for=\"remember-me\">Remember\n            me</label>\n        </div>\n\n        <div class=\"col-xs-12 \">\n            <div class=\"col-xs-12\" id=\"login-error\" :class=\"{open : rejected}\">\n                Incorrect name or password.\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <button class=\"btn btn-success btn-block\" :disabled=\"username.length == 0 || password.length == 0\">\n                SUBMIT\n            </button>\n        </div>\n\n\n    </form>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"login-view\">\n    <div class=\"card\" style=\"padding:20px\" v-if=\"store.demo\">\n        <p>\n            <em>In a real world situation, this would be linked to a university system.</em>\n            <br>\n            <em>For the purposes of this demo, click to create a user.</em>\n        </p>\n        <div id=\"demo-create-user\">\n            <button class=\"btn btn-primary\" @click=\"createUser\" :disabled=\"demo.loaded\">Generate user</button>\n            <div v-if=\"demo.loaded\">\n                <p>Name: <b>{{ demo.username }}</b></p>\n                <p>Password: <b>{{ demo.password }}</b></p>\n            </div>\n        </div>\n\n    </div>\n\n\n    <form class=\"row\" @submit.prevent=\"authenticate\">\n\n\n        <div class=\"col-xs-12 large-text column-stack\">\n            <label>Unikey</label>\n            <input type=\"text\" v-model=\"username\">\n        </div>\n\n        <div class=\"col-xs-12 large-text column-stack\">\n            <label>Password</label>\n            <input type=\"password\" v-model=\"password\">\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <input type=\"checkbox\" v-model=\"remember_me\" id=\"remember-me\"> <label for=\"remember-me\">Remember\n            me</label>\n        </div>\n\n        <div class=\"col-xs-12 \">\n            <div class=\"col-xs-12\" id=\"login-error\" :class=\"{open : rejected}\">\n                Incorrect name or password.\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <button class=\"btn btn-success btn-block\" :disabled=\"username.length == 0 || password.length == 0\">\n                SUBMIT\n            </button>\n        </div>\n\n\n    </form>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache["/* line 3, stdin */\n#login-error {\n  overflow: hidden;\n  max-height: 0px;\n  -webkit-transition: all 0.3s ease;\n  transition: all 0.3s ease;\n  color: white; }\n  /* line 9, stdin */\n  #login-error.open {\n    padding: 10px;\n    background-color: red;\n    max-height: 3rem; }\n\n/* line 18, stdin */\n#login-view #remember-me {\n  margin-right: 10px; }\n\n/* line 22, stdin */\n#login-view input {\n  padding: 5px; }\n\n/* line 26, stdin */\n#login-view .large-text {\n  font-size: 2rem; }\n\n/* line 30, stdin */\n#login-view .column-stack {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  margin-bottom: 15px; }\n\n/* line 36, stdin */\n#login-view button {\n  margin-top: 1.5rem;\n  font-size: 1.2rem; }\n"] = false
+    __vueify_insert__.cache["/* line 3, stdin */\n#login-error {\n  overflow: hidden;\n  max-height: 0px;\n  -webkit-transition: all 0.3s ease;\n  transition: all 0.3s ease;\n  color: white; }\n  /* line 9, stdin */\n  #login-error.open {\n    padding: 10px;\n    background-color: red;\n    max-height: 3rem; }\n\n/* line 16, stdin */\n#login-view {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 22, stdin */\n  #login-view #remember-me {\n    margin-right: 10px; }\n  /* line 26, stdin */\n  #login-view input {\n    padding: 5px; }\n  /* line 30, stdin */\n  #login-view .large-text {\n    font-size: 2rem; }\n  /* line 34, stdin */\n  #login-view .column-stack {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n    margin-bottom: 15px; }\n  /* line 40, stdin */\n  #login-view button {\n    margin-top: 1.5rem;\n    font-size: 1.2rem; }\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
@@ -543,6 +573,7 @@ exports.default = {
     data: function data() {
         return {
             store: _store.store,
+            party_mode: false,
             settings: {
                 unit_name: null,
                 unit_icon: null,
@@ -573,6 +604,20 @@ exports.default = {
         };
     },
     methods: {
+        toggleParty: function toggleParty() {
+            if (this.room.role === 'owner') {
+
+                if (!this.party_mode) {
+                    this.socket.emit('party_start');
+                    this.party_mode = true;
+                } else {
+
+                    this.socket.emit('party_stop');
+                    this.party_mode = false;
+                }
+            }
+        },
+
 
         /**
          * Send updated settings to the server
@@ -734,22 +779,44 @@ exports.default = {
             socket.on('connect', function () {
                 console.log({ room: _this5.room, id: _this5.room.id });
                 socket.on('authenticated', function (e) {
+                    console.log('authenticated');
 
                     _this5.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket);
 
-                    console.log('authenticated');
-
+                    // Backlog of comments for the room
                     socket.on('comment_history', function (comments) {
                         _this5.comments = [].concat((0, _toConsumableArray3.default)(comments));
                     });
 
+                    // Any time a comment is received
                     socket.on('comment', function (comment) {
                         console.log({ comment: comment });
                         _this5.comments.unshift(comment);
                     });
 
+                    // Any time a server-side message is received
                     socket.on('message', function (data) {
                         console.log({ data: data });
+                    });
+
+                    socket.on('kicked', function (data) {
+                        _store.store.alerts.addAlert({ type: 'danger', message: 'You have been removed from the room.' });
+                        _this5.$router.go('/units');
+                    });
+
+                    socket.on('blacklisted', function (data) {
+                        _store.store.alerts.addAlert({ type: 'danger', message: 'You have been blacklisted from this unit.' });
+                        _this5.$router.go('/units');
+                    });
+
+                    socket.on('party_start', function () {
+                        _store.store.alerts.addAlert({ type: 'info', message: 'Oooo yeah... party mode activated' });
+                        _this5.worm.set_style({ party: true });
+                    });
+
+                    socket.on('party_stop', function () {
+                        _store.store.alerts.addAlert({ type: 'info', message: "If you can't handle me at my memeiest, you definitely can't handle me at my creamiest." });
+                        _this5.worm.set_style({ party: false });
                     });
 
                     _this5.socket = socket;
@@ -838,7 +905,7 @@ exports.default = {
     ready: function ready() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<div v-if=\"!room.found &amp;&amp; !room.loading\">\n    <h5 style=\"color:red;background-color: black;padding:30px;\">Oh noes! Database Sez : no available rooms for this\n        unit. </h5>\n</div>\n<div class=\"row\" v-if=\"store.units.units.length > 0\">\n\n\n    <!--<div v-if=\"!room.loading && room.authorized\">-->\n\n    <!--<h5>-->\n    <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->\n    <!--Check console and see if something shit itself-->\n    <!--</h5>-->\n    <!--</div>-->\n\n    <div v-if=\"!room.loading &amp;&amp; !room.authorized\">\n        <h5>You have been blacklisted from this room :(</h5>\n        <h5>Sorry sweaty~</h5>\n    </div>\n</div>\n\n<div id=\"modal\" v-if=\"modal\" transition=\"fade\">\n    <div id=\"modal-content\">\n        <div autocomplete=\"off\">\n            <div class=\"container\">\n                <h2>Edit Settings</h2>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Icon</label>\n                    <div class=\"col-xs-2\" id=\"icon-preview-container\"><i class=\"fa fa-4x fa-{{settings.unit_icon}}\"></i></div>\n                    <div class=\"col-xs-7\">\n\n                        <div id=\"settings-icon-container\">\n                            <i v-for=\"icon in settings.icons\" class=\"fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}\" :title=\"icon\" @click=\"setIcon(icon)\"></i>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label for=\"description\" class=\"col-xs-3 col-form-label\">Unit Name</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" v-model=\"settings.unit_name\" class=\"form-control\" id=\"description\" name=\"description\">\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password Protected</label>\n                    <div class=\"col-xs-9\">\n                        <!-- Radio Buttons -->\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"true\">\n                            Yes\n                        </label>\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"false\" checked=\"\"> No\n                        </label>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" class=\"form-control\" v-model=\"settings.password\" :disabled=\"!settings.password_protected\">\n                    </div>\n                </div>\n\n                <div class=\"form-group row\" id=\"blacklist-row\">\n                    <label class=\"col-xs-3 col-form-label\">Blacklist</label>\n                    <div class=\"col-xs-9\">\n                        <div class=\"row\">\n                            <div class=\"col-xs-5\">\n                                <label>Allowed</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"allowed-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"!user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                            <div class=\"col-xs-2\" id=\"blacklist-controls\">\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersBlacklisted()\"> &gt;&gt;</button>\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersAllowed()\"> &lt;&lt;</button>\n                            </div>\n                            <div class=\"col-xs-5\">\n                                <label>Blacklisted</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"blacklisted-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <div class=\"offset-xs-3 col-xs-9\">\n                        <button type=\"submit\" class=\"btn btn-success\" @click.prevent=\"submitSettingsForm()\">\n                            Submit\n                        </button>\n                        <button type=\"submit\" class=\"btn btn-danger\" @click.prevent=\"closeModal()\" style=\"margin-left: 20px;\">Cancel\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n\n<div class=\"col-xs-12\" v-show=\"!room.loading &amp;&amp; room.found\">\n    <div class=\"col-xs-12\">\n        <div>\n            <h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}\n                <button @click=\"openModal()\" v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-cog\"></i>Room Settings\n                </button>\n            </h1>\n            <h5>Status : {{ room.status }}</h5>\n        </div>\n        <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n    </div>\n\n    <div class=\"col-xs-12\" style=\"margin-bottom:20px; position: relative\">\n\n\n        <canvas v-show=\"!mute_background\" id=\"fg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2\">\n\n        </canvas>\n        <canvas v-show=\"!mute_background\" id=\"bg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray\">\n\n        </canvas>\n\n        <!-- This div is a dud to stop the parent from collapsing -->\n        <div id=\"dud\" style=\"width:100%; height:350px;\"></div>\n\n        <div id=\"worm-comments\">\n\n        </div>\n    </div>\n\n\n    <div class=\"col-xs-12\">\n        <div class=\"row\">\n            <div class=\"col-xs-12\">\n                <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                    <input type=\"text\" v-model=\"comment\" :placeholder=\"room.status == 'running' ? Add a comment : 'You may only post a comment to a running room.'\" :disabled=\"!socket || room.status != 'running'\">\n                    <button class=\"btn btn-primary\" :disabled=\"!socket || room.status != 'running'\">SUBMIT</button>\n                </form>\n            </div>\n            <div class=\"col-xs-4\">\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                </div>\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                </div>\n            </div>\n            <div class=\"col-xs-8\">\n\n                <div id=\"comments-panel\">\n                    <div v-if=\"!socket\">\n                        Not connected to server\n                    </div>\n                    <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\">\n                        <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                        <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                        <div class=\"comment-text\">{{ comment.content }}</div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<div v-if=\"!room.found &amp;&amp; !room.loading\">\n    <h5 style=\"color:red;background-color: black;padding:30px;\">Oh noes! Database Sez : no available rooms for this\n        unit. </h5>\n</div>\n<div class=\"row\" v-if=\"store.units.units.length > 0\">\n\n\n    <!--<div v-if=\"!room.loading && room.authorized\">-->\n\n    <!--<h5>-->\n    <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->\n    <!--Check console and see if something shit itself-->\n    <!--</h5>-->\n    <!--</div>-->\n\n    <div v-if=\"!room.loading &amp;&amp; !room.authorized\">\n        <h5>You have been blacklisted from this room :(</h5>\n        <h5>Sorry sweaty~</h5>\n    </div>\n</div>\n\n<div id=\"modal\" v-if=\"modal\" transition=\"fade\">\n    <div id=\"modal-content\">\n        <div autocomplete=\"off\">\n            <div class=\"container\">\n                <h2>Edit Settings</h2>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Icon</label>\n                    <div class=\"col-xs-2\" id=\"icon-preview-container\"><i class=\"fa fa-4x fa-{{settings.unit_icon}}\"></i></div>\n                    <div class=\"col-xs-7\">\n\n                        <div id=\"settings-icon-container\">\n                            <i v-for=\"icon in settings.icons\" class=\"fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}\" :title=\"icon\" @click=\"setIcon(icon)\"></i>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label for=\"description\" class=\"col-xs-3 col-form-label\">Unit Name</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" v-model=\"settings.unit_name\" class=\"form-control\" id=\"description\" name=\"description\">\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password Protected</label>\n                    <div class=\"col-xs-9\">\n                        <!-- Radio Buttons -->\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"true\">\n                            Yes\n                        </label>\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"false\" checked=\"\"> No\n                        </label>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" class=\"form-control\" v-model=\"settings.password\" :disabled=\"!settings.password_protected\">\n                    </div>\n                </div>\n\n                <div class=\"form-group row\" id=\"blacklist-row\">\n                    <label class=\"col-xs-3 col-form-label\">Blacklist</label>\n                    <div class=\"col-xs-9\">\n                        <div class=\"row\">\n                            <div class=\"col-xs-5\">\n                                <label>Allowed</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"allowed-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"!user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                            <div class=\"col-xs-2\" id=\"blacklist-controls\">\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersBlacklisted()\"> &gt;&gt;</button>\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersAllowed()\"> &lt;&lt;</button>\n                            </div>\n                            <div class=\"col-xs-5\">\n                                <label>Blacklisted</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"blacklisted-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <div class=\"offset-xs-3 col-xs-9\">\n                        <button type=\"submit\" class=\"btn btn-success\" @click.prevent=\"submitSettingsForm()\">\n                            Submit\n                        </button>\n                        <button type=\"submit\" class=\"btn btn-danger\" @click.prevent=\"closeModal()\" style=\"margin-left: 20px;\">Cancel\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n\n<div class=\"col-xs-12\" v-show=\"!room.loading &amp;&amp; room.found\">\n    <div class=\"col-xs-12\">\n        <div>\n            <h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}\n                <button @click=\"openModal()\" v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-cog\"></i>Room Settings\n                </button>\n            </h1>\n            <h5>Status : {{ room.status }}</h5>\n            <div v-if=\"room.role === 'owner'\">\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"party_mode\">Stop the party :(</button>\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"!party_mode\">Start the party :)</button>\n            </div>\n        </div>\n        <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n    </div>\n\n    <div class=\"col-xs-12\" style=\"margin-bottom:20px; position: relative\">\n\n\n        <canvas v-show=\"!mute_background\" id=\"fg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2\">\n\n        </canvas>\n        <canvas v-show=\"!mute_background\" id=\"bg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray\">\n\n        </canvas>\n\n        <!-- This div is a dud to stop the parent from collapsing -->\n        <div id=\"dud\" style=\"width:100%; height:350px;\"></div>\n\n        <div id=\"worm-comments\">\n\n        </div>\n    </div>\n\n\n    <div class=\"col-xs-12\">\n        <div class=\"row\">\n            <div class=\"col-xs-12\">\n                <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                    <input type=\"text\" v-model=\"comment\" :placeholder=\"room.status == 'running' ? Add a comment : 'You may only post a comment to a running room.'\" :disabled=\"!socket || room.status != 'running'\">\n                    <button class=\"btn btn-primary\" :disabled=\"!socket || room.status != 'running'\">SUBMIT</button>\n                </form>\n            </div>\n            <div class=\"col-xs-4\">\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                </div>\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                </div>\n            </div>\n            <div class=\"col-xs-8\">\n\n                <div id=\"comments-panel\">\n                    <div v-if=\"!socket\">\n                        Not connected to server\n                    </div>\n                    <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\" track-by=\"$index\">\n                        <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                        <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                        <div class=\"comment-text\">{{ comment.content }}</div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -854,6 +921,8 @@ if (module.hot) {(function () {  module.hot.accept()
   }
 })()}
 },{"../auth":2,"../store":12,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":101,"socket.io-client":107,"sweetalert2":117,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],10:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#unit-list-view {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 9, stdin */\n  #unit-list-view > div {\n    width: 100%; }\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -886,8 +955,6 @@ exports.default = {
         activate: function activate() {
             var _this = this;
 
-            this.store.ui.main_centered = true;
-
             if (_store.store.units.units.length === 0) {
                 this.$http.get('/api/units').then(function (response) {
                     var _store$units$units;
@@ -902,24 +969,26 @@ exports.default = {
                 this.room_loading = false;
             }
         },
-        deactivate: function deactivate() {
-            this.store.ui.main_centered = false;
-        }
+        deactivate: function deactivate() {}
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<div v-if=\"room_loading\"><h3><i class=\"fa fa-pulse fa-5x fa-spinner\"></i> Loading units...</h3></div>\n\n\n<div v-if=\"!room_loading &amp;&amp; store.units.units.length === 0\">\n    <h3><i class=\"fa fa-exclamation-circle fa-5x\"></i> You are not enrolled in any units. If you think this is a problem, please contact your lecturer.</h3>\n</div>\n\n\n<div v-if=\"store.units.units.length > 0\">\n    <div>\n        <div class=\"row\">\n            <unit-panel :class=\"{blur: [null,unit.public_id].indexOf(store.units.hovered) < 0}\" v-for=\"unit in store.units.units\" :unit=\"unit\"></unit-panel>\n        </div>\n    </div>\n\n    <div class=\"row\" :class=\"{blur: !!store.units.hovered}\">\n        <div class=\"col-xs-12\" style=\"font-size: 0.85rem;\">\n            <div>Here's your classes. This line of text is to make the page look like it knows what\n                it's doing. Ahoy mihoy.\n            </div>\n            <div>Make lectures great again 2016</div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<div id=\"unit-list-view\">\n    <div v-if=\"room_loading\"><h3><i class=\"fa fa-pulse fa-5x fa-spinner\"></i> Loading units...</h3></div>\n\n\n    <div v-if=\"!room_loading &amp;&amp; store.units.units.length === 0\">\n        <h3><i class=\"fa fa-exclamation-circle fa-5x\"></i> You are not enrolled in any units. If you think this is a\n            problem, please contact your lecturer.</h3>\n    </div>\n\n\n    <div v-if=\"store.units.units.length > 0\">\n        <div>\n            <div class=\"row\">\n                <unit-panel :class=\"{blur: [null,unit.public_id].indexOf(store.units.hovered) < 0}\" v-for=\"unit in store.units.units\" :unit=\"unit\"></unit-panel>\n            </div>\n        </div>\n\n        <div class=\"row\" :class=\"{blur: !!store.units.hovered}\">\n            <div class=\"col-xs-12\" style=\"font-size: 0.85rem;\">\n                <div>Here's your classes. This line of text is to make the page look like it knows what\n                    it's doing. Ahoy mihoy.\n                </div>\n                <div>Make lectures great again 2016</div>\n            </div>\n        </div>\n    </div>\n</div>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["/* line 2, stdin */\n#unit-list-view {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 9, stdin */\n  #unit-list-view > div {\n    width: 100%; }\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
   if (!module.hot.data) {
     hotAPI.createRecord("_v-7f24e4cc", module.exports)
   } else {
     hotAPI.update("_v-7f24e4cc", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":12,"./UnitPanel.vue":11,"babel-runtime/helpers/toConsumableArray":17,"vue":122,"vue-hot-reload-api":119}],11:[function(require,module,exports){
+},{"../store":12,"./UnitPanel.vue":11,"babel-runtime/helpers/toConsumableArray":17,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],11:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.unit-content:hover {\n  -webkit-transform: rotateX(25deg);\n          transform: rotateX(25deg); }\n\n/* line 8, stdin */\n.move-up {\n  -webkit-transition: all 0.4s ease;\n  transition: all 0.4s ease;\n  -webkit-transform: translateY(-30px);\n          transform: translateY(-30px); }\n\n/* line 13, stdin */\n.unit-component {\n  z-index: 1;\n  -webkit-perspective: 700px;\n          perspective: 700px;\n  -webkit-transition: all 0.25s ease-out;\n  transition: all 0.25s ease-out; }\n  /* line 18, stdin */\n  .unit-component a {\n    color: inherit;\n    text-decoration: inherit; }\n  /* line 25, stdin */\n  .unit-component:hover .unit-icon {\n    -webkit-transform: scale(1.25) translateY(-10px);\n            transform: scale(1.25) translateY(-10px);\n    box-shadow: 0px 7px 2px -2px rgba(0, 0, 0, 0.4);\n    -webkit-transition: all 0.55s ease;\n    transition: all 0.55s ease;\n    background: darkorange; }\n  /* line 32, stdin */\n  .unit-component:hover .unit-button {\n    background-color: rgba(255, 255, 255, 0.5); }\n    /* line 34, stdin */\n    .unit-component:hover .unit-button:hover {\n      background-color: white; }\n")
 'use strict';
@@ -981,6 +1050,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 var createStore = function createStore() {
     return {
+        demo: true,
         user: {
             id: null,
             authenticated: false,
@@ -1003,9 +1073,6 @@ var createStore = function createStore() {
             current_unit: {},
             hovered: null,
             units: []
-        },
-        ui: {
-            main_centered: false
         },
         alerts: {
             alerts: [],

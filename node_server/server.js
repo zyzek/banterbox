@@ -151,7 +151,19 @@ function postAuth(socket, data) {
         if (client.role === 'owner' || client.role === 'moderator') {
           _alias = client.username
         }
+
+        // Set if it doesn't exist.
         rclient.hsetnxAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, _alias)
+
+        // Now retrieve it just in case it already existed, and place it on the client
+        rclient.hgetAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`)
+          .then(result => {
+            console.log({result})
+            client.alias = result
+          })
+
+
+
       })
 
       socket.join(data.room_id);
@@ -200,6 +212,65 @@ function setupEventListeners(socket) {
     socket.emit('message', 'Room leave success')
   })
 
+
+  // Special events that only the room owner can perform
+  if (socket.client.role === 'owner') {
+    socket.on('party_start', () => {
+      console.log('PARTAY')
+      io.to(client.room_id).emit('party_start');
+    })
+
+    socket.on('party_stop', () => {
+      io.to(client.room_id).emit('party_stop');
+
+    })
+  }
+
+
+  if(socket.client.role === 'owner' || socket.client.role === 'moderator'){
+    // Kicking and removing people is a little bit trickier.
+    // Since we are keeping people anon, we have to kick by alias, since we're not even using their user IDs anywhere.
+    socket.on('kick_user', alias => {
+
+      const ids = Object.keys(io.sockets.connected)
+
+      console.log({ids})
+
+      for(const i of ids){
+        const target = io.sockets.connected[i]
+        const client = target.client
+        if(client.alias === alias){
+          socket.broadcast.to(target.id).emit('kicked')
+          console.log('kicking', alias)
+          break
+        }
+      }
+    })
+
+
+    socket.on('blacklist_user', alias => {
+
+      const ids = Object.keys(io.sockets.connected)
+
+      console.log({ids})
+
+      for(const i of ids){
+        const target = io.sockets.connected[i]
+        const client = target.client
+        if(client.alias === alias){
+          socket.broadcast.to(target.id).emit('blacklisted')
+          console.log('blacklisting', alias)
+          // TODO: Update database to reflect status
+          break
+        }
+      }
+    })
+
+
+
+  }
+
+
   /**
    * Broadcast a comment to the room's chat channel , and persist it to the database.
    */
@@ -224,7 +295,7 @@ function setupEventListeners(socket) {
           date     : moment(now).format('DD/MM/YYYY'),
           time     : moment(now).format('HH:mm:ss'),
           author   : alias,
-          icon     : ['owner', 'moderator'].indexOf(client.role) !== -1 ? 'user-secret' : null,
+          icon     : (client.role === 'owner' || client.role === 'moderator') ? 'user-secret' : null,
         }
 
         io.to(client.room_id).emit('comment', comment);
@@ -423,30 +494,24 @@ function sendCommentHistory(room_id, socket) {
         .then(() => {
           return rclient.hgetallAsync(`room:${room_id}:alias`)
             .then(aliases => {
-            return {aliases, rows}
-          })
+              return {aliases, rows}
+            })
         })
     })
     .then(data => {
-      console.log({data})
-      const rows     = data.rows
-      const aliases  = data.aliases
-
-
+      const rows    = data.rows
+      const aliases = data.aliases
 
 
       const comments = []
       for (let r of rows) {
-
-        console.log({r})
-
         comments.push({
           content  : r.content,
           timestamp: moment(r.timestamp).unix(),
           date     : moment(r.timestamp).format('DD/MM/YYYY'),
           time     : moment(r.timestamp).format('HH:mm:ss'),
           author   : aliases[`user:${r.user_id}`],
-          icon     : ['owner', 'moderator'].indexOf(r.role) !== -1 ? 'user-secret' : null
+          icon     : (r.role === 'owner' || r.role === 'moderator') ? 'user-secret' : null
 
         })
       }

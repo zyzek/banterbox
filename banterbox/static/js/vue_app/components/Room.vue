@@ -134,6 +134,10 @@
                     </button>
                 </h1>
                 <h5>Status : {{ room.status }}</h5>
+                <div v-if="room.role === 'owner'">
+                    <button class="btn btn-danger" @click="toggleParty" v-if="party_mode">Stop the party :(</button>
+                    <button class="btn btn-danger" @click="toggleParty" v-if="!party_mode">Start the party :)</button>
+                </div>
             </div>
             <div style="color:dimgray;"><h3 style="font-weight: 200;">{{ unit_name }}</h3></div>
         </div>
@@ -189,7 +193,7 @@
                         <div v-if="!socket">
                             Not connected to server
                         </div>
-                        <div class="comment" :id="comment.id" v-for="comment in comments">
+                        <div class="comment" :id="comment.id" v-for="comment in comments" track-by="$index">
                             <span class="comment-hash"><i
                                     class="fa fa-{{comment.icon}}">  </i>  @{{ comment.author }}</span>
                             <span class="comment-time">{{comment.date}} - {{comment.time}}</span>
@@ -398,6 +402,7 @@
         data: () => {
             return {
                 store,
+                party_mode:false,
                 settings: {
                     unit_name: null,
                     unit_icon: null,
@@ -428,6 +433,20 @@
             }
         },
         methods: {
+
+            toggleParty(){
+              if(this.room.role === 'owner'){
+
+                  if(!this.party_mode) {
+                      this.socket.emit('party_start')
+                      this.party_mode = true
+                  }else{
+
+                      this.socket.emit('party_stop')
+                      this.party_mode = false
+                  }
+              }
+            },
 
             /**
              * Send updated settings to the server
@@ -573,22 +592,46 @@
                 socket.on('connect', () => {
                     console.log({room: this.room, id: this.room.id})
                     socket.on('authenticated', (e) => {
+                        console.log('authenticated')
+
 
                         this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket)
 
-                        console.log('authenticated')
-
+                        // Backlog of comments for the room
                         socket.on('comment_history', comments => {
                             this.comments = [...comments]
                         })
 
+                        // Any time a comment is received
                         socket.on('comment', comment => {
                             console.log({comment})
                             this.comments.unshift(comment)
                         })
 
+                        // Any time a server-side message is received
                         socket.on('message', data => {
                             console.log({data})
+                        })
+
+                        socket.on('kicked', data => {
+                            store.alerts.addAlert({type:'danger',message:'You have been removed from the room.'})
+                            this.$router.go('/units')
+                        })
+
+                        socket.on('blacklisted', data => {
+                            store.alerts.addAlert({type:'danger', message:'You have been blacklisted from this unit.'})
+                            this.$router.go('/units')
+
+                        })
+
+                        socket.on('party_start', () => {
+                            store.alerts.addAlert({type:'info',message:'Oooo yeah... party mode activated'})
+                            this.worm.set_style({party:true})
+                        })
+
+                        socket.on('party_stop', () => {
+                            store.alerts.addAlert({type:'info',message:"If you can't handle me at my memeiest, you definitely can't handle me at my creamiest."})
+                            this.worm.set_style({party:false})
                         })
 
                         this.socket = socket;
