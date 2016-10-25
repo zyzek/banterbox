@@ -22,6 +22,73 @@
 // TODO: Fix worm gradient when y offset is applied.
 
 
+
+
+
+class WormSocketHandler {
+  constructor(socket, parent) {
+    this.socket = socket;
+    this.parent = parent
+    this.set_up_socket();
+  }
+
+  /* Set up all the listeners and emitters on the socket, and emit the first sync
+   * message. Make sure the socket is actually initialised before calling this. */
+  set_up_socket() {
+
+      this.socket.on('votes', (data) => {
+          this.parent.push_data((data.votes.yes - data.votes.no), data.timestamp)
+      });
+
+      this.socket.on('comment', comment => {
+          this.parent.push_comment(comment.author, comment.content, comment.timestamp);
+      });
+
+      this.socket.on('vote_history', data => {
+          this.parent.data.splice(0,
+                           Math.min(2, data.length),
+                           ...data.map((e) => {
+                               return {value: e.votes.yes - e.votes.no,
+                                       timestamp: e.timestamp}
+                           })
+          )
+      });
+
+      this.socket.on('comment_history', data => {
+          this.parent.comments.splice(0,
+                               Math.min(1, data.length),
+                               ...data.map((c) => {
+                                  return {author: c.author,
+                                          text: c.content,
+                                          timestamp: c.timestamp*1000}
+                               }).reverse()
+          )
+      });
+
+
+      this.socket.on('start_time', (data) => {
+          this.parent.start_timestamp = data.start_time;
+      });
+
+      this.socket.on('timestamp', (data) => {
+          let serv_time = data.timestamp;
+          let client_time = Date.now();
+          this.parent.serv_time_diff = serv_time - (this.parent.sync_time + client_time)/2;
+      });
+
+      setInterval(() => {
+          this.parent.sync_time = Date.now();
+          this.socket.emit('timestamp');
+      }, 10000);
+  }
+
+  emit(value) {
+    this.socket.emit(value);
+  }
+}
+
+
+
 class Worm {
 
 
@@ -35,9 +102,9 @@ class Worm {
         this.bg_canvas = container_bg;
         this.bg_context = this.bg_canvas.getContext('2d');
 
+
         // Set up the networking.
-        this.socket = socket;
-        this.set_up_socket();
+        this.socket = new WormSocketHandler(socket, this);
 
         // Set up input handlers.
         this.set_up_event_listeners();
@@ -57,55 +124,6 @@ class Worm {
     }
 
 
-    /* Set up all the listeners and emitters on the socket, and emit the first sync
-     * message. Make sure the socket is actually initialised before calling this. */
-    set_up_socket() {
-
-        this.socket.on('votes', (data) => {
-            this.push_data((data.votes.yes - data.votes.no), data.timestamp)
-        });
-
-        this.socket.on('comment', comment => {
-            this.push_comment(comment.author, comment.content, comment.timestamp);
-        });
-
-        this.socket.on('vote_history', data => {
-            this.data.splice(0,
-                             Math.min(2, this.data.length),
-                             ...data.map((e) => {
-                                 return {value: e.votes.yes - e.votes.no,
-                                         timestamp: e.timestamp}
-                             })
-            )
-        });
-
-        this.socket.on('comment_history', data => {
-            this.comments.splice(0,
-                                 Math.min(1, this.data.length),
-                                 ...data.map((c) => {
-                                    return {author: c.author,
-                                            text: c.content,
-                                            timestamp: c.timestamp*1000}
-                                 }).reverse()
-            )
-        });
-
-
-        this.socket.on('start_time', (data) => {
-            this.start_timestamp = data.start_time;
-        });
-
-        this.socket.on('timestamp', (data) => {
-            let serv_time = data.timestamp;
-            let client_time = Date.now();
-            this.serv_time_diff = serv_time - (this.sync_time + client_time)/2;
-        });
-
-        setInterval(() => {
-            this.sync_time = Date.now();
-            this.socket.emit('timestamp');
-        }, 10000);
-    }
 
 
     /* Set up all the listeners for input events. */
@@ -324,6 +342,7 @@ class Worm {
         this.fg_canvas.height = fg_rect.height;
         this.bg_canvas.width = bg_rect.width;
         this.bg_canvas.height = bg_rect.height;
+
         this.set_style({gradient: true})
     }
 
@@ -450,13 +469,11 @@ class Worm {
         this.bg_context.font = "20px sans-serif";
 
         let pad = 5;
+        this.bg_context.textAlign = "left";
 
         if (x > this.bg_canvas.width / 2) {
             this.bg_context.textAlign = "right";
             pad = -5;
-        }
-        else {
-            this.bg_context.textAlign = "left";
         }
 
         this.bg_context.fillText(time_indicator, x + pad, 20);
