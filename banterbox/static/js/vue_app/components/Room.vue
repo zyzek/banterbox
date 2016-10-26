@@ -503,7 +503,6 @@
 
                     if (!this.party_mode) {
                         this.socket.emit('party_start')
-                        this.party_mode = true
                     } else {
 
                         this.socket.emit('party_stop')
@@ -694,6 +693,7 @@
                 socket.on('party_start', () => {
                     store.alerts.addAlert({type: 'info', message: 'Oooo yeah... party mode activated'})
                 this.worm.set_style({party: true})
+                    this.party_mode = true
             })
 
                 socket.on('party_stop', () => {
@@ -701,6 +701,7 @@
                     type: 'info',
                     message: "If you can't handle me at my memeiest, you definitely can't handle me at my creamiest."
                 })
+                    this.party_mode = false
                 this.worm.set_style({party: false})
             })
 
