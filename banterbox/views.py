@@ -11,6 +11,7 @@ from datetime import timedelta, datetime
 import calendar
 from .icons import icons
 
+
 '''
 ---------------------------------------------------- /api/room/blacklist ------------------------------------------
 '''
@@ -465,22 +466,16 @@ def room_list(request, unit_code):
 
 @api_view(['GET'])
 def analytics(request, room_id):
-
-
-
-
-    from textblob import TextBlob
+    """
+    Return the history of a room.
+    #TODO Stretch: Also return more analytics such as comments / polarities
+    """
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
         return Response({'message':'Room with that ID does not exist'}, status=404)
 
-
-    excluded_roles = UserRole.objects.filter(name__in=['owner','moderator'])
-    comments = Comment.objects.filter(room=room).exclude(user__userunitrole__role__in=excluded_roles)
-    sentences = [c.content for c in comments]
-    polarity = [{'sentiment' : TextBlob(s).sentiment.polarity, 'comment' : s} for s in sentences]
-    return Response({'message' : 'Hello', 'polarities' : polarity, 'history': room.history})
+    return Response({'history': room.history})
 
 
 @authentication_classes([])
