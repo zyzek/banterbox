@@ -447,6 +447,25 @@ def enter_unit(request, unit_code):
     })
 
 
+
+@api_view(['GET'])
+@authentication_classes([])
+@permission_classes([])
+def analytics(request):
+    from textblob import TextBlob
+
+
+    excluded_roles = UserRole.objects.filter(name__in=['owner','moderator'])
+    comments = Comment.objects.filter(room_id='31f6682c-6e44-4337-a841-cadfddaca642').exclude(user__userunitrole__role__in=excluded_roles)
+
+
+    sentences = [c.content for c in comments]
+
+
+    polarity = [{'sentiment' : TextBlob(s).sentiment.polarity, 'comment' : s} for s in sentences]
+    return Response({'message' : 'Hello', 'polarities' : polarity})
+
+
 @authentication_classes([])
 @permission_classes([])
 @throttle_classes([ScopedRateThrottle, ])

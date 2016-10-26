@@ -9,6 +9,9 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
 
+
+    url('^api/analytics/?$', views.analytics),
+
     url(r'^api/demo/user/?$', views.DemoUser.as_view()),
     url(r'^api/auth/?$', auth_views.obtain_auth_token),
     url(r'^api/user/?$', views.current_user),

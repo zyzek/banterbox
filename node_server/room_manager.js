@@ -66,7 +66,7 @@ function updateRooms() {
                    ON R.unit_id = SC.unit_id
                    AND (R.status_id != 5 OR R.status_id IS NULL )
                  INNER JOIN banterbox_unit U ON SC.unit_id = U.id
-               WHERE day = $1;`,
+               WHERE day = $1 AND SC.end_time > now()::TIME;`,
         values: [day]
       })
     })
@@ -78,7 +78,6 @@ function updateRooms() {
 
           // If a unit has no room, there will be no status name on the row.
           // Therefore we create the room and assign the ID to the row immediately.
-
           if (row.status_name === null) {
             const room_id = uuid.v4()
             console.log(`Creating room for Unit ${row.code} as :: ${room_id}`)

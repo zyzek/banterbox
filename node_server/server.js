@@ -458,7 +458,7 @@ function sendCommentHistory(room_id, socket) {
   DB.connection().any({
     name  : 'grab-comments-for-room',
     text  : `SELECT COMMENT_DATA.*, UR.name as ROLE
-             FROM (SELECT C.*, ROLE.role_id FROM banterbox_comment C
+             FROM (SELECT C.*, auth_user.username, ROLE.role_id FROM banterbox_comment C
                INNER JOIN banterbox_room  ROOM ON C.room_id = ROOM.id
                INNER JOIN auth_user ON C.user_id = auth_user.id
                LEFT JOIN banterbox_userunitrole ROLE ON ROOM.unit_id = ROLE.unit_id  AND ROLE.user_id = C.user_id
