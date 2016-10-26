@@ -149,14 +149,14 @@
             <div style="color:dimgray;"><h3 style="font-weight: 200;">{{ unit_name }}</h3></div>
         </div>
 
-        <div class="col-xs-12" style="margin-bottom:20px; position: relative">
+        <div class="col-xs-12" style="margin-bottom:20px; position: relative" id="canvas-containers">
 
 
             <canvas v-show="!mute_background" id="fg_canvas"
                     style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2">
 
             </canvas>
-            <canvas v-show="!mute_background" id="bg_canvas"
+            <canvas v-show="!mute_background" id="bg_canvas" :class="{party : party_mode}"
                     style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray">
 
             </canvas>
@@ -415,6 +415,20 @@
                 padding: 5px;
                 font-size: 0.95rem;
             }
+        }
+    }
+
+
+    #canvas-containers{
+        perspective: 700px;
+    }
+
+
+    #bg_canvas{
+        transition: all 0.25s ease;
+
+        &.party{
+            transform: rotateX(55deg) translateZ(-50px)
         }
     }
 
