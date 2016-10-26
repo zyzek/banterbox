@@ -144,7 +144,8 @@
 
                             return parsed.value
                         }).then(data => {
-                    this.setupChart(data)
+                    const interval = parseInt(data.length / 30)
+                    this.setupChart(data.filter((val,index) => index % interval == 0))
                 })
             },
 
