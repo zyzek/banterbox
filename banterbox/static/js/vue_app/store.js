@@ -1,5 +1,6 @@
 const createStore = () => {
     return {
+        demo : true,
         user: {
             id: null,
             authenticated: false,
@@ -9,6 +10,7 @@ const createStore = () => {
             first_name: null,
             last_name: null,
             username: null,
+            is_admin : false,
 
             get full_name() {
                 if (!this.first_name || !this.last_name) {
@@ -21,9 +23,6 @@ const createStore = () => {
             current_unit: {},
             hovered: null,
             units: [],
-        },
-        ui: {
-            main_centered: false,
         },
         alerts: {
             alerts: [],

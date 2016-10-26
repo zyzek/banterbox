@@ -132,20 +132,31 @@
                     <button @click="openModal()" v-if="room.role === 'owner'"
                             class="settings-button btn btn-danger btn-sm"><i class="fa fa-cog"></i>Room Settings
                     </button>
+
+                    <button v-link="{ path : '/units/' + unit_code + '/analytics' }" v-if="room.role === 'owner'"
+                            class="settings-button btn btn-danger btn-sm"><i class="fa fa-line-chart"></i>
+                        Unit Analytics
+                    </button>
+
+
                 </h1>
                 <h5>Status : {{ room.status }}</h5>
+                <div v-if="room.role === 'owner'">
+                    <button class="btn btn-danger" @click="toggleParty" v-if="party_mode">Stop the party :(</button>
+                    <button class="btn btn-danger" @click="toggleParty" v-if="!party_mode">Start the party :)</button>
+                </div>
             </div>
             <div style="color:dimgray;"><h3 style="font-weight: 200;">{{ unit_name }}</h3></div>
         </div>
 
-        <div class="col-xs-12" style="margin-bottom:20px; position: relative">
+        <div class="col-xs-12" style="margin-bottom:20px; position: relative" id="canvas-containers">
 
 
             <canvas v-show="!mute_background" id="fg_canvas"
                     style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2">
 
             </canvas>
-            <canvas v-show="!mute_background" id="bg_canvas"
+            <canvas v-show="!mute_background" id="bg_canvas" :class="{party : party_mode}"
                     style="width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray">
 
             </canvas>
@@ -189,11 +200,16 @@
                         <div v-if="!socket">
                             Not connected to server
                         </div>
-                        <div class="comment" :id="comment.id" v-for="comment in comments">
-                            <span class="comment-hash"><i
-                                    class="fa fa-{{comment.icon}}">  </i>  @{{ comment.author }}</span>
-                            <span class="comment-time">{{comment.date}} - {{comment.time}}</span>
-                            <div class="comment-text">{{ comment.content }}</div>
+
+                        <div class="comment" :id="comment.id" v-for="comment in comments" track-by="$index">
+                            <div>
+                                <span class="comment-hash"><i class="fa fa-{{comment.icon}}">  </i>  @{{ comment.author }}</span>
+                                <span class="comment-time">{{comment.date}} - {{comment.time}}</span>
+                                <div class="comment-text">{{ comment.content }}</div>
+                            </div>
+                            <div @click="kickUser(comment.author)" v-if="(room.role === 'moderator' || room.role == 'owner')">
+                                <i class="fa fa-gavel"> </i>
+                            </div>
                         </div>
 
                     </div>
@@ -359,16 +375,33 @@
     }
 
     #comments-panel {
+        border: 3px dashed rgba(122, 122, 122, 0.25);
         max-height: 250px;
         overflow-x: hidden;
         overflow-y: scroll;
 
         .comment {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             background-color: white;
             padding: 5px;
             margin-bottom: 5px;
             border-radius: 2px;
             margin-right: 3px;
+
+            .fa-gavel {
+                padding: 10px;
+                font-size: 1.5em;
+                color:#b8b8b8;
+
+                transition:all 0.25s ease;
+
+                &:hover{
+                    color:black;
+                    transform:scale(1.1,1.1);
+                }
+            }
 
             .comment-username {
                 font-weight: 600;
@@ -385,6 +418,20 @@
         }
     }
 
+
+    #canvas-containers{
+        perspective: 700px;
+    }
+
+
+    #bg_canvas{
+        transition: all 0.25s ease;
+
+        &.party{
+            transform: rotateX(55deg) translateZ(-50px)
+        }
+    }
+
 </style>
 
 
@@ -398,6 +445,7 @@
         data: () => {
             return {
                 store,
+                party_mode: false,
                 settings: {
                     unit_name: null,
                     unit_icon: null,
@@ -428,6 +476,40 @@
             }
         },
         methods: {
+
+
+            kickUser(name){
+                const role = this.room.role
+              if(role === 'moderator' || role === 'owner'){
+                  swal({
+                        title: `Kick ${name}?`,
+                        type: 'success',
+                        confirmButtonColor: '#17b000',
+                        showCancelButton: true,
+                          showCloseButton: true,
+
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                      this.socket.emit('kick_user', name)
+                  }).catch(err => {
+                      console.log({err})
+                  })
+              }
+            },
+
+            toggleParty(){
+                if (this.room.role === 'owner') {
+
+                    if (!this.party_mode) {
+                        this.socket.emit('party_start')
+                    } else {
+
+                        this.socket.emit('party_stop')
+                        this.party_mode = false
+                    }
+                }
+            },
 
             /**
              * Send updated settings to the server
@@ -568,36 +650,68 @@
 
                 socket.on('unauthorized', function (err) {
                     console.log("There was an error with the authentication:", err.message);
-                });
+                })
 
                 socket.on('connect', () => {
                     console.log({room: this.room, id: this.room.id})
-                    socket.on('authenticated', (e) => {
+                socket.on('authenticated', (e) => {
+                    console.log('authenticated')
 
-                        this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket)
 
-                        console.log('authenticated')
+                this.worm = new Worm(document.getElementById('fg_canvas'), document.getElementById('bg_canvas'), socket)
 
-                        socket.on('comment_history', comments => {
-                            this.comments = [...comments]
-                        })
+                // Backlog of comments for the room
+                socket.on('comment_history', comments => {
+                    this.comments = [...comments]
+            })
 
-                        socket.on('comment', comment => {
-                            console.log({comment})
-                            this.comments.unshift(comment)
-                        })
+                // Any time a comment is received
+                socket.on('comment', comment => {
+                    console.log({comment})
+                this.comments.unshift(comment)
+            })
 
-                        socket.on('message', data => {
-                            console.log({data})
-                        })
+                // Any time a server-side message is received
+                socket.on('message', data => {
+                    console.log({data})
+            })
 
-                        this.socket = socket;
-                    });
+                socket.on('kicked', data => {
+                    store.alerts.addAlert({type: 'danger', message: 'You have been removed from the room.'})
+                this.$router.go('/units')
+            })
 
-                    socket.emit('authentication', {token_id: auth.getToken(), room_id: this.room.id});
+                socket.on('blacklisted', data => {
+                    store.alerts.addAlert({
+                    type: 'danger',
+                    message: 'You have been blacklisted from this unit.'
+                })
+                this.$router.go('/units')
 
-                });
-            },
+            })
+
+                socket.on('party_start', () => {
+                    store.alerts.addAlert({type: 'info', message: 'Oooo yeah... party mode activated'})
+                this.worm.set_style({party: true})
+                    this.party_mode = true
+            })
+
+                socket.on('party_stop', () => {
+                    store.alerts.addAlert({
+                    type: 'info',
+                    message: "If you can't handle me at my memeiest, you definitely can't handle me at my creamiest."
+                })
+                    this.party_mode = false
+                this.worm.set_style({party: false})
+            })
+
+                this.socket = socket;
+            })
+
+                socket.emit('authentication', {token_id: auth.getToken(), room_id: this.room.id});
+
+            })
+        },
 
 
             /**

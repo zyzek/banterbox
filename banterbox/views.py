@@ -1,7 +1,9 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, throttle_classes, authentication_classes, permission_classes
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from banterbox.serializers import *
 from django.db import IntegrityError
 from django.utils import timezone
@@ -9,11 +11,13 @@ from datetime import timedelta, datetime
 import calendar
 from .icons import icons
 
+
 '''
 ---------------------------------------------------- /api/room/blacklist ------------------------------------------
 '''
 
-#TODO : Make this actually work
+
+# TODO : Make this actually work
 @api_view(['GET', 'POST'])
 def blacklist(request, room_id):
     # get the room 
@@ -27,12 +31,14 @@ def blacklist(request, room_id):
     elif request.method == "POST":
         return blacklist_POST(request, room)
 
-#TODO : Make this actually work
+
+# TODO : Make this actually work
 def blacklist_GET(request, room):
     return {
         'blacklisted_users': 'TBI'}  # return {'blacklisted_users' : [User.objects.get(id = UserRoomBlacklist.user_id).id for UserRoomBlacklist in UserRoomBlacklist.objects.filter(room_id=room.id)]}
 
-#TODO : Make this actually work
+
+# TODO : Make this actually work
 def blacklist_POST(request, room):
     # check if admin
     user = request.user
@@ -57,12 +63,10 @@ def blacklist_POST(request, room):
     return HttpResponse(200)
 
 
-
-
-@api_view(['GET','PUT'])
+@api_view(['GET', 'PUT'])
 def room_settings(request, room_id):
     if request.method == 'GET':
-        return get_room_settings(request,room_id)
+        return get_room_settings(request, room_id)
     elif request.method == 'PUT':
         return update_room_settings(request, room_id)
 
@@ -77,15 +81,20 @@ def get_room_settings(request, room_id):
     """
     user = request.user
 
-    if user.is_staff != 1:
-        return Response({"message": "permission denied."}, status=403)
-
     # get the room
     try:
         room = Room.objects.get(id=room_id)
-
     except Room.DoesNotExist:
         return Response({"message": "room does not exist."}, status=404)
+
+    # Make sure they're allowed to be here
+    try:
+        user.userunitrole_set.get(unit=room.unit, role__name='owner')
+    except UserUnitRole.DoesNotExist:
+        return Response({"message": "permission denied."}, status=403)
+    except Exception as e:
+        print(e)
+        return Response(status=403)
 
     try:
         blacklist_ids = [u.user_id for u in UserRoomBLackList.objects.filter(room_id=room.id)]
@@ -100,7 +109,7 @@ def get_room_settings(request, room_id):
             'blacklisted': e.id in blacklist_ids,
             'email'      : e.email,
             'username'   : e.username,
-            'id'    : e.id
+            'id'         : e.id
         })
 
     result = {
@@ -128,33 +137,29 @@ def update_room_settings(request, room_id):
     try:
         room = Room.objects.get(id=room_id)
     except Room.DoesNotExist:
-        return Response({'message' : 'Room does not exist'}, status=404)
+        return Response({'message': 'Room does not exist'}, status=404)
 
     # Update and save room properties
     unit = room.unit
     unit.name = request.data.get('unit_name')
-    unit.icon = request.data.get('unit_icon','graduation-cap')
+    unit.icon = request.data.get('unit_icon', 'graduation-cap')
     room.password_protected = request.data.get('password_protected', False)
     room.password = request.data.get('password', None)
 
     unit.save()
     room.save()
 
-
-    blacklist = User.objects.filter(id__in=request.data.get('blacklist',[]))
-    whitelist = User.objects.filter(id__in=request.data.get('whitelist',[]))
-
+    blacklist = User.objects.filter(id__in=request.data.get('blacklist', []))
+    whitelist = User.objects.filter(id__in=request.data.get('whitelist', []))
 
     # Remove people off the blacklist matching the whitelist IDs
     UserRoomBLackList.objects.filter(user_id__in=whitelist, room_id=room_id).delete()
 
     # Add people to blacklist if they are not already there
     for a in blacklist:
-        UserRoomBLackList.objects.get_or_create(room_id=room_id,user=a)
+        UserRoomBLackList.objects.get_or_create(room_id=room_id, user=a)
 
-
-
-    return Response({'message' : 'OK'})
+    return Response({'message': 'OK'})
 
 
 '''
@@ -164,15 +169,17 @@ def update_room_settings(request, room_id):
 
 @api_view(['GET'])
 def current_user(request):
-    profile = request.user.profile
+    user = request.user
+    profile = user.profile
 
     output = {
         'id'        : profile.id,
         'icon'      : profile.icon,
-        'email'     : profile.user.email,
-        'first_name': profile.user.first_name,
-        'last_name' : profile.user.last_name,
-        'username'  : profile.user.username,
+        'email'     : user.email,
+        'first_name': user.first_name,
+        'last_name' : user.last_name,
+        'username'  : user.username,
+        'is_admin'  : user.is_staff
     }
     return Response(output)
 
@@ -252,7 +259,6 @@ def get_next_session(unit):
                    or next((x for x in scheduled_rooms if x.day > today), None) \
                    or next((x for x in scheduled_rooms if x.day < today), None)
 
-
     if next_session is None:
         return {'time': None, 'day': None}
 
@@ -269,15 +275,18 @@ def get_units(request):
     out_units = []
     for user_enrolment in UserUnitEnrolment.objects.filter(user_id=user.id):
         unit = Unit.objects.get(id=user_enrolment.unit_id)
-        room = unit.room_set.first()
+
+        try:
+            room = unit.room_set.get(status__name__in=['commencing','running'])
+        except Exception as e:
+            room = unit.room_set.first()
 
         if room and room.status:
             room_status = room.status.name
             room_id = room.id
         else:
             room_id = '---'
-            room_status = 'unknown'
-
+            room_status = 'unopened'
 
         result = {
             "id"          : room_id,
@@ -288,7 +297,6 @@ def get_units(request):
             "status"      : room_status,
             "next_session": get_next_session(unit)
         }
-
 
         out_units.append(result)
     return Response({'units': out_units})
@@ -395,25 +403,21 @@ def enter_unit(request, unit_code):
 
 
 
-    room_id = request.GET.get('room_id',None)
+    room_id = request.GET.get('room_id', None)
 
     if room_id is not None:
         try:
             room = Room.objects.get(unit__code=unit_code, id=room_id)
         except Room.DoesNotExist:
-            room = None # Todo : return list of prior rooms. See above
-            return Response({'message' : 'Room not found.'},status=404)
+            room = None  # Todo : return list of prior rooms. See above
+            return Response({'message': 'Room not found.'}, status=404)
 
     else:
         try:
             room = Room.objects.get(unit__code=unit_code, status__name='running')
         except Room.DoesNotExist:
-            room = None # Todo : return list of prior rooms. See above
-            return Response({'message' : 'No running rooms found.'},status=404)
-
-
-
-
+            room = None  # Todo : return list of prior rooms. See above
+            return Response({'message': 'No running rooms found.'}, status=404)
 
     try:
         unit = Unit.objects.get(code=unit_code)
@@ -421,8 +425,6 @@ def enter_unit(request, unit_code):
         return Response({'message': 'The unit you are trying to access does not exist'}, status=404)
 
 
-    # Collect a correct room
-    room = unit.room_set.first()
 
     # TODO: Turn this into a decorator
     # Check authorization, if they're not allowed to enter we let them know they're unauthorized
@@ -440,10 +442,67 @@ def enter_unit(request, unit_code):
     #   1. The Room's unit info : name,code
 
     return Response({
-        'unit_code': unit.code,
-        'unit_name': unit.name,
-        'unit_icon': unit.icon,
-        'role'     : role,
-        'room_id' : room.id,
-        'room_status' : room.status.name
+        'unit_code'  : unit.code,
+        'unit_name'  : unit.name,
+        'unit_icon'  : unit.icon,
+        'role'       : role,
+        'room_id'    : room.id,
+        'room_status': room.status.name
     })
+
+
+
+@api_view(['GET'])
+def room_list(request, unit_code):
+    try :
+        room_status = request.GET['filter'].lower()
+        return Response([{'date':r.created_at, 'id' : r.id, 'status' : r.status.name} for r in Room.objects.filter(unit__code=unit_code, status__name=room_status)])
+    except Exception as e:
+        print(e)
+        return Response([{'date':r.created_at, 'id' : r.id, 'status' : r.status.name} for r in Room.objects.filter(unit__code=unit_code)])
+
+
+
+
+@api_view(['GET'])
+def analytics(request, room_id):
+    """
+    Return the history of a room.
+    #TODO Stretch: Also return more analytics such as comments / polarities
+    """
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({'message':'Room with that ID does not exist'}, status=404)
+
+    return Response({'history': room.history})
+
+
+@authentication_classes([])
+@permission_classes([])
+@throttle_classes([ScopedRateThrottle, ])
+class DemoUser(APIView):
+    """
+    For the purposes of the in class demonstration, we allow users to create a user once every 60 seconds.
+    """
+    throttle_scope = 'demo_registration'
+
+    def get(self, request):
+        import string
+        import random
+
+        # Make a fake
+        name = ''.join(random.sample(string.ascii_lowercase, 4) + random.sample(string.digits, 4))
+        user = User(username=name)
+        user.set_password('password')
+        user.save()
+
+        # Enrol them to the best unit in the universe
+        prawnsville = Unit.objects.get(code='PRWN9001')
+        gangland = Unit.objects.get(code='WTUP8876')
+        UserUnitEnrolment(user_id=user.id, unit_id=prawnsville.id).save()
+        UserUnitEnrolment(user_id=user.id, unit_id=gangland.id).save()
+
+        print(name, user)
+
+        return Response({'username': name, 'password': 'password'})
