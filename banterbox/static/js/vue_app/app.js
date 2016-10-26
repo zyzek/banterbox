@@ -23,9 +23,6 @@ if (Auth.getToken()) {
 export const router = new Router()
 
 router.map({
-    '/': {
-        component: Home
-    },
     '/login': {
         component: Login
     },
@@ -41,6 +38,7 @@ router.map({
 })
 
 router.redirect({
+    '/':'/units',
     '*': '/404'
 })
 
@@ -50,7 +48,6 @@ const free_routes = ['/login', '/404']
 // Check auth before travelling to the next route
 router.beforeEach(function (transition) {
     // if path is safe, continue
-
 
     if (free_routes.indexOf(transition.to.path) !== -1) {
         transition.next()

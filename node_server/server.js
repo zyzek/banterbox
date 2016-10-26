@@ -234,8 +234,6 @@ function setupEventListeners(socket) {
 
       const ids = Object.keys(io.sockets.connected)
 
-      console.log({ids})
-
       for(const i of ids){
         const target = io.sockets.connected[i]
         const client = target.client
@@ -252,7 +250,6 @@ function setupEventListeners(socket) {
 
       const ids = Object.keys(io.sockets.connected)
 
-      console.log({ids})
 
       for(const i of ids){
         const target = io.sockets.connected[i]

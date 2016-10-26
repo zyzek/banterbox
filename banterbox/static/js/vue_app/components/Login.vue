@@ -12,6 +12,9 @@
                     <p>Name: <b>{{ demo.username }}</b></p>
                     <p>Password: <b>{{ demo.password }}</b></p>
                 </div>
+                <div v-if="demo.error_message" transition="fade" style="margin-top: 20px;">
+                    <div class="alert alert-danger">{{ demo.error_message }}</div>
+                </div>
             </div>
 
         </div>
@@ -118,27 +121,30 @@
                 demo: {
                     username: null,
                     password: null,
-                    loaded: false
+                    loaded: false,
+                    error_message : null
                 }
             }
         },
         methods: {
 
             createUser(){
-                if (!window.localStorage.getItem('demo_user')) {
-                    this.$http.get('/api/demo/get-user')
+                    this.$http.get('/api/demo/user')
                             .then(response => {
-
                                 const user = response.data
                                 this.demo.loaded = true
                                 this.demo.username = user.username
                                 this.demo.password = user.password
 
-                                window.localStorage.setItem('demo_user', user.username)
-                                window.localStorage.setItem('demo_password', user.password)
-
-                            })
+                            }).catch(fail => {
+                    if(fail.status === 429){
+                    this.demo.error_message = fail.data.detail
+                }else{
+                    this.demo.error_message = 'An unknown error has occured. Our highly paid team of specialists are working on it! '
                 }
+                    console.log({fail})
+                })
+
             },
 
             authenticate(){
@@ -166,26 +172,6 @@
                             console.log({reject})
                         })
 
-            }
-        },
-        route: {
-            activate: function () {
-                // Demo purposes only
-                const username = window.localStorage.getItem('demo_user')
-                const password = window.localStorage.getItem('demo_password')
-
-                if (username && password) {
-                    this.demo.loaded = true
-                    this.demo.username = username
-                    this.demo.password = password
-                } else {
-                    window.localStorage.removeItem('demo_user')
-                    window.localStorage.removeItem('demo_password')
-                }
-
-
-            },
-            deactivate: function () {
             }
         }
     }

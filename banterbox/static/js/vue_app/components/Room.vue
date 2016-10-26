@@ -363,6 +363,7 @@
     }
 
     #comments-panel {
+        border: 3px dashed rgba(122,122,122,0.25);
         max-height: 250px;
         overflow-x: hidden;
         overflow-y: scroll;

@@ -9,7 +9,7 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
 
-    url(r'^api/demo/get-user/?$', views.create_demo_user),
+    url(r'^api/demo/user/?$', views.DemoUser.as_view()),
     url(r'^api/auth/?$', auth_views.obtain_auth_token),
     url(r'^api/user/?$', views.current_user),
     url(r'^api/units/?$', views.get_units),

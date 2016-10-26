@@ -71,7 +71,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.ScopedRateThrottle',
     ),
     'DEFAULT_THROTTLE_RATES'  : {
-        'demo_registration': '2/min',
+        'demo_registration': '1/min',
         'uploads' : '20/day'
     }
 }
