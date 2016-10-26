@@ -635,7 +635,6 @@ exports.default = {
 
                 if (!this.party_mode) {
                     this.socket.emit('party_start');
-                    this.party_mode = true;
                 } else {
 
                     this.socket.emit('party_stop');
@@ -841,6 +840,7 @@ exports.default = {
                     socket.on('party_start', function () {
                         _store.store.alerts.addAlert({ type: 'info', message: 'Oooo yeah... party mode activated' });
                         _this6.worm.set_style({ party: true });
+                        _this6.party_mode = true;
                     });
 
                     socket.on('party_stop', function () {
@@ -848,6 +848,7 @@ exports.default = {
                             type: 'info',
                             message: "If you can't handle me at my memeiest, you definitely can't handle me at my creamiest."
                         });
+                        _this6.party_mode = false;
                         _this6.worm.set_style({ party: false });
                     });
 
