@@ -4,13 +4,13 @@ from rest_framework import routers
 from . import views
 
 unit_pattern = "(?P<unit_code>[a-zA-Z]{4}[0-9]{4})"
-uuid_pattern = "(?P<room_id>[0-9a-f-]{32,})"
+room_pattern = "(?P<room_id>[0-9a-f-]{32,})"
 router = routers.DefaultRouter()
 
 urlpatterns = [
 
 
-    url('^api/analytics/?$', views.analytics),
+    url('^api/unit/' + unit_pattern + r'/rooms/?$', views.room_list),
 
     url(r'^api/demo/user/?$', views.DemoUser.as_view()),
     url(r'^api/auth/?$', auth_views.obtain_auth_token),
@@ -24,7 +24,8 @@ urlpatterns = [
     url(r'^api/unit/' + unit_pattern + r'/run/?$', views.run),
     url(r'^api/unit/' + unit_pattern, views.enter_unit),
 
-    url(r'^api/room/' + uuid_pattern + r'/settings/?$', views.room_settings),
+    url(r'^api/room/' + room_pattern + r'/settings/?$', views.room_settings),
+    url(r'^api/room/' + room_pattern + r'/analytics/?$', views.analytics),
 
     url(r'^$', views.index, name='index'),
     url(r'^api/', include(router.urls)),

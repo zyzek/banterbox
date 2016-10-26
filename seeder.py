@@ -266,6 +266,34 @@ def run_step(func, args, pre_string=None, fail_string=None):
     sys.stdout.flush()
 
 
+
+def make_old_rooms():
+    closed = models.RoomStatus.objects.get(name='closed')
+    for unit in models.Unit.objects.all():
+        room = models.Room()
+        room.name = unit.code + " Lecture"
+        room.lecturer = unit.lecturer
+        room.unit = unit
+        room.status = closed
+        room.private = False
+        room.password_protected = False
+        room.history = open('fake_votes_1.txt').read()
+        room.save()
+
+        # I know this is pleb , idgaf
+        room = models.Room()
+        room.name = unit.code + " Lecture"
+        room.lecturer = unit.lecturer
+        room.unit = unit
+        room.status = closed
+        room.private = False
+        room.password_protected = False
+        room.history = open('fake_votes_2.txt').read()
+        room.save()
+
+
+
+
 def hard_reset_db():
     def remove_migrations():
         for filename in os.listdir("banterbox/migrations/"):
@@ -289,7 +317,7 @@ def populate_db():
     run_step(make_schedules, [LECTURES_PER_UNIT], \
              "Adding {} scheduled lectures per unit...".format(LECTURES_PER_UNIT))
     run_step(add_dummy_unit, [], "Adding prawns...")
-    # run_step(make_rooms(10),[],"Adding rooms...","Rooms failed")
+    run_step(make_old_rooms(),[],"Adding old rooms...")
     print("All Done.")
 
 

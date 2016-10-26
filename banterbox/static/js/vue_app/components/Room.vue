@@ -133,11 +133,9 @@
                             class="settings-button btn btn-danger btn-sm"><i class="fa fa-cog"></i>Room Settings
                     </button>
 
-                    <button  v-if="room.role === 'owner'"
+                    <button v-link="{ path : '/units/' + unit_code + '/analytics' }"  v-if="room.role === 'owner'"
                             class="settings-button btn btn-danger btn-sm"><i class="fa fa-line-chart"></i>
-                        <a v-link="{ path : '/units/' + unit_code + '/analytics' }">
                             Unit Analytics
-                        </a>
                     </button>
 
 

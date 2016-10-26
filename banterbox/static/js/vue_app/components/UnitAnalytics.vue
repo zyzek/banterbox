@@ -2,8 +2,24 @@
     <div>
         <h1>Analytics for {{ unit_code }}</h1>
 
-
         <div class="row">
+            <div class="col-xs-12">
+
+                <div class="form-group" v-if="no_rooms_available">
+                    <h3>Unfortunately there are no available rooms for this unit. It must be new!</h3>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Select a room</label>
+                        <select type="text" class="form-control" v-model="selected_room.id" @change="getRoomData">
+                            <option :value="null">Choose a date from below</option>
+                            <option :value="room.id" v-for="room in room_list">{{ room.date }}</option>
+                        </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" v-show="selected_room.loaded" transition="slide">
             <div class="col-xs-12">
                 <div class="info-panel">
                     <div class="panel-description">
@@ -93,26 +109,47 @@
 
 <script>
 
-
-    window.TIMESTAMPS = {"value":[{"votes":{"yes":0,"no":0},"timestamp":1477455747867,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455748865,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455749868,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455750871,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455751876,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455752878,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455753882,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455754888,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455755894,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455756894,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455757895,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455758900,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455759902,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455760917,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455761921,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455762924,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455763930,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455764954,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455765934,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455766938,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455767941,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455768949,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455769951,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455770953,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455771956,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455772959,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455773960,"connected":[]},{"votes":{"yes":0,"no":0},"timestamp":1477455774967,"connected":["112"]},{"votes":{"yes":0,"no":0},"timestamp":1477455775970,"connected":["112","118"]},{"votes":{"yes":1,"no":0},"timestamp":1477455776972,"connected":["112","118"]},{"votes":{"yes":1,"no":0},"timestamp":1477455777973,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455778975,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455779976,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455780978,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455781982,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455782985,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455783991,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455784994,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455785996,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455786998,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455788001,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455789003,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455790010,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455791011,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455792014,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455793016,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455794018,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455795022,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455796030,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455797032,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455798037,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455799043,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455800043,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455801046,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455802047,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455803050,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455804053,"connected":["112","118"]},{"votes":{"yes":2,"no":0},"timestamp":1477455805058,"connected":["112","118"]},{"votes":{"yes":0,"no":3},"timestamp":1477455806061,"connected":["111","112","118"]}]}
-
     import Chartist from 'chartist'
 
     import moment from 'moment'
     export default {
         data: () => {
             return {
-                unit_code: null
-            }
-        },
-        route: {
-            activate(){
-                this.unit_code = this.$route.params.id
+                no_rooms_available : false,
+                unit_code: null,
+                room_list : [],
+                selected_room :{
+                    id : null,
+                    loaded : false,
+                    history : []
+                }
             }
         },
 
+        methods : {
+            getRoomData(){
+                if(this.selected_room.id === null){
+                    this.selected_room.loaded =  false
+                    this.selected_room.history = []
+                    return
+                }
 
-        ready(){
+
+                this.$http.get(`/api/room/${this.selected_room.id}/analytics`)
+                        .then(response => {
+                            this.selected_room.loaded = true
+                            const parsed = JSON.parse(response.data.history)
+                            this.selected_room.history = [...parsed.value]
+                            console.log({response})
+
+                            return parsed.value
+                        }).then(data => {
+                    this.setupChart(data)
+                })
+            },
+
+            setupChart(data){
+
 
 
             const votes = []
@@ -123,7 +160,7 @@
 
 
 
-            window.TIMESTAMPS.value.forEach(x => {
+            data.forEach(x => {
 
                 const date = new Date(x.timestamp)
                 const vote_value = x.votes.yes - x.votes.no
@@ -152,7 +189,7 @@
                 height: '500px',
                 fullWidth: true,
                   showPoint: false,
-                  lineSmooth: false,
+                  lineSmooth: true,
 
 
                 chartPadding: {
@@ -167,6 +204,27 @@
                     }
                 }
             });
+
+            }
+        },
+
+        route: {
+            activate(){
+                this.unit_code = this.$route.params.id
+
+
+                this.$http.get(`/api/unit/${this.unit_code}/rooms?filter=closed`)
+                        .then(response => {
+                            const data = response.data
+                            console.log({data})
+                            this.no_rooms_available = (data.length === 0)
+                            this.room_list = [...data]
+                        })
+            }
+        },
+
+
+        ready(){
         }
     }
 </script>

@@ -274,7 +274,11 @@ def get_units(request):
     out_units = []
     for user_enrolment in UserUnitEnrolment.objects.filter(user_id=user.id):
         unit = Unit.objects.get(id=user_enrolment.unit_id)
-        room = unit.room_set.first()
+
+        try:
+            room = unit.room_set.get(status__name__in=['commencing','running'])
+        except Exception as e:
+            room = unit.room_set.first()
 
         if room and room.status:
             room_status = room.status.name
@@ -419,8 +423,7 @@ def enter_unit(request, unit_code):
     except Unit.DoesNotExist:
         return Response({'message': 'The unit you are trying to access does not exist'}, status=404)
 
-    # Collect a correct room
-    room = unit.room_set.first()
+
 
     # TODO: Turn this into a decorator
     # Check authorization, if they're not allowed to enter we let them know they're unauthorized
@@ -449,21 +452,35 @@ def enter_unit(request, unit_code):
 
 
 @api_view(['GET'])
-@authentication_classes([])
-@permission_classes([])
-def analytics(request):
+def room_list(request, unit_code):
+    try :
+        room_status = request.GET['filter'].lower()
+        return Response([{'date':r.created_at, 'id' : r.id, 'status' : r.status.name} for r in Room.objects.filter(unit__code=unit_code, status__name=room_status)])
+    except Exception as e:
+        print(e)
+        return Response([{'date':r.created_at, 'id' : r.id, 'status' : r.status.name} for r in Room.objects.filter(unit__code=unit_code)])
+
+
+
+
+@api_view(['GET'])
+def analytics(request, room_id):
+
+
+
+
     from textblob import TextBlob
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({'message':'Room with that ID does not exist'}, status=404)
 
 
     excluded_roles = UserRole.objects.filter(name__in=['owner','moderator'])
-    comments = Comment.objects.filter(room_id='31f6682c-6e44-4337-a841-cadfddaca642').exclude(user__userunitrole__role__in=excluded_roles)
-
-
+    comments = Comment.objects.filter(room=room).exclude(user__userunitrole__role__in=excluded_roles)
     sentences = [c.content for c in comments]
-
-
     polarity = [{'sentiment' : TextBlob(s).sentiment.polarity, 'comment' : s} for s in sentences]
-    return Response({'message' : 'Hello', 'polarities' : polarity})
+    return Response({'message' : 'Hello', 'polarities' : polarity, 'history': room.history})
 
 
 @authentication_classes([])

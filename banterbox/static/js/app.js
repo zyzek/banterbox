@@ -910,7 +910,7 @@ exports.default = {
     ready: function ready() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<div v-if=\"!room.found &amp;&amp; !room.loading\">\n    <h5 style=\"color:red;background-color: black;padding:30px;\">Oh noes! Database Sez : no available rooms for this\n        unit. </h5>\n</div>\n<div class=\"row\" v-if=\"store.units.units.length > 0\">\n\n\n    <!--<div v-if=\"!room.loading && room.authorized\">-->\n\n    <!--<h5>-->\n    <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->\n    <!--Check console and see if something shit itself-->\n    <!--</h5>-->\n    <!--</div>-->\n\n    <div v-if=\"!room.loading &amp;&amp; !room.authorized\">\n        <h5>You have been blacklisted from this room :(</h5>\n        <h5>Sorry sweaty~</h5>\n    </div>\n</div>\n\n<div id=\"modal\" v-if=\"modal\" transition=\"fade\">\n    <div id=\"modal-content\">\n        <div autocomplete=\"off\">\n            <div class=\"container\">\n                <h2>Edit Settings</h2>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Icon</label>\n                    <div class=\"col-xs-2\" id=\"icon-preview-container\"><i class=\"fa fa-4x fa-{{settings.unit_icon}}\"></i></div>\n                    <div class=\"col-xs-7\">\n\n                        <div id=\"settings-icon-container\">\n                            <i v-for=\"icon in settings.icons\" class=\"fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}\" :title=\"icon\" @click=\"setIcon(icon)\"></i>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label for=\"description\" class=\"col-xs-3 col-form-label\">Unit Name</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" v-model=\"settings.unit_name\" class=\"form-control\" id=\"description\" name=\"description\">\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password Protected</label>\n                    <div class=\"col-xs-9\">\n                        <!-- Radio Buttons -->\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"true\">\n                            Yes\n                        </label>\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"false\" checked=\"\"> No\n                        </label>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" class=\"form-control\" v-model=\"settings.password\" :disabled=\"!settings.password_protected\">\n                    </div>\n                </div>\n\n                <div class=\"form-group row\" id=\"blacklist-row\">\n                    <label class=\"col-xs-3 col-form-label\">Blacklist</label>\n                    <div class=\"col-xs-9\">\n                        <div class=\"row\">\n                            <div class=\"col-xs-5\">\n                                <label>Allowed</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"allowed-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"!user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                            <div class=\"col-xs-2\" id=\"blacklist-controls\">\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersBlacklisted()\"> &gt;&gt;</button>\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersAllowed()\"> &lt;&lt;</button>\n                            </div>\n                            <div class=\"col-xs-5\">\n                                <label>Blacklisted</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"blacklisted-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <div class=\"offset-xs-3 col-xs-9\">\n                        <button type=\"submit\" class=\"btn btn-success\" @click.prevent=\"submitSettingsForm()\">\n                            Submit\n                        </button>\n                        <button type=\"submit\" class=\"btn btn-danger\" @click.prevent=\"closeModal()\" style=\"margin-left: 20px;\">Cancel\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n\n<div class=\"col-xs-12\" v-show=\"!room.loading &amp;&amp; room.found\">\n    <div class=\"col-xs-12\">\n        <div>\n            <h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}\n                <button @click=\"openModal()\" v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-cog\"></i>Room Settings\n                </button>\n\n                <button v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-line-chart\"></i>\n                    <a v-link=\"{ path : '/units/' + unit_code + '/analytics' }\">\n                        Unit Analytics\n                    </a>\n                </button>\n\n\n            </h1>\n            <h5>Status : {{ room.status }}</h5>\n            <div v-if=\"room.role === 'owner'\">\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"party_mode\">Stop the party :(</button>\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"!party_mode\">Start the party :)</button>\n            </div>\n        </div>\n        <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n    </div>\n\n    <div class=\"col-xs-12\" style=\"margin-bottom:20px; position: relative\">\n\n\n        <canvas v-show=\"!mute_background\" id=\"fg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2\">\n\n        </canvas>\n        <canvas v-show=\"!mute_background\" id=\"bg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray\">\n\n        </canvas>\n\n        <!-- This div is a dud to stop the parent from collapsing -->\n        <div id=\"dud\" style=\"width:100%; height:350px;\"></div>\n\n        <div id=\"worm-comments\">\n\n        </div>\n    </div>\n\n\n    <div class=\"col-xs-12\">\n        <div class=\"row\">\n            <div class=\"col-xs-12\">\n                <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                    <input type=\"text\" v-model=\"comment\" :placeholder=\"room.status == 'running' ? Add a comment : 'You may only post a comment to a running room.'\" :disabled=\"!socket || room.status != 'running'\">\n                    <button class=\"btn btn-primary\" :disabled=\"!socket || room.status != 'running'\">SUBMIT</button>\n                </form>\n            </div>\n            <div class=\"col-xs-4\">\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                </div>\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                </div>\n            </div>\n            <div class=\"col-xs-8\">\n\n                <div id=\"comments-panel\">\n                    <div v-if=\"!socket\">\n                        Not connected to server\n                    </div>\n                    <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\" track-by=\"$index\">\n                        <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                        <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                        <div class=\"comment-text\">{{ comment.content }}</div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<div v-if=\"!room.found &amp;&amp; !room.loading\">\n    <h5 style=\"color:red;background-color: black;padding:30px;\">Oh noes! Database Sez : no available rooms for this\n        unit. </h5>\n</div>\n<div class=\"row\" v-if=\"store.units.units.length > 0\">\n\n\n    <!--<div v-if=\"!room.loading && room.authorized\">-->\n\n    <!--<h5>-->\n    <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->\n    <!--Check console and see if something shit itself-->\n    <!--</h5>-->\n    <!--</div>-->\n\n    <div v-if=\"!room.loading &amp;&amp; !room.authorized\">\n        <h5>You have been blacklisted from this room :(</h5>\n        <h5>Sorry sweaty~</h5>\n    </div>\n</div>\n\n<div id=\"modal\" v-if=\"modal\" transition=\"fade\">\n    <div id=\"modal-content\">\n        <div autocomplete=\"off\">\n            <div class=\"container\">\n                <h2>Edit Settings</h2>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Icon</label>\n                    <div class=\"col-xs-2\" id=\"icon-preview-container\"><i class=\"fa fa-4x fa-{{settings.unit_icon}}\"></i></div>\n                    <div class=\"col-xs-7\">\n\n                        <div id=\"settings-icon-container\">\n                            <i v-for=\"icon in settings.icons\" class=\"fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}\" :title=\"icon\" @click=\"setIcon(icon)\"></i>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label for=\"description\" class=\"col-xs-3 col-form-label\">Unit Name</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" v-model=\"settings.unit_name\" class=\"form-control\" id=\"description\" name=\"description\">\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password Protected</label>\n                    <div class=\"col-xs-9\">\n                        <!-- Radio Buttons -->\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"true\">\n                            Yes\n                        </label>\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"false\" checked=\"\"> No\n                        </label>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" class=\"form-control\" v-model=\"settings.password\" :disabled=\"!settings.password_protected\">\n                    </div>\n                </div>\n\n                <div class=\"form-group row\" id=\"blacklist-row\">\n                    <label class=\"col-xs-3 col-form-label\">Blacklist</label>\n                    <div class=\"col-xs-9\">\n                        <div class=\"row\">\n                            <div class=\"col-xs-5\">\n                                <label>Allowed</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"allowed-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"!user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                            <div class=\"col-xs-2\" id=\"blacklist-controls\">\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersBlacklisted()\"> &gt;&gt;</button>\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersAllowed()\"> &lt;&lt;</button>\n                            </div>\n                            <div class=\"col-xs-5\">\n                                <label>Blacklisted</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"blacklisted-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <div class=\"offset-xs-3 col-xs-9\">\n                        <button type=\"submit\" class=\"btn btn-success\" @click.prevent=\"submitSettingsForm()\">\n                            Submit\n                        </button>\n                        <button type=\"submit\" class=\"btn btn-danger\" @click.prevent=\"closeModal()\" style=\"margin-left: 20px;\">Cancel\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n\n<div class=\"col-xs-12\" v-show=\"!room.loading &amp;&amp; room.found\">\n    <div class=\"col-xs-12\">\n        <div>\n            <h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}\n                <button @click=\"openModal()\" v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-cog\"></i>Room Settings\n                </button>\n\n                <button v-link=\"{ path : '/units/' + unit_code + '/analytics' }\" v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-line-chart\"></i>\n                        Unit Analytics\n                </button>\n\n\n            </h1>\n            <h5>Status : {{ room.status }}</h5>\n            <div v-if=\"room.role === 'owner'\">\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"party_mode\">Stop the party :(</button>\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"!party_mode\">Start the party :)</button>\n            </div>\n        </div>\n        <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n    </div>\n\n    <div class=\"col-xs-12\" style=\"margin-bottom:20px; position: relative\">\n\n\n        <canvas v-show=\"!mute_background\" id=\"fg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2\">\n\n        </canvas>\n        <canvas v-show=\"!mute_background\" id=\"bg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray\">\n\n        </canvas>\n\n        <!-- This div is a dud to stop the parent from collapsing -->\n        <div id=\"dud\" style=\"width:100%; height:350px;\"></div>\n\n        <div id=\"worm-comments\">\n\n        </div>\n    </div>\n\n\n    <div class=\"col-xs-12\">\n        <div class=\"row\">\n            <div class=\"col-xs-12\">\n                <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                    <input type=\"text\" v-model=\"comment\" :placeholder=\"room.status == 'running' ? Add a comment : 'You may only post a comment to a running room.'\" :disabled=\"!socket || room.status != 'running'\">\n                    <button class=\"btn btn-primary\" :disabled=\"!socket || room.status != 'running'\">SUBMIT</button>\n                </form>\n            </div>\n            <div class=\"col-xs-4\">\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                </div>\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                </div>\n            </div>\n            <div class=\"col-xs-8\">\n\n                <div id=\"comments-panel\">\n                    <div v-if=\"!socket\">\n                        Not connected to server\n                    </div>\n                    <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\" track-by=\"$index\">\n                        <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                        <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                        <div class=\"comment-text\">{{ comment.content }}</div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -951,96 +951,139 @@ if (module.hot) {(function () {  module.hot.accept()
 },{"vue":131,"vue-hot-reload-api":128}],11:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#chart-legend {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  font-weight: bold; }\n  /* line 7, stdin */\n  #chart-legend > * {\n    padding: 0 5px; }\n\n/* line 13, stdin */\n.legend-box {\n  width: 20px;\n  height: 20px;\n  display: inline-block; }\n\n/* line 20, stdin */\n.series-attendance {\n  stroke: #d70206;\n  background-color: #d70206; }\n\n/* line 25, stdin */\n.series-votes {\n  stroke: #006fd7;\n  background-color: #006fd7; }\n")
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _minSafeInteger = require("babel-runtime/core-js/number/min-safe-integer");
+var _minSafeInteger = require('babel-runtime/core-js/number/min-safe-integer');
 
 var _minSafeInteger2 = _interopRequireDefault(_minSafeInteger);
 
-var _maxSafeInteger = require("babel-runtime/core-js/number/max-safe-integer");
+var _maxSafeInteger = require('babel-runtime/core-js/number/max-safe-integer');
 
 var _maxSafeInteger2 = _interopRequireDefault(_maxSafeInteger);
 
-var _chartist = require("chartist");
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _chartist = require('chartist');
 
 var _chartist2 = _interopRequireDefault(_chartist);
 
-var _moment = require("moment");
+var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-window.TIMESTAMPS = { "value": [{ "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455747867, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455748865, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455749868, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455750871, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455751876, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455752878, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455753882, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455754888, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455755894, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455756894, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455757895, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455758900, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455759902, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455760917, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455761921, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455762924, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455763930, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455764954, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455765934, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455766938, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455767941, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455768949, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455769951, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455770953, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455771956, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455772959, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455773960, "connected": [] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455774967, "connected": ["112"] }, { "votes": { "yes": 0, "no": 0 }, "timestamp": 1477455775970, "connected": ["112", "118"] }, { "votes": { "yes": 1, "no": 0 }, "timestamp": 1477455776972, "connected": ["112", "118"] }, { "votes": { "yes": 1, "no": 0 }, "timestamp": 1477455777973, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455778975, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455779976, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455780978, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455781982, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455782985, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455783991, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455784994, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455785996, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455786998, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455788001, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455789003, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455790010, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455791011, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455792014, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455793016, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455794018, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455795022, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455796030, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455797032, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455798037, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455799043, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455800043, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455801046, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455802047, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455803050, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455804053, "connected": ["112", "118"] }, { "votes": { "yes": 2, "no": 0 }, "timestamp": 1477455805058, "connected": ["112", "118"] }, { "votes": { "yes": 0, "no": 3 }, "timestamp": 1477455806061, "connected": ["111", "112", "118"] }] };
-
 exports.default = {
     data: function data() {
         return {
-            unit_code: null
+            no_rooms_available: false,
+            unit_code: null,
+            room_list: [],
+            selected_room: {
+                id: null,
+                loaded: false,
+                history: []
+            }
         };
     },
-    route: {
-        activate: function activate() {
-            this.unit_code = this.$route.params.id;
+
+    methods: {
+        getRoomData: function getRoomData() {
+            var _this = this;
+
+            if (this.selected_room.id === null) {
+                this.selected_room.loaded = false;
+                this.selected_room.history = [];
+                return;
+            }
+
+            this.$http.get('/api/room/' + this.selected_room.id + '/analytics').then(function (response) {
+                _this.selected_room.loaded = true;
+                var parsed = JSON.parse(response.data.history);
+                _this.selected_room.history = [].concat((0, _toConsumableArray3.default)(parsed.value));
+                console.log({ response: response });
+
+                return parsed.value;
+            }).then(function (data) {
+                _this.setupChart(data);
+            });
+        },
+        setupChart: function setupChart(data) {
+
+            var votes = [];
+            var attendance = [];
+
+            var min = _maxSafeInteger2.default;
+            var max = _minSafeInteger2.default;
+
+            data.forEach(function (x) {
+
+                var date = new Date(x.timestamp);
+                var vote_value = x.votes.yes - x.votes.no;
+
+                attendance.push({ x: date, y: x.connected.length });
+                votes.push({ x: date, y: vote_value });
+
+                min = Math.min(min, vote_value, x.connected.length);
+                max = Math.max(max, vote_value, x.connected.length);
+            });
+
+            new _chartist2.default.Line('#line-chart', {
+                series: [{
+                    className: 'series-votes',
+                    name: 'Votes',
+                    data: votes
+                }, {
+                    className: 'series-attendance',
+                    name: 'Attendance',
+                    data: attendance
+                }]
+            }, {
+                height: '500px',
+                fullWidth: true,
+                showPoint: false,
+                lineSmooth: true,
+
+                chartPadding: {
+                    right: 40
+                },
+                axisX: {
+                    type: _chartist2.default.FixedScaleAxis,
+                    divisor: 10,
+                    labelInterpolationFnc: function labelInterpolationFnc(value, index) {
+                        console.log(value);
+                        return (0, _moment2.default)(value).format('H:mm:ss');
+                    }
+                }
+            });
         }
     },
 
-    ready: function ready() {
+    route: {
+        activate: function activate() {
+            var _this2 = this;
 
-        var votes = [];
-        var attendance = [];
+            this.unit_code = this.$route.params.id;
 
-        var min = _maxSafeInteger2.default;
-        var max = _minSafeInteger2.default;
+            this.$http.get('/api/unit/' + this.unit_code + '/rooms?filter=closed').then(function (response) {
+                var data = response.data;
+                console.log({ data: data });
+                _this2.no_rooms_available = data.length === 0;
+                _this2.room_list = [].concat((0, _toConsumableArray3.default)(data));
+            });
+        }
+    },
 
-        window.TIMESTAMPS.value.forEach(function (x) {
-
-            var date = new Date(x.timestamp);
-            var vote_value = x.votes.yes - x.votes.no;
-
-            attendance.push({ x: date, y: x.connected.length });
-            votes.push({ x: date, y: vote_value });
-
-            min = Math.min(min, vote_value, x.connected.length);
-            max = Math.max(max, vote_value, x.connected.length);
-        });
-
-        new _chartist2.default.Line('#line-chart', {
-            series: [{
-                className: 'series-votes',
-                name: 'Votes',
-                data: votes
-            }, {
-                className: 'series-attendance',
-                name: 'Attendance',
-                data: attendance
-            }]
-        }, {
-            height: '500px',
-            fullWidth: true,
-            showPoint: false,
-            lineSmooth: false,
-
-            chartPadding: {
-                right: 40
-            },
-            axisX: {
-                type: _chartist2.default.FixedScaleAxis,
-                divisor: 10,
-                labelInterpolationFnc: function labelInterpolationFnc(value, index) {
-                    console.log(value);
-                    return (0, _moment2.default)(value).format('H:mm:ss');
-                }
-            }
-        });
-    }
+    ready: function ready() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div>\n    <h1>Analytics for {{ unit_code }}</h1>\n\n\n    <div class=\"row\">\n        <div class=\"col-xs-12\">\n            <div class=\"info-panel\">\n                <div class=\"panel-description\">\n                    <h3>Student Satisfaction</h3>\n                    <div>In here you will find the overall student satisfaction as well as a timeline to pinpoint\n                        the exact moment you broke their hearts.\n                    </div>\n\n\n                    <div class=\"card\" style=\"padding:10px;\">\n                        <div id=\"chart-legend\">\n                            <h5>Legend:</h5>\n                            <div class=\"legend\"><span class=\"legend-box series-attendance\"></span>\n                                Attendance\n                            </div>\n                            <div class=\"legend\"><span class=\"legend-box series-votes\"></span>\n                                Votes\n                            </div>\n                        </div>\n\n                        <div id=\"line-chart\">\n\n                        </div>\n                    </div>\n\n                </div>\n\n                <div class=\"panel-data\">\n                </div>\n            </div>\n\n        </div>\n        <div class=\"col-xs-12\">\n            In this corner, we have attendance stats\n        </div>\n    </div>\n\n\n    <div class=\"row\">\n        <div class=\"col-xs-12 col-sm-8\">\n            In here we have comment sentiments\n        </div>\n\n        <div class=\"col-xs-12 col-sm-4\">\n            And here, a lovely little word cloud or some shit\n        </div>\n    </div>\n\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div>\n    <h1>Analytics for {{ unit_code }}</h1>\n\n    <div class=\"row\">\n        <div class=\"col-xs-12\">\n\n            <div class=\"form-group\" v-if=\"no_rooms_available\">\n                <h3>Unfortunately there are no available rooms for this unit. It must be new!</h3>\n            </div>\n\n            <div class=\"form-group\">\n                <label class=\"control-label\">Select a room</label>\n                    <select type=\"text\" class=\"form-control\" v-model=\"selected_room.id\" @change=\"getRoomData\">\n                        <option :value=\"null\">Choose a date from below</option>\n                        <option :value=\"room.id\" v-for=\"room in room_list\">{{ room.date }}</option>\n                    </select>\n            </div>\n        </div>\n    </div>\n\n    <div class=\"row\" v-show=\"selected_room.loaded\" transition=\"slide\">\n        <div class=\"col-xs-12\">\n            <div class=\"info-panel\">\n                <div class=\"panel-description\">\n                    <h3>Student Satisfaction</h3>\n                    <div>In here you will find the overall student satisfaction as well as a timeline to pinpoint\n                        the exact moment you broke their hearts.\n                    </div>\n\n\n                    <div class=\"card\" style=\"padding:10px;\">\n                        <div id=\"chart-legend\">\n                            <h5>Legend:</h5>\n                            <div class=\"legend\"><span class=\"legend-box series-attendance\"></span>\n                                Attendance\n                            </div>\n                            <div class=\"legend\"><span class=\"legend-box series-votes\"></span>\n                                Votes\n                            </div>\n                        </div>\n\n                        <div id=\"line-chart\">\n\n                        </div>\n                    </div>\n\n                </div>\n\n                <div class=\"panel-data\">\n                </div>\n            </div>\n\n        </div>\n        <div class=\"col-xs-12\">\n            In this corner, we have attendance stats\n        </div>\n    </div>\n\n\n    <div class=\"row\">\n        <div class=\"col-xs-12 col-sm-8\">\n            In here we have comment sentiments\n        </div>\n\n        <div class=\"col-xs-12 col-sm-4\">\n            And here, a lovely little word cloud or some shit\n        </div>\n    </div>\n\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -1055,7 +1098,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c18f13c8", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"babel-runtime/core-js/number/max-safe-integer":18,"babel-runtime/core-js/number/min-safe-integer":19,"chartist":26,"moment":110,"vue":131,"vue-hot-reload-api":128,"vueify/lib/insert-css":132}],12:[function(require,module,exports){
+},{"babel-runtime/core-js/number/max-safe-integer":18,"babel-runtime/core-js/number/min-safe-integer":19,"babel-runtime/helpers/toConsumableArray":21,"chartist":26,"moment":110,"vue":131,"vue-hot-reload-api":128,"vueify/lib/insert-css":132}],12:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#unit-list-view {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 9, stdin */\n  #unit-list-view > div {\n    width: 100%; }\n")
 'use strict';
