@@ -18,6 +18,10 @@ var _vueResource = require('vue-resource');
 
 var _vueResource2 = _interopRequireDefault(_vueResource);
 
+var _App = require('./components/App.vue');
+
+var _App2 = _interopRequireDefault(_App);
+
 var _NotFound = require('./components/NotFound.vue');
 
 var _NotFound2 = _interopRequireDefault(_NotFound);
@@ -25,6 +29,10 @@ var _NotFound2 = _interopRequireDefault(_NotFound);
 var _Home = require('./components/Home.vue');
 
 var _Home2 = _interopRequireDefault(_Home);
+
+var _UnitAnalytics = require('./components/UnitAnalytics.vue');
+
+var _UnitAnalytics2 = _interopRequireDefault(_UnitAnalytics);
 
 var _UnitListing = require('./components/UnitListing.vue');
 
@@ -34,13 +42,13 @@ var _Room = require('./components/Room.vue');
 
 var _Room2 = _interopRequireDefault(_Room);
 
-var _App = require('./components/App.vue');
-
-var _App2 = _interopRequireDefault(_App);
-
 var _Login = require('./components/Login.vue');
 
 var _Login2 = _interopRequireDefault(_Login);
+
+var _ScheduleSettings = require('./components/ScheduleSettings.vue');
+
+var _ScheduleSettings2 = _interopRequireDefault(_ScheduleSettings);
 
 var _store = require('./store');
 
@@ -50,7 +58,14 @@ var _auth2 = _interopRequireDefault(_auth);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// Framework libraries
 _vue2.default.use(_vueRouter2.default);
+
+// App data/logic
+
+
+// Pages
+
 _vue2.default.use(_vueResource2.default);
 
 if (_auth2.default.getToken()) {
@@ -66,11 +81,19 @@ router.map({
     '/units': {
         component: _UnitListing2.default
     },
+
+    '/units/:id/analytics': {
+        component: _UnitAnalytics2.default
+    },
+
     '/units/:id': {
         component: _Room2.default
     },
     '/404': {
         component: _NotFound2.default
+    },
+    '/schedule-settings': {
+        component: _ScheduleSettings2.default
     }
 });
 
@@ -106,7 +129,7 @@ router.start(_App2.default, '#app');
 
 console.log("%c🍆", "background-color:yellow;border:5px solid black;font-size:5rem;color:white;;border-radius:1000px;padding:10px");
 
-},{"./auth":2,"./components/App.vue":4,"./components/Home.vue":5,"./components/Login.vue":6,"./components/NotFound.vue":7,"./components/Room.vue":9,"./components/UnitListing.vue":10,"./store":12,"vue":122,"vue-resource":120,"vue-router":121}],2:[function(require,module,exports){
+},{"./auth":2,"./components/App.vue":4,"./components/Home.vue":5,"./components/Login.vue":6,"./components/NotFound.vue":7,"./components/Room.vue":9,"./components/ScheduleSettings.vue":10,"./components/UnitAnalytics.vue":11,"./components/UnitListing.vue":12,"./store":14,"vue":124,"vue-resource":122,"vue-router":123}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -202,7 +225,7 @@ exports.default = {
     }
 };
 
-},{"./app":1,"./store":12,"vue":122}],3:[function(require,module,exports){
+},{"./app":1,"./store":14,"vue":124}],3:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.alert-message {\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1;\n  text-align: center; }\n\n/* line 8, stdin */\n#alert-box-container {\n  position: relative;\n  width: 100%; }\n\n/* line 13, stdin */\n#alert-box {\n  position: absolute;\n  width: 100%; }\n\n/* line 18, stdin */\n.alert-row {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: justify;\n      -ms-flex-pack: justify;\n          justify-content: space-between;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  color: white;\n  cursor: pointer; }\n  /* line 25, stdin */\n  .alert-row:not(:last-of-type) {\n    border-bottom: 1px solid #717171; }\n  /* line 29, stdin */\n  .alert-row:last-of-type {\n    box-shadow: 0 2px 2px 0 #c5c5c5; }\n  /* line 33, stdin */\n  .alert-row i {\n    padding: 4px; }\n  /* line 37, stdin */\n  .alert-row.warning {\n    background-color: #fcad10; }\n  /* line 41, stdin */\n  .alert-row.danger {\n    background-color: #F00; }\n  /* line 45, stdin */\n  .alert-row.success {\n    background-color: #17b000; }\n  /* line 49, stdin */\n  .alert-row.info {\n    background-color: #0089ff; }\n")
 'use strict';
@@ -236,7 +259,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-75b22685", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":12,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],4:[function(require,module,exports){
+},{"../store":14,"vue":124,"vue-hot-reload-api":121,"vueify/lib/insert-css":125}],4:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 5, stdin */\n#header {\n  z-index: 100;\n  width: 100%;\n  margin-bottom: 15px;\n  background-color: #323e4c;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: baseline;\n      -ms-flex-align: baseline;\n          align-items: baseline;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column; }\n  /* line 14, stdin */\n  #header a {\n    color: inherit;\n    text-decoration: inherit; }\n\n/* line 21, stdin */\n#schedule-settings {\n  background-color: red; }\n\n/* line 25, stdin */\n#content-wrapper {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1; }\n\n/* line 31, stdin */\n#main {\n  width: 100%;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-flex: 1;\n      -ms-flex: 1;\n          flex: 1; }\n  /* line 36, stdin */\n  #main > div {\n    width: 100%; }\n  /* line 40, stdin */\n  #main.centered {\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n                -ms-grid-row-align: center;\n            align-items: center; }\n\n/* line 45, stdin */\n#header-links {\n  margin: 0;\n  list-style: none;\n  color: #757f8c; }\n  /* line 52, stdin */\n  #header-links li {\n    padding: 0px 15px;\n    display: inline-block; }\n\n/* line 58, stdin */\n.v-link-active {\n  color: white; }\n")
 'use strict';
@@ -296,7 +319,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-338a84db", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../app":1,"../auth":2,"../store":12,"./AlertBox.vue":3,"./Profile.vue":8,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],5:[function(require,module,exports){
+},{"../app":1,"../auth":2,"../store":14,"./AlertBox.vue":3,"./Profile.vue":8,"vue":124,"vue-hot-reload-api":121,"vueify/lib/insert-css":125}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -324,7 +347,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-446038d6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":122,"vue-hot-reload-api":119}],6:[function(require,module,exports){
+},{"vue":124,"vue-hot-reload-api":121}],6:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n#login-error {\n  overflow: hidden;\n  max-height: 0px;\n  -webkit-transition: all 0.3s ease;\n  transition: all 0.3s ease;\n  color: white; }\n  /* line 9, stdin */\n  #login-error.open {\n    padding: 10px;\n    background-color: red;\n    max-height: 3rem; }\n\n/* line 16, stdin */\n#login-view {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 22, stdin */\n  #login-view #remember-me {\n    margin-right: 10px; }\n  /* line 26, stdin */\n  #login-view input {\n    padding: 5px; }\n  /* line 30, stdin */\n  #login-view .large-text {\n    font-size: 2rem; }\n  /* line 34, stdin */\n  #login-view .column-stack {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-orient: vertical;\n    -webkit-box-direction: normal;\n        -ms-flex-direction: column;\n            flex-direction: column;\n    margin-bottom: 15px; }\n  /* line 40, stdin */\n  #login-view button {\n    margin-top: 1.5rem;\n    font-size: 1.2rem; }\n")
 'use strict';
@@ -407,7 +430,7 @@ exports.default = {
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"login-view\">\n    <div class=\"card\" style=\"padding:20px\" v-if=\"store.demo\">\n        <p>\n            <em>In a real world situation, this would be linked to a university system.</em>\n            <br>\n            <em>For the purposes of this demo, click to create a user.</em>\n        </p>\n        <div id=\"demo-create-user\">\n            <button class=\"btn btn-primary\" @click=\"createUser\" :disabled=\"demo.loaded\">Generate user</button>\n            <div v-if=\"demo.loaded\">\n                <p>Name: <b>{{ demo.username }}</b></p>\n                <p>Password: <b>{{ demo.password }}</b></p>\n            </div>\n            <div v-if=\"demo.error_message\" transition=\"fade\" style=\"margin-top: 20px;\">\n                <div class=\"alert alert-danger\">{{ demo.error_message }}</div>\n            </div>\n        </div>\n\n    </div>\n\n\n    <form class=\"row\" @submit.prevent=\"authenticate\">\n\n\n        <div class=\"col-xs-12 large-text column-stack\">\n            <label>Unikey</label>\n            <input type=\"text\" v-model=\"username\">\n        </div>\n\n        <div class=\"col-xs-12 large-text column-stack\">\n            <label>Password</label>\n            <input type=\"password\" v-model=\"password\">\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <input type=\"checkbox\" v-model=\"remember_me\" id=\"remember-me\"> <label for=\"remember-me\">Remember\n            me</label>\n        </div>\n\n        <div class=\"col-xs-12 \">\n            <div class=\"col-xs-12\" id=\"login-error\" :class=\"{open : rejected}\">\n                Incorrect name or password.\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <button class=\"btn btn-success btn-block\" :disabled=\"username.length == 0 || password.length == 0\">\n                SUBMIT\n            </button>\n        </div>\n\n\n    </form>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div id=\"login-view\">\n    <div class=\"card\" style=\"padding:20px\" v-if=\"store.demo\">\n        <h4>Demo Version</h4>\n        <p>\n            <em>In a real world situation, this would be linked to a university system with students automatically enrolled.</em>\n            <br>\n            <em>For the purposes of this demo, click to create a user.</em>\n        </p>\n        <div id=\"demo-create-user\">\n            <button class=\"btn btn-primary\" @click=\"createUser\" :disabled=\"demo.loaded\">Generate user</button>\n            <div v-if=\"demo.loaded\">\n                <p>Name: <b>{{ demo.username }}</b></p>\n                <p>Password: <b>{{ demo.password }}</b></p>\n            </div>\n            <div v-if=\"demo.error_message\" transition=\"fade\" style=\"margin-top: 20px;\">\n                <div class=\"alert alert-danger\">{{ demo.error_message }}</div>\n            </div>\n        </div>\n\n    </div>\n\n\n    <form class=\"row\" @submit.prevent=\"authenticate\">\n\n\n        <div class=\"col-xs-12 large-text column-stack\">\n            <label>Unikey</label>\n            <input type=\"text\" v-model=\"username\">\n        </div>\n\n        <div class=\"col-xs-12 large-text column-stack\">\n            <label>Password</label>\n            <input type=\"password\" v-model=\"password\">\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <input type=\"checkbox\" v-model=\"remember_me\" id=\"remember-me\"> <label for=\"remember-me\">Remember\n            me</label>\n        </div>\n\n        <div class=\"col-xs-12 \">\n            <div class=\"col-xs-12\" id=\"login-error\" :class=\"{open : rejected}\">\n                Incorrect name or password.\n            </div>\n        </div>\n\n\n        <div class=\"col-xs-12\">\n            <button class=\"btn btn-success btn-block\" :disabled=\"username.length == 0 || password.length == 0\">\n                SUBMIT\n            </button>\n        </div>\n\n\n    </form>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -422,7 +445,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-0bdd14ba", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../app":1,"../auth":2,"../store":12,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],7:[function(require,module,exports){
+},{"../app":1,"../auth":2,"../store":14,"vue":124,"vue-hot-reload-api":121,"vueify/lib/insert-css":125}],7:[function(require,module,exports){
 ;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<h1 style=\"color:red\">OH NO 404</h1>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
@@ -434,7 +457,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-26cd1fb6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":122,"vue-hot-reload-api":119}],8:[function(require,module,exports){
+},{"vue":124,"vue-hot-reload-api":121}],8:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 7, stdin */\n#header-profile-dropdown-links {\n  position: relative;\n  color: #323e4c; }\n  /* line 11, stdin */\n  #header-profile-dropdown-links .dropdown-menu-item {\n    border: 1px solid #a8a8a8;\n    border-bottom: none;\n    display: block; }\n    /* line 15, stdin */\n    #header-profile-dropdown-links .dropdown-menu-item:last-of-type {\n      border-bottom: 1px solid #a8a8a8; }\n    /* line 21, stdin */\n    #header-profile-dropdown-links .dropdown-menu-item:hover {\n      color: #ececec;\n      background-color: #323e4c; }\n  /* line 28, stdin */\n  #header-profile-dropdown-links > div {\n    width: 100%;\n    max-height: 0;\n    overflow: hidden;\n    -webkit-transition: all 0.25s ease-out;\n    transition: all 0.25s ease-out;\n    position: absolute;\n    background-color: #ececec; }\n  /* line 37, stdin */\n  #header-profile-dropdown-links .open {\n    max-height: 100px; }\n\n/* line 42, stdin */\n#header-profile {\n  min-width: 120px;\n  cursor: pointer;\n  margin-right: 10px;\n  color: white; }\n  /* line 48, stdin */\n  #header-profile i {\n    padding: 7px; }\n  /* line 52, stdin */\n  #header-profile a {\n    color: inherit;\n    text-decoration: inherit; }\n    /* line 56, stdin */\n    #header-profile a.v-link-active {\n      color: white; }\n")
 'use strict';
@@ -514,7 +537,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-9291213a", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../app":1,"../auth":2,"../store":12,"sweetalert2":117,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],9:[function(require,module,exports){
+},{"../app":1,"../auth":2,"../store":14,"sweetalert2":119,"vue":124,"vue-hot-reload-api":121,"vueify/lib/insert-css":125}],9:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 4, stdin */\n#icon-preview-container {\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n\n/* line 10, stdin */\n#settings-icon-container {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  width: 100%;\n  height: 195px;\n  overflow: auto;\n  -ms-flex-wrap: wrap;\n      flex-wrap: wrap;\n  -webkit-box-pack: start;\n      -ms-flex-pack: start;\n          justify-content: flex-start;\n  -webkit-box-align: start;\n      -ms-flex-align: start;\n          align-items: flex-start;\n  border-radius: 3px;\n  border: 1px solid gainsboro; }\n  /* line 21, stdin */\n  #settings-icon-container i {\n    padding: 5px;\n    margin: 3px;\n    width: 50px;\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    height: 50px;\n    border: 1px solid gainsboro;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    color: #464646;\n    -webkit-transition: all 0.15s ease-out;\n    transition: all 0.15s ease-out; }\n    /* line 33, stdin */\n    #settings-icon-container i:hover {\n      -webkit-transform: scale(1.1);\n              transform: scale(1.1); }\n    /* line 37, stdin */\n    #settings-icon-container i.selected {\n      box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.67);\n      color: gainsboro;\n      background-color: #464646;\n      -webkit-transform: scale(1.2);\n              transform: scale(1.2); }\n\n/* line 46, stdin */\n#blacklist-controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column; }\n  /* line 52, stdin */\n  #blacklist-controls button {\n    font-weight: bold;\n    color: white;\n    margin: 10px 0;\n    background-color: #323e4c; }\n\n/* line 60, stdin */\n*:disabled {\n  cursor: not-allowed; }\n\n/* line 65, stdin */\n#blacklist-row select {\n  overflow-y: scroll;\n  height: 250px; }\n\n/* line 71, stdin */\n#modal {\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  background-color: rgba(0, 0, 0, 0.6);\n  top: 0;\n  left: 0;\n  z-index: 1000000;\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 83, stdin */\n  #modal #modal-content {\n    overflow: auto;\n    padding: 10px;\n    width: 80%;\n    max-height: 90%;\n    background-color: white;\n    border-radius: 3px;\n    box-shadow: 0 7px 8px -3px rgba(0, 0, 0, 0.78); }\n\n/* line 94, stdin */\n.settings-button {\n  margin-left: 10px; }\n  /* line 95, stdin */\n  .settings-button i {\n    padding-right: 5px; }\n\n/* line 102, stdin */\n#comments-form {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin-bottom: 10px; }\n  /* line 106, stdin */\n  #comments-form input {\n    padding: 3px 3px 3px 10px;\n    -webkit-box-flex: 1;\n        -ms-flex: 1;\n            flex: 1;\n    margin-right: 10px; }\n  /* line 112, stdin */\n  #comments-form .btn {\n    background-color: #323e4c; }\n\n/* line 117, stdin */\n.vote-icon-container {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 122, stdin */\n  .vote-icon-container .vote-icon {\n    display: -webkit-box;\n    display: -ms-flexbox;\n    display: flex;\n    -webkit-box-pack: center;\n        -ms-flex-pack: center;\n            justify-content: center;\n    -webkit-box-align: center;\n        -ms-flex-align: center;\n            align-items: center;\n    padding: 20px;\n    border-radius: 1000px;\n    width: 100px;\n    height: 100px;\n    border: 2px solid #b4b4b4;\n    margin: 10px;\n    -webkit-transition: all 0.25s ease;\n    transition: all 0.25s ease;\n    box-shadow: 0px 2px 0 0 #3b3b3b; }\n    /* line 137, stdin */\n    .vote-icon-container .vote-icon:hover {\n      box-shadow: 0px 6px 0 0 #3b3b3b;\n      -webkit-transform: translateY(-3px);\n              transform: translateY(-3px); }\n    /* line 142, stdin */\n    .vote-icon-container .vote-icon.red {\n      background-color: red;\n      border: 2px solid transparent; }\n    /* line 147, stdin */\n    .vote-icon-container .vote-icon.green {\n      background-color: #23cd23;\n      border: 2px solid transparent; }\n\n/* line 155, stdin */\n#comments-panel {\n  border: 3px dashed rgba(122, 122, 122, 0.25);\n  max-height: 250px;\n  overflow-x: hidden;\n  overflow-y: scroll; }\n  /* line 161, stdin */\n  #comments-panel .comment {\n    background-color: white;\n    padding: 5px;\n    margin-bottom: 5px;\n    border-radius: 2px;\n    margin-right: 3px; }\n    /* line 168, stdin */\n    #comments-panel .comment .comment-username {\n      font-weight: 600; }\n    /* line 172, stdin */\n    #comments-panel .comment .comment-time {\n      font-size: 0.7rem; }\n    /* line 176, stdin */\n    #comments-panel .comment .comment-text {\n      padding: 5px;\n      font-size: 0.95rem; }\n")
 'use strict';
@@ -887,7 +910,7 @@ exports.default = {
     ready: function ready() {}
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<div v-if=\"!room.found &amp;&amp; !room.loading\">\n    <h5 style=\"color:red;background-color: black;padding:30px;\">Oh noes! Database Sez : no available rooms for this\n        unit. </h5>\n</div>\n<div class=\"row\" v-if=\"store.units.units.length > 0\">\n\n\n    <!--<div v-if=\"!room.loading && room.authorized\">-->\n\n    <!--<h5>-->\n    <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->\n    <!--Check console and see if something shit itself-->\n    <!--</h5>-->\n    <!--</div>-->\n\n    <div v-if=\"!room.loading &amp;&amp; !room.authorized\">\n        <h5>You have been blacklisted from this room :(</h5>\n        <h5>Sorry sweaty~</h5>\n    </div>\n</div>\n\n<div id=\"modal\" v-if=\"modal\" transition=\"fade\">\n    <div id=\"modal-content\">\n        <div autocomplete=\"off\">\n            <div class=\"container\">\n                <h2>Edit Settings</h2>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Icon</label>\n                    <div class=\"col-xs-2\" id=\"icon-preview-container\"><i class=\"fa fa-4x fa-{{settings.unit_icon}}\"></i></div>\n                    <div class=\"col-xs-7\">\n\n                        <div id=\"settings-icon-container\">\n                            <i v-for=\"icon in settings.icons\" class=\"fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}\" :title=\"icon\" @click=\"setIcon(icon)\"></i>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label for=\"description\" class=\"col-xs-3 col-form-label\">Unit Name</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" v-model=\"settings.unit_name\" class=\"form-control\" id=\"description\" name=\"description\">\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password Protected</label>\n                    <div class=\"col-xs-9\">\n                        <!-- Radio Buttons -->\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"true\">\n                            Yes\n                        </label>\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"false\" checked=\"\"> No\n                        </label>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" class=\"form-control\" v-model=\"settings.password\" :disabled=\"!settings.password_protected\">\n                    </div>\n                </div>\n\n                <div class=\"form-group row\" id=\"blacklist-row\">\n                    <label class=\"col-xs-3 col-form-label\">Blacklist</label>\n                    <div class=\"col-xs-9\">\n                        <div class=\"row\">\n                            <div class=\"col-xs-5\">\n                                <label>Allowed</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"allowed-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"!user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                            <div class=\"col-xs-2\" id=\"blacklist-controls\">\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersBlacklisted()\"> &gt;&gt;</button>\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersAllowed()\"> &lt;&lt;</button>\n                            </div>\n                            <div class=\"col-xs-5\">\n                                <label>Blacklisted</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"blacklisted-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <div class=\"offset-xs-3 col-xs-9\">\n                        <button type=\"submit\" class=\"btn btn-success\" @click.prevent=\"submitSettingsForm()\">\n                            Submit\n                        </button>\n                        <button type=\"submit\" class=\"btn btn-danger\" @click.prevent=\"closeModal()\" style=\"margin-left: 20px;\">Cancel\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n\n<div class=\"col-xs-12\" v-show=\"!room.loading &amp;&amp; room.found\">\n    <div class=\"col-xs-12\">\n        <div>\n            <h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}\n                <button @click=\"openModal()\" v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-cog\"></i>Room Settings\n                </button>\n            </h1>\n            <h5>Status : {{ room.status }}</h5>\n            <div v-if=\"room.role === 'owner'\">\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"party_mode\">Stop the party :(</button>\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"!party_mode\">Start the party :)</button>\n            </div>\n        </div>\n        <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n    </div>\n\n    <div class=\"col-xs-12\" style=\"margin-bottom:20px; position: relative\">\n\n\n        <canvas v-show=\"!mute_background\" id=\"fg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2\">\n\n        </canvas>\n        <canvas v-show=\"!mute_background\" id=\"bg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray\">\n\n        </canvas>\n\n        <!-- This div is a dud to stop the parent from collapsing -->\n        <div id=\"dud\" style=\"width:100%; height:350px;\"></div>\n\n        <div id=\"worm-comments\">\n\n        </div>\n    </div>\n\n\n    <div class=\"col-xs-12\">\n        <div class=\"row\">\n            <div class=\"col-xs-12\">\n                <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                    <input type=\"text\" v-model=\"comment\" :placeholder=\"room.status == 'running' ? Add a comment : 'You may only post a comment to a running room.'\" :disabled=\"!socket || room.status != 'running'\">\n                    <button class=\"btn btn-primary\" :disabled=\"!socket || room.status != 'running'\">SUBMIT</button>\n                </form>\n            </div>\n            <div class=\"col-xs-4\">\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                </div>\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                </div>\n            </div>\n            <div class=\"col-xs-8\">\n\n                <div id=\"comments-panel\">\n                    <div v-if=\"!socket\">\n                        Not connected to server\n                    </div>\n                    <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\" track-by=\"$index\">\n                        <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                        <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                        <div class=\"comment-text\">{{ comment.content }}</div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n\n<div v-if=\"!room.found &amp;&amp; !room.loading\">\n    <h5 style=\"color:red;background-color: black;padding:30px;\">Oh noes! Database Sez : no available rooms for this\n        unit. </h5>\n</div>\n<div class=\"row\" v-if=\"store.units.units.length > 0\">\n\n\n    <!--<div v-if=\"!room.loading && room.authorized\">-->\n\n    <!--<h5>-->\n    <!--If you are seeing this, the room's data has not loaded or auth fail, or some other crap.-->\n    <!--Check console and see if something shit itself-->\n    <!--</h5>-->\n    <!--</div>-->\n\n    <div v-if=\"!room.loading &amp;&amp; !room.authorized\">\n        <h5>You have been blacklisted from this room :(</h5>\n        <h5>Sorry sweaty~</h5>\n    </div>\n</div>\n\n<div id=\"modal\" v-if=\"modal\" transition=\"fade\">\n    <div id=\"modal-content\">\n        <div autocomplete=\"off\">\n            <div class=\"container\">\n                <h2>Edit Settings</h2>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Icon</label>\n                    <div class=\"col-xs-2\" id=\"icon-preview-container\"><i class=\"fa fa-4x fa-{{settings.unit_icon}}\"></i></div>\n                    <div class=\"col-xs-7\">\n\n                        <div id=\"settings-icon-container\">\n                            <i v-for=\"icon in settings.icons\" class=\"fa fa-2x fa-{{icon}} {{icon === settings.unit_icon ? 'selected' : ''}}\" :title=\"icon\" @click=\"setIcon(icon)\"></i>\n                        </div>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label for=\"description\" class=\"col-xs-3 col-form-label\">Unit Name</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" v-model=\"settings.unit_name\" class=\"form-control\" id=\"description\" name=\"description\">\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password Protected</label>\n                    <div class=\"col-xs-9\">\n                        <!-- Radio Buttons -->\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"true\">\n                            Yes\n                        </label>\n                        <label class=\"form-check-inline\">\n                            <input class=\"form-check-input\" type=\"radio\" v-model=\"settings.password_protected\" :value=\"false\" checked=\"\"> No\n                        </label>\n                    </div>\n                </div>\n\n                <div class=\"form-group row\">\n                    <label class=\"col-xs-3 col-form-label\">Password</label>\n                    <div class=\"col-xs-9\">\n                        <input type=\"text\" class=\"form-control\" v-model=\"settings.password\" :disabled=\"!settings.password_protected\">\n                    </div>\n                </div>\n\n                <div class=\"form-group row\" id=\"blacklist-row\">\n                    <label class=\"col-xs-3 col-form-label\">Blacklist</label>\n                    <div class=\"col-xs-9\">\n                        <div class=\"row\">\n                            <div class=\"col-xs-5\">\n                                <label>Allowed</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"allowed-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"!user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                            <div class=\"col-xs-2\" id=\"blacklist-controls\">\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersBlacklisted()\"> &gt;&gt;</button>\n                                <button class=\"btn btn-sm\" @click.prevent()=\"setUsersAllowed()\"> &lt;&lt;</button>\n                            </div>\n                            <div class=\"col-xs-5\">\n                                <label>Blacklisted</label>\n                                <select multiple=\"\" class=\"form-control\" id=\"blacklisted-users\">\n                                    <option v-for=\"user in settings.users\" v-if=\"user.blacklisted\" :value=\"user.id\">\n                                        {{ user.username }}\n                                    </option>\n                                </select>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n\n                <div class=\"form-group row\">\n                    <div class=\"offset-xs-3 col-xs-9\">\n                        <button type=\"submit\" class=\"btn btn-success\" @click.prevent=\"submitSettingsForm()\">\n                            Submit\n                        </button>\n                        <button type=\"submit\" class=\"btn btn-danger\" @click.prevent=\"closeModal()\" style=\"margin-left: 20px;\">Cancel\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n\n\n<div class=\"col-xs-12\" v-show=\"!room.loading &amp;&amp; room.found\">\n    <div class=\"col-xs-12\">\n        <div>\n            <h1><i class=\"unit-icon fa  fa-{{ unit_icon }}\"> </i> {{ unit_code }}\n                <button @click=\"openModal()\" v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-cog\"></i>Room Settings\n                </button>\n\n                <button v-if=\"room.role === 'owner'\" class=\"settings-button btn btn-danger btn-sm\"><i class=\"fa fa-line-chart\"></i>\n                    <a v-link=\"{ path : '/units/' + unit_code + '/analytics' }\">\n                        Unit Analytics\n                    </a>\n                </button>\n\n\n            </h1>\n            <h5>Status : {{ room.status }}</h5>\n            <div v-if=\"room.role === 'owner'\">\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"party_mode\">Stop the party :(</button>\n                <button class=\"btn btn-danger\" @click=\"toggleParty\" v-if=\"!party_mode\">Start the party :)</button>\n            </div>\n        </div>\n        <div style=\"color:dimgray;\"><h3 style=\"font-weight: 200;\">{{ unit_name }}</h3></div>\n    </div>\n\n    <div class=\"col-xs-12\" style=\"margin-bottom:20px; position: relative\">\n\n\n        <canvas v-show=\"!mute_background\" id=\"fg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 2\">\n\n        </canvas>\n        <canvas v-show=\"!mute_background\" id=\"bg_canvas\" style=\"width:100%; position: absolute; top: 0; left: 0; height:350px; z-index: 1; background-color: darkslategray\">\n\n        </canvas>\n\n        <!-- This div is a dud to stop the parent from collapsing -->\n        <div id=\"dud\" style=\"width:100%; height:350px;\"></div>\n\n        <div id=\"worm-comments\">\n\n        </div>\n    </div>\n\n\n    <div class=\"col-xs-12\">\n        <div class=\"row\">\n            <div class=\"col-xs-12\">\n                <form @submit.prevent=\"submitComment()\" id=\"comments-form\">\n                    <input type=\"text\" v-model=\"comment\" :placeholder=\"room.status == 'running' ? Add a comment : 'You may only post a comment to a running room.'\" :disabled=\"!socket || room.status != 'running'\">\n                    <button class=\"btn btn-primary\" :disabled=\"!socket || room.status != 'running'\">SUBMIT</button>\n                </form>\n            </div>\n            <div class=\"col-xs-4\">\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"upvote\">\n                        <i @click=\"changeVote('yes')\" class=\"vote-icon fa fa-5x fa-thumbs-o-up\" :class=\"{green : vote_direction === 'yes'}\"></i>\n                    </span>\n                </div>\n                <div class=\"text-xs-center\">\n                    <span class=\"vote-icon-container\" id=\"downvote\">\n                        <i @click=\"changeVote('no')\" class=\"vote-icon fa fa-5x fa-thumbs-o-down\" :class=\"{red: vote_direction === 'no'}\"></i>\n                    </span>\n                </div>\n            </div>\n            <div class=\"col-xs-8\">\n\n                <div id=\"comments-panel\">\n                    <div v-if=\"!socket\">\n                        Not connected to server\n                    </div>\n                    <div class=\"comment\" :id=\"comment.id\" v-for=\"comment in comments\" track-by=\"$index\">\n                        <span class=\"comment-hash\"><i class=\"fa fa-{{comment.icon}}\">  </i>  @{{ comment.author }}</span>\n                        <span class=\"comment-time\">{{comment.date}} - {{comment.time}}</span>\n                        <div class=\"comment-text\">{{ comment.content }}</div>\n                    </div>\n\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -902,7 +925,60 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-1f13dcde", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../auth":2,"../store":12,"babel-runtime/core-js/object/assign":16,"babel-runtime/helpers/toConsumableArray":17,"moment":101,"socket.io-client":107,"sweetalert2":117,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],10:[function(require,module,exports){
+},{"../auth":2,"../store":14,"babel-runtime/core-js/object/assign":18,"babel-runtime/helpers/toConsumableArray":19,"moment":103,"socket.io-client":109,"sweetalert2":119,"vue":124,"vue-hot-reload-api":121,"vueify/lib/insert-css":125}],10:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    data: function data() {
+        return {};
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div>\n    <h4>Schedule</h4>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-e5b4afe0", module.exports)
+  } else {
+    hotAPI.update("_v-e5b4afe0", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":124,"vue-hot-reload-api":121}],11:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    data: function data() {
+        return {
+            unit_code: null
+        };
+    },
+    route: {
+        activate: function activate() {
+            this.unit_code = this.$route.params.id;
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div>\n    <h1>Analytics for {{ unit_code }}</h1>\n\n\n    <div class=\"row\">\n        <div class=\"col-xs-12 col-sm-8\">\n            In this corner,\n        </div>\n        <div class=\"col-xs-12 col-sm-4\">\n            In this corner, we have attendance stats\n        </div>\n    </div>\n\n\n    <div class=\"row\">\n        <div class=\"col-xs-12 col-sm-8\">\n            In here we have comment sentiments\n        </div>\n\n        <div class=\"col-xs-12 col-sm-4\">\n            And here, a lovely little word cloud or some shit\n        </div>\n    </div>\n\n    <div>Yo yo what up hoes</div>\n\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-c18f13c8", module.exports)
+  } else {
+    hotAPI.update("_v-c18f13c8", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":124,"vue-hot-reload-api":121}],12:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 2, stdin */\n#unit-list-view {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-orient: vertical;\n  -webkit-box-direction: normal;\n      -ms-flex-direction: column;\n          flex-direction: column;\n  -webkit-box-pack: center;\n      -ms-flex-pack: center;\n          justify-content: center;\n  -webkit-box-align: center;\n      -ms-flex-align: center;\n          align-items: center; }\n  /* line 9, stdin */\n  #unit-list-view > div {\n    width: 100%; }\n")
 'use strict';
@@ -970,7 +1046,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7f24e4cc", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":12,"./UnitPanel.vue":11,"babel-runtime/helpers/toConsumableArray":17,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],11:[function(require,module,exports){
+},{"../store":14,"./UnitPanel.vue":13,"babel-runtime/helpers/toConsumableArray":19,"vue":124,"vue-hot-reload-api":121,"vueify/lib/insert-css":125}],13:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("/* line 3, stdin */\n.unit-content:hover {\n  -webkit-transform: rotateX(25deg);\n          transform: rotateX(25deg); }\n\n/* line 8, stdin */\n.move-up {\n  -webkit-transition: all 0.4s ease;\n  transition: all 0.4s ease;\n  -webkit-transform: translateY(-30px);\n          transform: translateY(-30px); }\n\n/* line 13, stdin */\n.unit-component {\n  z-index: 1;\n  -webkit-perspective: 700px;\n          perspective: 700px;\n  -webkit-transition: all 0.25s ease-out;\n  transition: all 0.25s ease-out; }\n  /* line 18, stdin */\n  .unit-component a {\n    color: inherit;\n    text-decoration: inherit; }\n  /* line 25, stdin */\n  .unit-component:hover .unit-icon {\n    -webkit-transform: scale(1.25) translateY(-10px);\n            transform: scale(1.25) translateY(-10px);\n    box-shadow: 0px 7px 2px -2px rgba(0, 0, 0, 0.4);\n    -webkit-transition: all 0.55s ease;\n    transition: all 0.55s ease;\n    background: darkorange; }\n  /* line 32, stdin */\n  .unit-component:hover .unit-button {\n    background-color: rgba(255, 255, 255, 0.5); }\n    /* line 34, stdin */\n    .unit-component:hover .unit-button:hover {\n      background-color: white; }\n")
 'use strict';
@@ -1024,7 +1100,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-d218b6cc", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../store":12,"vue":122,"vue-hot-reload-api":119,"vueify/lib/insert-css":123}],12:[function(require,module,exports){
+},{"../store":14,"vue":124,"vue-hot-reload-api":121,"vueify/lib/insert-css":125}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1110,7 +1186,7 @@ store.reset = function () {
     return Object.assign(store, createStore());
 };
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = after
 
 function after(count, callback, err_cb) {
@@ -1140,7 +1216,7 @@ function after(count, callback, err_cb) {
 
 function noop() {}
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * An abstraction for slicing an arraybuffer even when
  * ArrayBuffer.prototype.slice is not supported
@@ -1171,11 +1247,11 @@ module.exports = function(arraybuffer, start, end) {
   return result.buffer;
 };
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/array/from"), __esModule: true };
-},{"core-js/library/fn/array/from":25}],16:[function(require,module,exports){
+},{"core-js/library/fn/array/from":27}],18:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/object/assign"), __esModule: true };
-},{"core-js/library/fn/object/assign":26}],17:[function(require,module,exports){
+},{"core-js/library/fn/object/assign":28}],19:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -1197,7 +1273,7 @@ exports.default = function (arr) {
     return (0, _from2.default)(arr);
   }
 };
-},{"../core-js/array/from":15}],18:[function(require,module,exports){
+},{"../core-js/array/from":17}],20:[function(require,module,exports){
 
 /**
  * Expose `Backoff`.
@@ -1284,7 +1360,7 @@ Backoff.prototype.setJitter = function(jitter){
 };
 
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /*
  * base64-arraybuffer
  * https://github.com/niklasvh/base64-arraybuffer
@@ -1353,7 +1429,7 @@ Backoff.prototype.setJitter = function(jitter){
   };
 })();
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function (global){
 /**
  * Create a blob builder even when vendor prefixes exist
@@ -1453,9 +1529,9 @@ module.exports = (function() {
 })();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /**
  * Slice reference.
  */
@@ -1480,7 +1556,7 @@ module.exports = function(obj, fn){
   }
 };
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -1646,7 +1722,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 
 module.exports = function(a, b){
   var fn = function(){};
@@ -1654,25 +1730,25 @@ module.exports = function(a, b){
   a.prototype = new fn;
   a.prototype.constructor = a;
 };
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 require('../../modules/es6.string.iterator');
 require('../../modules/es6.array.from');
 module.exports = require('../../modules/_core').Array.from;
-},{"../../modules/_core":32,"../../modules/es6.array.from":79,"../../modules/es6.string.iterator":81}],26:[function(require,module,exports){
+},{"../../modules/_core":34,"../../modules/es6.array.from":81,"../../modules/es6.string.iterator":83}],28:[function(require,module,exports){
 require('../../modules/es6.object.assign');
 module.exports = require('../../modules/_core').Object.assign;
-},{"../../modules/_core":32,"../../modules/es6.object.assign":80}],27:[function(require,module,exports){
+},{"../../modules/_core":34,"../../modules/es6.object.assign":82}],29:[function(require,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
 };
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var isObject = require('./_is-object');
 module.exports = function(it){
   if(!isObject(it))throw TypeError(it + ' is not an object!');
   return it;
 };
-},{"./_is-object":48}],29:[function(require,module,exports){
+},{"./_is-object":50}],31:[function(require,module,exports){
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = require('./_to-iobject')
@@ -1694,7 +1770,7 @@ module.exports = function(IS_INCLUDES){
     } return !IS_INCLUDES && -1;
   };
 };
-},{"./_to-index":70,"./_to-iobject":72,"./_to-length":73}],30:[function(require,module,exports){
+},{"./_to-index":72,"./_to-iobject":74,"./_to-length":75}],32:[function(require,module,exports){
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = require('./_cof')
   , TAG = require('./_wks')('toStringTag')
@@ -1718,16 +1794,16 @@ module.exports = function(it){
     // ES3 arguments fallback
     : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
 };
-},{"./_cof":31,"./_wks":77}],31:[function(require,module,exports){
+},{"./_cof":33,"./_wks":79}],33:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = function(it){
   return toString.call(it).slice(8, -1);
 };
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 var $defineProperty = require('./_object-dp')
   , createDesc      = require('./_property-desc');
@@ -1736,7 +1812,7 @@ module.exports = function(object, index, value){
   if(index in object)$defineProperty.f(object, index, createDesc(0, value));
   else object[index] = value;
 };
-},{"./_object-dp":57,"./_property-desc":64}],34:[function(require,module,exports){
+},{"./_object-dp":59,"./_property-desc":66}],36:[function(require,module,exports){
 // optional / simple context binding
 var aFunction = require('./_a-function');
 module.exports = function(fn, that, length){
@@ -1757,18 +1833,18 @@ module.exports = function(fn, that, length){
     return fn.apply(that, arguments);
   };
 };
-},{"./_a-function":27}],35:[function(require,module,exports){
+},{"./_a-function":29}],37:[function(require,module,exports){
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function(it){
   if(it == undefined)throw TypeError("Can't call method on  " + it);
   return it;
 };
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 // Thank's IE8 for his funny defineProperty
 module.exports = !require('./_fails')(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_fails":40}],37:[function(require,module,exports){
+},{"./_fails":42}],39:[function(require,module,exports){
 var isObject = require('./_is-object')
   , document = require('./_global').document
   // in old IE typeof document.createElement is 'object'
@@ -1776,12 +1852,12 @@ var isObject = require('./_is-object')
 module.exports = function(it){
   return is ? document.createElement(it) : {};
 };
-},{"./_global":41,"./_is-object":48}],38:[function(require,module,exports){
+},{"./_global":43,"./_is-object":50}],40:[function(require,module,exports){
 // IE 8- don't enum bug keys
 module.exports = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var global    = require('./_global')
   , core      = require('./_core')
   , ctx       = require('./_ctx')
@@ -1843,7 +1919,7 @@ $export.W = 32;  // wrap
 $export.U = 64;  // safe
 $export.R = 128; // real proto method for `library` 
 module.exports = $export;
-},{"./_core":32,"./_ctx":34,"./_global":41,"./_hide":43}],40:[function(require,module,exports){
+},{"./_core":34,"./_ctx":36,"./_global":43,"./_hide":45}],42:[function(require,module,exports){
 module.exports = function(exec){
   try {
     return !!exec();
@@ -1851,17 +1927,17 @@ module.exports = function(exec){
     return true;
   }
 };
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
 if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var hasOwnProperty = {}.hasOwnProperty;
 module.exports = function(it, key){
   return hasOwnProperty.call(it, key);
 };
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var dP         = require('./_object-dp')
   , createDesc = require('./_property-desc');
 module.exports = require('./_descriptors') ? function(object, key, value){
@@ -1870,19 +1946,19 @@ module.exports = require('./_descriptors') ? function(object, key, value){
   object[key] = value;
   return object;
 };
-},{"./_descriptors":36,"./_object-dp":57,"./_property-desc":64}],44:[function(require,module,exports){
+},{"./_descriptors":38,"./_object-dp":59,"./_property-desc":66}],46:[function(require,module,exports){
 module.exports = require('./_global').document && document.documentElement;
-},{"./_global":41}],45:[function(require,module,exports){
+},{"./_global":43}],47:[function(require,module,exports){
 module.exports = !require('./_descriptors') && !require('./_fails')(function(){
   return Object.defineProperty(require('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_descriptors":36,"./_dom-create":37,"./_fails":40}],46:[function(require,module,exports){
+},{"./_descriptors":38,"./_dom-create":39,"./_fails":42}],48:[function(require,module,exports){
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = require('./_cof');
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
-},{"./_cof":31}],47:[function(require,module,exports){
+},{"./_cof":33}],49:[function(require,module,exports){
 // check on default Array iterator
 var Iterators  = require('./_iterators')
   , ITERATOR   = require('./_wks')('iterator')
@@ -1891,11 +1967,11 @@ var Iterators  = require('./_iterators')
 module.exports = function(it){
   return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
 };
-},{"./_iterators":53,"./_wks":77}],48:[function(require,module,exports){
+},{"./_iterators":55,"./_wks":79}],50:[function(require,module,exports){
 module.exports = function(it){
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 // call something on iterator step with safe closing on error
 var anObject = require('./_an-object');
 module.exports = function(iterator, fn, value, entries){
@@ -1908,7 +1984,7 @@ module.exports = function(iterator, fn, value, entries){
     throw e;
   }
 };
-},{"./_an-object":28}],50:[function(require,module,exports){
+},{"./_an-object":30}],52:[function(require,module,exports){
 'use strict';
 var create         = require('./_object-create')
   , descriptor     = require('./_property-desc')
@@ -1922,7 +1998,7 @@ module.exports = function(Constructor, NAME, next){
   Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
   setToStringTag(Constructor, NAME + ' Iterator');
 };
-},{"./_hide":43,"./_object-create":56,"./_property-desc":64,"./_set-to-string-tag":66,"./_wks":77}],51:[function(require,module,exports){
+},{"./_hide":45,"./_object-create":58,"./_property-desc":66,"./_set-to-string-tag":68,"./_wks":79}],53:[function(require,module,exports){
 'use strict';
 var LIBRARY        = require('./_library')
   , $export        = require('./_export')
@@ -1993,7 +2069,7 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED
   }
   return methods;
 };
-},{"./_export":39,"./_has":42,"./_hide":43,"./_iter-create":50,"./_iterators":53,"./_library":54,"./_object-gpo":60,"./_redefine":65,"./_set-to-string-tag":66,"./_wks":77}],52:[function(require,module,exports){
+},{"./_export":41,"./_has":44,"./_hide":45,"./_iter-create":52,"./_iterators":55,"./_library":56,"./_object-gpo":62,"./_redefine":67,"./_set-to-string-tag":68,"./_wks":79}],54:[function(require,module,exports){
 var ITERATOR     = require('./_wks')('iterator')
   , SAFE_CLOSING = false;
 
@@ -2015,11 +2091,11 @@ module.exports = function(exec, skipClosing){
   } catch(e){ /* empty */ }
   return safe;
 };
-},{"./_wks":77}],53:[function(require,module,exports){
+},{"./_wks":79}],55:[function(require,module,exports){
 module.exports = {};
-},{}],54:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 module.exports = true;
-},{}],55:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys  = require('./_object-keys')
@@ -2053,7 +2129,7 @@ module.exports = !$assign || require('./_fails')(function(){
     while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
   } return T;
 } : $assign;
-},{"./_fails":40,"./_iobject":46,"./_object-gops":59,"./_object-keys":62,"./_object-pie":63,"./_to-object":74}],56:[function(require,module,exports){
+},{"./_fails":42,"./_iobject":48,"./_object-gops":61,"./_object-keys":64,"./_object-pie":65,"./_to-object":76}],58:[function(require,module,exports){
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject    = require('./_an-object')
   , dPs         = require('./_object-dps')
@@ -2096,7 +2172,7 @@ module.exports = Object.create || function create(O, Properties){
   return Properties === undefined ? result : dPs(result, Properties);
 };
 
-},{"./_an-object":28,"./_dom-create":37,"./_enum-bug-keys":38,"./_html":44,"./_object-dps":58,"./_shared-key":67}],57:[function(require,module,exports){
+},{"./_an-object":30,"./_dom-create":39,"./_enum-bug-keys":40,"./_html":46,"./_object-dps":60,"./_shared-key":69}],59:[function(require,module,exports){
 var anObject       = require('./_an-object')
   , IE8_DOM_DEFINE = require('./_ie8-dom-define')
   , toPrimitive    = require('./_to-primitive')
@@ -2113,7 +2189,7 @@ exports.f = require('./_descriptors') ? Object.defineProperty : function defineP
   if('value' in Attributes)O[P] = Attributes.value;
   return O;
 };
-},{"./_an-object":28,"./_descriptors":36,"./_ie8-dom-define":45,"./_to-primitive":75}],58:[function(require,module,exports){
+},{"./_an-object":30,"./_descriptors":38,"./_ie8-dom-define":47,"./_to-primitive":77}],60:[function(require,module,exports){
 var dP       = require('./_object-dp')
   , anObject = require('./_an-object')
   , getKeys  = require('./_object-keys');
@@ -2127,9 +2203,9 @@ module.exports = require('./_descriptors') ? Object.defineProperties : function 
   while(length > i)dP.f(O, P = keys[i++], Properties[P]);
   return O;
 };
-},{"./_an-object":28,"./_descriptors":36,"./_object-dp":57,"./_object-keys":62}],59:[function(require,module,exports){
+},{"./_an-object":30,"./_descriptors":38,"./_object-dp":59,"./_object-keys":64}],61:[function(require,module,exports){
 exports.f = Object.getOwnPropertySymbols;
-},{}],60:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has         = require('./_has')
   , toObject    = require('./_to-object')
@@ -2143,7 +2219,7 @@ module.exports = Object.getPrototypeOf || function(O){
     return O.constructor.prototype;
   } return O instanceof Object ? ObjectProto : null;
 };
-},{"./_has":42,"./_shared-key":67,"./_to-object":74}],61:[function(require,module,exports){
+},{"./_has":44,"./_shared-key":69,"./_to-object":76}],63:[function(require,module,exports){
 var has          = require('./_has')
   , toIObject    = require('./_to-iobject')
   , arrayIndexOf = require('./_array-includes')(false)
@@ -2161,7 +2237,7 @@ module.exports = function(object, names){
   }
   return result;
 };
-},{"./_array-includes":29,"./_has":42,"./_shared-key":67,"./_to-iobject":72}],62:[function(require,module,exports){
+},{"./_array-includes":31,"./_has":44,"./_shared-key":69,"./_to-iobject":74}],64:[function(require,module,exports){
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys       = require('./_object-keys-internal')
   , enumBugKeys = require('./_enum-bug-keys');
@@ -2169,9 +2245,9 @@ var $keys       = require('./_object-keys-internal')
 module.exports = Object.keys || function keys(O){
   return $keys(O, enumBugKeys);
 };
-},{"./_enum-bug-keys":38,"./_object-keys-internal":61}],63:[function(require,module,exports){
+},{"./_enum-bug-keys":40,"./_object-keys-internal":63}],65:[function(require,module,exports){
 exports.f = {}.propertyIsEnumerable;
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 module.exports = function(bitmap, value){
   return {
     enumerable  : !(bitmap & 1),
@@ -2180,9 +2256,9 @@ module.exports = function(bitmap, value){
     value       : value
   };
 };
-},{}],65:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 module.exports = require('./_hide');
-},{"./_hide":43}],66:[function(require,module,exports){
+},{"./_hide":45}],68:[function(require,module,exports){
 var def = require('./_object-dp').f
   , has = require('./_has')
   , TAG = require('./_wks')('toStringTag');
@@ -2190,20 +2266,20 @@ var def = require('./_object-dp').f
 module.exports = function(it, tag, stat){
   if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
 };
-},{"./_has":42,"./_object-dp":57,"./_wks":77}],67:[function(require,module,exports){
+},{"./_has":44,"./_object-dp":59,"./_wks":79}],69:[function(require,module,exports){
 var shared = require('./_shared')('keys')
   , uid    = require('./_uid');
 module.exports = function(key){
   return shared[key] || (shared[key] = uid(key));
 };
-},{"./_shared":68,"./_uid":76}],68:[function(require,module,exports){
+},{"./_shared":70,"./_uid":78}],70:[function(require,module,exports){
 var global = require('./_global')
   , SHARED = '__core-js_shared__'
   , store  = global[SHARED] || (global[SHARED] = {});
 module.exports = function(key){
   return store[key] || (store[key] = {});
 };
-},{"./_global":41}],69:[function(require,module,exports){
+},{"./_global":43}],71:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , defined   = require('./_defined');
 // true  -> String#at
@@ -2221,7 +2297,7 @@ module.exports = function(TO_STRING){
       : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
   };
 };
-},{"./_defined":35,"./_to-integer":71}],70:[function(require,module,exports){
+},{"./_defined":37,"./_to-integer":73}],72:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , max       = Math.max
   , min       = Math.min;
@@ -2229,34 +2305,34 @@ module.exports = function(index, length){
   index = toInteger(index);
   return index < 0 ? max(index + length, 0) : min(index, length);
 };
-},{"./_to-integer":71}],71:[function(require,module,exports){
+},{"./_to-integer":73}],73:[function(require,module,exports){
 // 7.1.4 ToInteger
 var ceil  = Math.ceil
   , floor = Math.floor;
 module.exports = function(it){
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
-},{}],72:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = require('./_iobject')
   , defined = require('./_defined');
 module.exports = function(it){
   return IObject(defined(it));
 };
-},{"./_defined":35,"./_iobject":46}],73:[function(require,module,exports){
+},{"./_defined":37,"./_iobject":48}],75:[function(require,module,exports){
 // 7.1.15 ToLength
 var toInteger = require('./_to-integer')
   , min       = Math.min;
 module.exports = function(it){
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
-},{"./_to-integer":71}],74:[function(require,module,exports){
+},{"./_to-integer":73}],76:[function(require,module,exports){
 // 7.1.13 ToObject(argument)
 var defined = require('./_defined');
 module.exports = function(it){
   return Object(defined(it));
 };
-},{"./_defined":35}],75:[function(require,module,exports){
+},{"./_defined":37}],77:[function(require,module,exports){
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = require('./_is-object');
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
@@ -2269,13 +2345,13 @@ module.exports = function(it, S){
   if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
   throw TypeError("Can't convert object to primitive value");
 };
-},{"./_is-object":48}],76:[function(require,module,exports){
+},{"./_is-object":50}],78:[function(require,module,exports){
 var id = 0
   , px = Math.random();
 module.exports = function(key){
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
-},{}],77:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 var store      = require('./_shared')('wks')
   , uid        = require('./_uid')
   , Symbol     = require('./_global').Symbol
@@ -2287,7 +2363,7 @@ var $exports = module.exports = function(name){
 };
 
 $exports.store = store;
-},{"./_global":41,"./_shared":68,"./_uid":76}],78:[function(require,module,exports){
+},{"./_global":43,"./_shared":70,"./_uid":78}],80:[function(require,module,exports){
 var classof   = require('./_classof')
   , ITERATOR  = require('./_wks')('iterator')
   , Iterators = require('./_iterators');
@@ -2296,7 +2372,7 @@ module.exports = require('./_core').getIteratorMethod = function(it){
     || it['@@iterator']
     || Iterators[classof(it)];
 };
-},{"./_classof":30,"./_core":32,"./_iterators":53,"./_wks":77}],79:[function(require,module,exports){
+},{"./_classof":32,"./_core":34,"./_iterators":55,"./_wks":79}],81:[function(require,module,exports){
 'use strict';
 var ctx            = require('./_ctx')
   , $export        = require('./_export')
@@ -2335,12 +2411,12 @@ $export($export.S + $export.F * !require('./_iter-detect')(function(iter){ Array
   }
 });
 
-},{"./_create-property":33,"./_ctx":34,"./_export":39,"./_is-array-iter":47,"./_iter-call":49,"./_iter-detect":52,"./_to-length":73,"./_to-object":74,"./core.get-iterator-method":78}],80:[function(require,module,exports){
+},{"./_create-property":35,"./_ctx":36,"./_export":41,"./_is-array-iter":49,"./_iter-call":51,"./_iter-detect":54,"./_to-length":75,"./_to-object":76,"./core.get-iterator-method":80}],82:[function(require,module,exports){
 // 19.1.3.1 Object.assign(target, source)
 var $export = require('./_export');
 
 $export($export.S + $export.F, 'Object', {assign: require('./_object-assign')});
-},{"./_export":39,"./_object-assign":55}],81:[function(require,module,exports){
+},{"./_export":41,"./_object-assign":57}],83:[function(require,module,exports){
 'use strict';
 var $at  = require('./_string-at')(true);
 
@@ -2358,7 +2434,7 @@ require('./_iter-define')(String, 'String', function(iterated){
   this._i += point.length;
   return {value: point, done: false};
 });
-},{"./_iter-define":51,"./_string-at":69}],82:[function(require,module,exports){
+},{"./_iter-define":53,"./_string-at":71}],84:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -2528,7 +2604,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":83}],83:[function(require,module,exports){
+},{"./debug":85}],85:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -2727,11 +2803,11 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":102}],84:[function(require,module,exports){
+},{"ms":104}],86:[function(require,module,exports){
 
 module.exports = require('./lib/');
 
-},{"./lib/":85}],85:[function(require,module,exports){
+},{"./lib/":87}],87:[function(require,module,exports){
 
 module.exports = require('./socket');
 
@@ -2743,7 +2819,7 @@ module.exports = require('./socket');
  */
 module.exports.parser = require('engine.io-parser');
 
-},{"./socket":86,"engine.io-parser":94}],86:[function(require,module,exports){
+},{"./socket":88,"engine.io-parser":96}],88:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies.
@@ -3466,7 +3542,7 @@ Socket.prototype.filterUpgrades = function (upgrades) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transport":87,"./transports":88,"component-emitter":23,"debug":82,"engine.io-parser":94,"indexof":99,"parsejson":103,"parseqs":104,"parseuri":105}],87:[function(require,module,exports){
+},{"./transport":89,"./transports":90,"component-emitter":25,"debug":84,"engine.io-parser":96,"indexof":101,"parsejson":105,"parseqs":106,"parseuri":107}],89:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -3623,7 +3699,7 @@ Transport.prototype.onClose = function () {
   this.emit('close');
 };
 
-},{"component-emitter":23,"engine.io-parser":94}],88:[function(require,module,exports){
+},{"component-emitter":25,"engine.io-parser":96}],90:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies
@@ -3680,7 +3756,7 @@ function polling (opts) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling-jsonp":89,"./polling-xhr":90,"./websocket":92,"xmlhttprequest-ssl":93}],89:[function(require,module,exports){
+},{"./polling-jsonp":91,"./polling-xhr":92,"./websocket":94,"xmlhttprequest-ssl":95}],91:[function(require,module,exports){
 (function (global){
 
 /**
@@ -3915,7 +3991,7 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling":91,"component-inherit":24}],90:[function(require,module,exports){
+},{"./polling":93,"component-inherit":26}],92:[function(require,module,exports){
 (function (global){
 /**
  * Module requirements.
@@ -4331,7 +4407,7 @@ function unloadHandler () {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling":91,"component-emitter":23,"component-inherit":24,"debug":82,"xmlhttprequest-ssl":93}],91:[function(require,module,exports){
+},{"./polling":93,"component-emitter":25,"component-inherit":26,"debug":84,"xmlhttprequest-ssl":95}],93:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -4578,7 +4654,7 @@ Polling.prototype.uri = function () {
   return schema + '://' + (ipv6 ? '[' + this.hostname + ']' : this.hostname) + port + this.path + query;
 };
 
-},{"../transport":87,"component-inherit":24,"debug":82,"engine.io-parser":94,"parseqs":104,"xmlhttprequest-ssl":93,"yeast":125}],92:[function(require,module,exports){
+},{"../transport":89,"component-inherit":26,"debug":84,"engine.io-parser":96,"parseqs":106,"xmlhttprequest-ssl":95,"yeast":127}],94:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies.
@@ -4873,7 +4949,7 @@ WS.prototype.check = function () {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../transport":87,"component-inherit":24,"debug":82,"engine.io-parser":94,"parseqs":104,"ws":21,"yeast":125}],93:[function(require,module,exports){
+},{"../transport":89,"component-inherit":26,"debug":84,"engine.io-parser":96,"parseqs":106,"ws":23,"yeast":127}],95:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 
 // Indicate to eslint that ActiveXObject is global
@@ -4915,7 +4991,7 @@ module.exports = function (opts) {
   }
 };
 
-},{"has-cors":98}],94:[function(require,module,exports){
+},{"has-cors":100}],96:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies.
@@ -5525,7 +5601,7 @@ exports.decodePayloadAsBinary = function (data, binaryType, callback) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./keys":95,"after":13,"arraybuffer.slice":14,"base64-arraybuffer":19,"blob":20,"has-binary":96,"wtf-8":124}],95:[function(require,module,exports){
+},{"./keys":97,"after":15,"arraybuffer.slice":16,"base64-arraybuffer":21,"blob":22,"has-binary":98,"wtf-8":126}],97:[function(require,module,exports){
 
 /**
  * Gets the keys for an object.
@@ -5546,7 +5622,7 @@ module.exports = Object.keys || function keys (obj){
   return arr;
 };
 
-},{}],96:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 (function (global){
 
 /*
@@ -5608,7 +5684,7 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"isarray":100}],97:[function(require,module,exports){
+},{"isarray":102}],99:[function(require,module,exports){
 (function (global){
 
 /*
@@ -5671,7 +5747,7 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"isarray":100}],98:[function(require,module,exports){
+},{"isarray":102}],100:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -5690,7 +5766,7 @@ try {
   module.exports = false;
 }
 
-},{}],99:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -5701,12 +5777,12 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],100:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],101:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 //! moment.js
 //! version : 2.15.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -9941,7 +10017,7 @@ module.exports = Array.isArray || function (arr) {
     return _moment;
 
 }));
-},{}],102:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -10068,7 +10144,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],103:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 (function (global){
 /**
  * JSON parse.
@@ -10103,7 +10179,7 @@ module.exports = function parsejson(data) {
   }
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],104:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 /**
  * Compiles a querystring
  * Returns string representation of the object
@@ -10142,7 +10218,7 @@ exports.decode = function(qs){
   return qry;
 };
 
-},{}],105:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 /**
  * Parses an URI
  *
@@ -10183,7 +10259,7 @@ module.exports = function parseuri(str) {
     return uri;
 };
 
-},{}],106:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -10365,7 +10441,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],107:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -10476,7 +10552,7 @@ exports.connect = lookup;
 exports.Manager = require('./manager');
 exports.Socket = require('./socket');
 
-},{"./manager":108,"./socket":110,"./url":111,"debug":82,"socket.io-parser":114}],108:[function(require,module,exports){
+},{"./manager":110,"./socket":112,"./url":113,"debug":84,"socket.io-parser":116}],110:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -11038,7 +11114,7 @@ Manager.prototype.onreconnect = function () {
   this.emitAll('reconnect', attempt);
 };
 
-},{"./on":109,"./socket":110,"backo2":18,"component-bind":22,"component-emitter":112,"debug":82,"engine.io-client":84,"indexof":99,"socket.io-parser":114}],109:[function(require,module,exports){
+},{"./on":111,"./socket":112,"backo2":20,"component-bind":24,"component-emitter":114,"debug":84,"engine.io-client":86,"indexof":101,"socket.io-parser":116}],111:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -11064,7 +11140,7 @@ function on (obj, ev, fn) {
   };
 }
 
-},{}],110:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -11485,7 +11561,7 @@ Socket.prototype.compress = function (compress) {
   return this;
 };
 
-},{"./on":109,"component-bind":22,"component-emitter":112,"debug":82,"has-binary":97,"socket.io-parser":114,"to-array":118}],111:[function(require,module,exports){
+},{"./on":111,"component-bind":24,"component-emitter":114,"debug":84,"has-binary":99,"socket.io-parser":116,"to-array":120}],113:[function(require,module,exports){
 (function (global){
 
 /**
@@ -11564,7 +11640,7 @@ function url (uri, loc) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"debug":82,"parseuri":105}],112:[function(require,module,exports){
+},{"debug":84,"parseuri":107}],114:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -11727,7 +11803,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],113:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 (function (global){
 /*global Blob,File*/
 
@@ -11872,7 +11948,7 @@ exports.removeBlobs = function(data, callback) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./is-buffer":115,"isarray":100}],114:[function(require,module,exports){
+},{"./is-buffer":117,"isarray":102}],116:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -12274,7 +12350,7 @@ function error(data){
   };
 }
 
-},{"./binary":113,"./is-buffer":115,"component-emitter":23,"debug":82,"isarray":100,"json3":116}],115:[function(require,module,exports){
+},{"./binary":115,"./is-buffer":117,"component-emitter":25,"debug":84,"isarray":102,"json3":118}],117:[function(require,module,exports){
 (function (global){
 
 module.exports = isBuf;
@@ -12291,7 +12367,7 @@ function isBuf(obj) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],116:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 (function (global){
 /*! JSON v3.3.2 | http://bestiejs.github.io/json3 | Copyright 2012-2014, Kit Cambridge | http://kit.mit-license.org */
 ;(function () {
@@ -13197,7 +13273,7 @@ function isBuf(obj) {
 }).call(this);
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],117:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 /*!
  * sweetalert2 v4.3.3
  * Released under the MIT License.
@@ -14762,7 +14838,7 @@ function isBuf(obj) {
   return sweetAlert;
 
 }));
-},{}],118:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 module.exports = toArray
 
 function toArray(list, index) {
@@ -14777,7 +14853,7 @@ function toArray(list, index) {
     return array
 }
 
-},{}],119:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 var Vue // late bind
 var map = Object.create(null)
 var shimmed = false
@@ -15078,7 +15154,7 @@ function format (id) {
   return match ? match[0] : id
 }
 
-},{}],120:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 /*!
  * vue-resource v1.0.2
  * https://github.com/vuejs/vue-resource
@@ -16590,7 +16666,7 @@ if (typeof window !== 'undefined' && window.Vue) {
 }
 
 module.exports = plugin;
-},{}],121:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 /*!
  * vue-router v0.7.13
  * (c) 2016 Evan You
@@ -19300,7 +19376,7 @@ module.exports = plugin;
   return Router;
 
 }));
-},{}],122:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.26
@@ -29377,7 +29453,7 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":106}],123:[function(require,module,exports){
+},{"_process":108}],125:[function(require,module,exports){
 var inserted = exports.cache = {}
 
 exports.insert = function (css) {
@@ -29397,7 +29473,7 @@ exports.insert = function (css) {
   return elem
 }
 
-},{}],124:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/wtf8 v1.0.0 by @mathias */
 ;(function(root) {
@@ -29635,7 +29711,7 @@ exports.insert = function (css) {
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],125:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 'use strict';
 
 var alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'.split('')

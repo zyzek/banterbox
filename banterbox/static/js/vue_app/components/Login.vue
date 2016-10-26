@@ -1,8 +1,9 @@
 <template>
     <div id="login-view">
         <div class="card" style="padding:20px" v-if="store.demo">
+            <h4>Demo Version</h4>
             <p>
-                <em>In a real world situation, this would be linked to a university system.</em>
+                <em>In a real world situation, this would be linked to a university system with students automatically enrolled.</em>
                 <br>
                 <em>For the purposes of this demo, click to create a user.</em>
             </p>

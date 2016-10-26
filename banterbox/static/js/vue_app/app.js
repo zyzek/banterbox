@@ -1,18 +1,25 @@
+// Framework libraries
 import Vue from 'vue'
 import Router from 'vue-router'
 import Resource from 'vue-resource'
+
+// Pages
+import App from './components/App.vue'
 import NotFound from './components/NotFound.vue'
 import Home from './components/Home.vue'
-
+import UnitAnalytics from './components/UnitAnalytics.vue'
 import RoomSelection from './components/UnitListing.vue'
 import Room from './components/Room.vue'
-
-import App from './components/App.vue'
 import Login from './components/Login.vue'
-import {store} from './store'
+import ScheduleSettings from './components/ScheduleSettings.vue'
 
+
+// App data/logic
+import {store} from './store'
 Vue.use(Router)
 Vue.use(Resource)
+
+
 
 import Auth from './auth'
 
@@ -29,11 +36,19 @@ router.map({
     '/units': {
         component: RoomSelection,
     },
+
+    '/units/:id/analytics':{
+        component : UnitAnalytics
+    },
+
     '/units/:id': {
         component: Room,
     },
     '/404': {
         component: NotFound
+    },
+    '/schedule-settings' : {
+        component: ScheduleSettings
     }
 })
 

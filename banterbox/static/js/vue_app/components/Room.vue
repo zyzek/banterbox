@@ -132,6 +132,15 @@
                     <button @click="openModal()" v-if="room.role === 'owner'"
                             class="settings-button btn btn-danger btn-sm"><i class="fa fa-cog"></i>Room Settings
                     </button>
+
+                    <button  v-if="room.role === 'owner'"
+                            class="settings-button btn btn-danger btn-sm"><i class="fa fa-line-chart"></i>
+                        <a v-link="{ path : '/units/' + unit_code + '/analytics' }">
+                            Unit Analytics
+                        </a>
+                    </button>
+
+
                 </h1>
                 <h5>Status : {{ room.status }}</h5>
                 <div v-if="room.role === 'owner'">
