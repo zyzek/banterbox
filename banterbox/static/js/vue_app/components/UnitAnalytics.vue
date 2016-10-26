@@ -11,6 +11,11 @@
                         <div>In here you will find the overall student satisfaction as well as a timeline to pinpoint
                             the exact moment you broke their hearts.
                         </div>
+
+                        <div id="line-chart">
+
+                        </div>
+
                     </div>
 
                     <div class="panel-data">
@@ -45,6 +50,7 @@
 
 
 <script>
+    import Chartist from 'chartist'
     export default {
         data: () => {
             return {
@@ -55,6 +61,21 @@
             activate(){
                 this.unit_code = this.$route.params.id
             }
+        },
+
+
+        ready(){
+            new Chartist.Line('#line-chart', {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                series: [
+                    [12, 9, 7, 8, 5],
+                ]
+            }, {
+                fullWidth: true,
+                chartPadding: {
+                    right: 40
+                }
+            });
         }
     }
 </script>

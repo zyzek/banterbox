@@ -13,14 +13,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chartist": "^0.10.1",
     "gulp": "^3.9.1",
     "lodash": "^4.15.0",
     "moment": "^2.15.1",
+    "socket.io-client": "latest",
     "sweetalert2": "^4.3.3",
     "vue": "^1.0.26",
     "vue-resource": "^1.0.2",
-    "vue-router": "^0.7.13",
-    "socket.io-client": "latest"
+    "vue-router": "^0.7.13"
   },
   "devDependencies": {
     "gulp-autoprefixer": "^3.1.1",

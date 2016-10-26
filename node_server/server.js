@@ -320,7 +320,7 @@ function setupEventListeners(socket) {
     //remove redis entry for this user in connected_users
     var remove_connection = rclient.sremAsync(`room:${client.room_id}:users`, client.user_id);
 
-    //remove their key-val pair
+    //remove their vote
     var remove_key = rclient.hdelAsync(`room:${client.room_id}`, `user:${client.user_id}`);
 
     Promise.join(remove_connection, remove_key).then(function () {
@@ -416,7 +416,7 @@ function acceptVote(user_id, room_id, vote_value) {
     const add_connected = rclient.saddAsync(`room:${room_id}:users`, user_id);
 
     Promise.join(add_vote, add_connected).then(function () {
-      console.log("added user: " + user_id);
+      console.log("added vote for user: " + user_id);
     });
   }
 }
@@ -612,8 +612,8 @@ function closeRoom(room_id) {
       return rclient.hgetAsync(`room:${room_id}`, `timestamp:${timestamp}`);
     })
     .then(function (histories) {
-
-      const json = JSON.stringify({value: histories});
+      const parsed = histories.map(x => JSON.parse(x))
+      const json = JSON.stringify({value: parsed});
 
       return DB.connection().none({
         name  : 'update-room-history',
