@@ -11,6 +11,7 @@ application = get_wsgi_application()
 
 # Actual imports
 from faker import Factory
+from django.utils import timezone
 from random import choice, randint, sample
 from datetime import date, datetime, timedelta, time
 
@@ -268,6 +269,8 @@ def run_step(func, args, pre_string=None, fail_string=None):
 
 
 def make_old_rooms():
+    now = datetime.now(tz=timezone.get_current_timezone())
+
     closed = models.RoomStatus.objects.get(name='closed')
     for unit in models.Unit.objects.all():
         room = models.Room()
@@ -279,6 +282,10 @@ def make_old_rooms():
         room.password_protected = False
         room.history = open('fake_votes_1.txt').read()
         room.save()
+        room.created_at = now - timedelta(days=7)
+        room.save()
+
+
 
         # I know this is pleb , idgaf
         room = models.Room()
@@ -290,7 +297,8 @@ def make_old_rooms():
         room.password_protected = False
         room.history = open('fake_votes_2.txt').read()
         room.save()
-
+        room.created_at = now - timedelta(days=14)
+        room.save()
 
 
 

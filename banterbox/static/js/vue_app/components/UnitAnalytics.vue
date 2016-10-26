@@ -13,7 +13,7 @@
                     <label class="control-label">Select a room</label>
                         <select type="text" class="form-control" v-model="selected_room.id" @change="getRoomData">
                             <option :value="null">Choose a date from below</option>
-                            <option :value="room.id" v-for="room in room_list">{{ room.date }}</option>
+                            <option :value="room.id" v-for="room in room_list">{{ room.date_formatted }}</option>
                         </select>
                 </div>
             </div>
@@ -156,22 +156,11 @@
             const votes = []
             const attendance = []
 
-            let min = Number.MAX_SAFE_INTEGER
-            let max = Number.MIN_SAFE_INTEGER
-
-
-
             data.forEach(x => {
-
                 const date = new Date(x.timestamp)
                 const vote_value = x.votes.yes - x.votes.no
-
                 attendance.push({x: date, y: x.connected.length})
                 votes.push({x: date, y:vote_value})
-
-                min = Math.min(min,vote_value,x.connected.length)
-                max = Math.max(max,vote_value,x.connected.length)
-
             })
 
 
@@ -217,8 +206,14 @@
                 this.$http.get(`/api/unit/${this.unit_code}/rooms?filter=closed`)
                         .then(response => {
                             const data = response.data
-                            console.log({data})
                             this.no_rooms_available = (data.length === 0)
+
+
+                            data.forEach(x => x.date_formatted = moment(x.date).format('MMMM Do YYYY, H:mm'))
+
+                            data.sort((x,y) => y.date > x.date)
+
+                            console.log({data})
                             this.room_list = [...data]
                         })
             }

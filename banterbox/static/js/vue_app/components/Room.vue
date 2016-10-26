@@ -471,6 +471,9 @@
                         title: `Kick ${name}?`,
                         type: 'success',
                         confirmButtonColor: '#17b000',
+                        showCancelButton: true,
+                          showCloseButton: true,
+
                         cancelButtonColor: '#d33',
                         confirmButtonText: 'OK'
                     }).then(() => {
