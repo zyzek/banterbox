@@ -325,7 +325,7 @@ def populate_db():
     run_step(make_schedules, [LECTURES_PER_UNIT], \
              "Adding {} scheduled lectures per unit...".format(LECTURES_PER_UNIT))
     run_step(add_dummy_unit, [], "Adding prawns...")
-    run_step(make_old_rooms(),[],"Adding old rooms...")
+    run_step(make_old_rooms,[],"Adding old rooms...")
     print("All Done.")
 
 
