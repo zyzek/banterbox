@@ -151,7 +151,19 @@ function postAuth(socket, data) {
         if (client.role === 'owner' || client.role === 'moderator') {
           _alias = client.username
         }
+
+        // Set if it doesn't exist.
         rclient.hsetnxAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`, _alias)
+
+        // Now retrieve it just in case it already existed, and place it on the client
+        rclient.hgetAsync(`room:${data.room_id}:alias`, `user:${client.user_id}`)
+          .then(result => {
+            console.log({result})
+            client.alias = result
+          })
+
+
+
       })
 
       socket.join(data.room_id);
@@ -200,6 +212,62 @@ function setupEventListeners(socket) {
     socket.emit('message', 'Room leave success')
   })
 
+
+  // Special events that only the room owner can perform
+  if (socket.client.role === 'owner') {
+    socket.on('party_start', () => {
+      console.log('PARTAY')
+      io.to(client.room_id).emit('party_start');
+    })
+
+    socket.on('party_stop', () => {
+      io.to(client.room_id).emit('party_stop');
+
+    })
+  }
+
+
+  if(socket.client.role === 'owner' || socket.client.role === 'moderator'){
+    // Kicking and removing people is a little bit trickier.
+    // Since we are keeping people anon, we have to kick by alias, since we're not even using their user IDs anywhere.
+    socket.on('kick_user', alias => {
+
+      const ids = Object.keys(io.sockets.connected)
+
+      for(const i of ids){
+        const target = io.sockets.connected[i]
+        const client = target.client
+        if(client.alias === alias){
+          socket.broadcast.to(target.id).emit('kicked')
+          console.log('kicking', alias)
+          break
+        }
+      }
+    })
+
+
+    socket.on('blacklist_user', alias => {
+
+      const ids = Object.keys(io.sockets.connected)
+
+
+      for(const i of ids){
+        const target = io.sockets.connected[i]
+        const client = target.client
+        if(client.alias === alias){
+          socket.broadcast.to(target.id).emit('blacklisted')
+          console.log('blacklisting', alias)
+          // TODO: Update database to reflect status
+          break
+        }
+      }
+    })
+
+
+
+  }
+
+
   /**
    * Broadcast a comment to the room's chat channel , and persist it to the database.
    */
@@ -224,7 +292,7 @@ function setupEventListeners(socket) {
           date     : moment(now).format('DD/MM/YYYY'),
           time     : moment(now).format('HH:mm:ss'),
           author   : alias,
-          icon     : ['owner', 'moderator'].indexOf(client.role) !== -1 ? 'user-secret' : null,
+          icon     : (client.role === 'owner' || client.role === 'moderator') ? 'user-secret' : null,
         }
 
         io.to(client.room_id).emit('comment', comment);
@@ -252,7 +320,7 @@ function setupEventListeners(socket) {
     //remove redis entry for this user in connected_users
     var remove_connection = rclient.sremAsync(`room:${client.room_id}:users`, client.user_id);
 
-    //remove their key-val pair
+    //remove their vote
     var remove_key = rclient.hdelAsync(`room:${client.room_id}`, `user:${client.user_id}`);
 
     Promise.join(remove_connection, remove_key).then(function () {
@@ -348,7 +416,7 @@ function acceptVote(user_id, room_id, vote_value) {
     const add_connected = rclient.saddAsync(`room:${room_id}:users`, user_id);
 
     Promise.join(add_vote, add_connected).then(function () {
-      console.log("added user: " + user_id);
+      console.log("added vote for user: " + user_id);
     });
   }
 }
@@ -390,7 +458,7 @@ function sendCommentHistory(room_id, socket) {
   DB.connection().any({
     name  : 'grab-comments-for-room',
     text  : `SELECT COMMENT_DATA.*, UR.name as ROLE
-             FROM (SELECT * FROM banterbox_comment C
+             FROM (SELECT C.*, auth_user.username, ROLE.role_id FROM banterbox_comment C
                INNER JOIN banterbox_room  ROOM ON C.room_id = ROOM.id
                INNER JOIN auth_user ON C.user_id = auth_user.id
                LEFT JOIN banterbox_userunitrole ROLE ON ROOM.unit_id = ROLE.unit_id  AND ROLE.user_id = C.user_id
@@ -421,15 +489,17 @@ function sendCommentHistory(room_id, socket) {
       // When all aliases are created, set up alias lookup object
       return Promise.join(...promises)
         .then(() => {
-          return rclient.hgetallAsync(`room:${room_id}:alias`).then(aliases => {
-            return {aliases, rows}
-          })
-
+          return rclient.hgetallAsync(`room:${room_id}:alias`)
+            .then(aliases => {
+              return {aliases, rows}
+            })
         })
     })
     .then(data => {
-      const rows     = data.rows
-      const aliases  = data.aliases
+      const rows    = data.rows
+      const aliases = data.aliases
+
+
       const comments = []
       for (let r of rows) {
         comments.push({
@@ -438,7 +508,7 @@ function sendCommentHistory(room_id, socket) {
           date     : moment(r.timestamp).format('DD/MM/YYYY'),
           time     : moment(r.timestamp).format('HH:mm:ss'),
           author   : aliases[`user:${r.user_id}`],
-          icon     : ['owner', 'moderator'].indexOf(r.role) !== -1 ? 'user-secret' : null
+          icon     : (r.role === 'owner' || r.role === 'moderator') ? 'user-secret' : null
 
         })
       }
@@ -542,8 +612,8 @@ function closeRoom(room_id) {
       return rclient.hgetAsync(`room:${room_id}`, `timestamp:${timestamp}`);
     })
     .then(function (histories) {
-
-      const json = JSON.stringify({value: histories});
+      const parsed = histories.map(x => JSON.parse(x))
+      const json = JSON.stringify({value: parsed});
 
       return DB.connection().none({
         name  : 'update-room-history',

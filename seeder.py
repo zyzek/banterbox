@@ -183,7 +183,7 @@ def add_dummy_unit():
     lecturer.first_name = "Wikus"
     lecturer.last_name = "van der Merwe"
     lecturer.username = "wikus"
-    lecturer.password = "popcorn"
+    lecturer.password = make_password("popcorn")
     lecturer.email = "wikus@d9.co.za"
     lecturer.save()
 
@@ -193,6 +193,20 @@ def add_dummy_unit():
     unit.lecturer = lecturer
     unit.icon = "braille"
     unit.save()
+
+    dud_unit = models.Unit()
+    dud_unit.name = 'Intro to Gang Signs'
+    dud_unit.code = 'WTUP8876'
+    dud_unit.lecturer = lecturer
+    dud_unit.icon = 'american-sign-language-interpreting'
+    dud_unit.save()
+    #
+    dud_room = models.ScheduledRoom()
+    dud_room.day = 2
+    dud_room.unit = dud_unit
+    dud_room.start_time = time(hour=10, minute=00, second=00)
+    dud_room.end_time = time(hour=12, minute=00, second=00)
+    dud_room.save()
 
     for i in range(7):
         room = models.ScheduledRoom()
@@ -219,7 +233,9 @@ def add_dummy_unit():
         user = models.User()
         user.username = uname
         user.password = make_password("corn")
+        user.is_staff = True
         user.save()
+
 
         enrolment = models.UserUnitEnrolment()
         enrolment.unit = unit
@@ -250,6 +266,34 @@ def run_step(func, args, pre_string=None, fail_string=None):
     sys.stdout.flush()
 
 
+
+def make_old_rooms():
+    closed = models.RoomStatus.objects.get(name='closed')
+    for unit in models.Unit.objects.all():
+        room = models.Room()
+        room.name = unit.code + " Lecture"
+        room.lecturer = unit.lecturer
+        room.unit = unit
+        room.status = closed
+        room.private = False
+        room.password_protected = False
+        room.history = open('fake_votes_1.txt').read()
+        room.save()
+
+        # I know this is pleb , idgaf
+        room = models.Room()
+        room.name = unit.code + " Lecture"
+        room.lecturer = unit.lecturer
+        room.unit = unit
+        room.status = closed
+        room.private = False
+        room.password_protected = False
+        room.history = open('fake_votes_2.txt').read()
+        room.save()
+
+
+
+
 def hard_reset_db():
     def remove_migrations():
         for filename in os.listdir("banterbox/migrations/"):
@@ -273,6 +317,7 @@ def populate_db():
     run_step(make_schedules, [LECTURES_PER_UNIT], \
              "Adding {} scheduled lectures per unit...".format(LECTURES_PER_UNIT))
     run_step(add_dummy_unit, [], "Adding prawns...")
+    run_step(make_old_rooms(),[],"Adding old rooms...")
     print("All Done.")
 
 

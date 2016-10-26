@@ -1,5 +1,26 @@
 <template>
     <div id="login-view">
+        <div class="card" style="padding:20px" v-if="store.demo">
+            <h4>Demo Version</h4>
+            <p>
+                <em>In a real world situation, this would be linked to a university system with students automatically enrolled.</em>
+                <br>
+                <em>For the purposes of this demo, click to create a user.</em>
+            </p>
+            <div id="demo-create-user">
+                <button class="btn btn-primary" @click="createUser" :disabled="demo.loaded">Generate user</button>
+                <div v-if="demo.loaded">
+                    <p>Name: <b>{{ demo.username }}</b></p>
+                    <p>Password: <b>{{ demo.password }}</b></p>
+                </div>
+                <div v-if="demo.error_message" transition="fade" style="margin-top: 20px;">
+                    <div class="alert alert-danger">{{ demo.error_message }}</div>
+                </div>
+            </div>
+
+        </div>
+
+
         <form class="row" @submit.prevent="authenticate">
 
 
@@ -54,6 +75,10 @@
     }
 
     #login-view {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
 
         #remember-me {
             margin-right: 10px;;
@@ -93,10 +118,36 @@
                 username: '',
                 password: '',
                 remember_me: true,
-                rejected: false
+                rejected: false,
+                demo: {
+                    username: null,
+                    password: null,
+                    loaded: false,
+                    error_message : null
+                }
             }
         },
         methods: {
+
+            createUser(){
+                    this.$http.get('/api/demo/user')
+                            .then(response => {
+                                const user = response.data
+                                this.demo.loaded = true
+                                this.demo.username = user.username
+                                this.demo.password = user.password
+
+                            }).catch(fail => {
+                    if(fail.status === 429){
+                    this.demo.error_message = fail.data.detail
+                }else{
+                    this.demo.error_message = 'An unknown error has occured. Our highly paid team of specialists are working on it! '
+                }
+                    console.log({fail})
+                })
+
+            },
+
             authenticate(){
                 this.rejected = false
                 AuthService.authenticate(this.username, this.password, this.remember_me)
@@ -122,14 +173,6 @@
                             console.log({reject})
                         })
 
-            }
-        },
-        route: {
-            activate: function () {
-                this.store.ui.main_centered = true;
-            },
-            deactivate: function () {
-                this.store.ui.main_centered = false;
             }
         }
     }

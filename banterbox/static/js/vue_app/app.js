@@ -1,18 +1,25 @@
+// Framework libraries
 import Vue from 'vue'
 import Router from 'vue-router'
 import Resource from 'vue-resource'
+
+// Pages
+import App from './components/App.vue'
 import NotFound from './components/NotFound.vue'
 import Home from './components/Home.vue'
-
+import UnitAnalytics from './components/UnitAnalytics.vue'
 import RoomSelection from './components/UnitListing.vue'
 import Room from './components/Room.vue'
-
-import App from './components/App.vue'
 import Login from './components/Login.vue'
-import {store} from './store'
+import ScheduleSettings from './components/ScheduleSettings.vue'
 
+
+// App data/logic
+import {store} from './store'
 Vue.use(Router)
 Vue.use(Resource)
+
+
 
 import Auth from './auth'
 
@@ -23,24 +30,30 @@ if (Auth.getToken()) {
 export const router = new Router()
 
 router.map({
-    '/': {
-        component: Home
-    },
     '/login': {
         component: Login
     },
     '/units': {
         component: RoomSelection,
     },
+
+    '/units/:id/analytics':{
+        component : UnitAnalytics
+    },
+
     '/units/:id': {
         component: Room,
     },
     '/404': {
         component: NotFound
+    },
+    '/schedule-settings' : {
+        component: ScheduleSettings
     }
 })
 
 router.redirect({
+    '/':'/units',
     '*': '/404'
 })
 
@@ -50,7 +63,6 @@ const free_routes = ['/login', '/404']
 // Check auth before travelling to the next route
 router.beforeEach(function (transition) {
     // if path is safe, continue
-
 
     if (free_routes.indexOf(transition.to.path) !== -1) {
         transition.next()
