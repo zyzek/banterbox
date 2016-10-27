@@ -20,6 +20,7 @@
 // TODO: Fix worm gradient when y offset is applied.
 
 
+
 class WormSocketHandler {
   constructor(socket, parent) {
     this.socket = socket;
@@ -84,6 +85,7 @@ class WormSocketHandler {
 
 
 
+
 class Worm {
 
 
@@ -96,7 +98,6 @@ class Worm {
         this.fg_context = this.fg_canvas.getContext('2d');
         this.bg_canvas = container_bg;
         this.bg_context = this.bg_canvas.getContext('2d');
-
 
         // Set up the networking.
         this.socket = new WormSocketHandler(socket, this);
@@ -117,8 +118,6 @@ class Worm {
         this.run = this.run.bind(this);
         this.run()
     }
-
-
 
 
     /* Set up all the listeners for input events. */
@@ -277,6 +276,12 @@ class Worm {
         this.comment_min_dist = 20;
         this.comment_min_height = 10;
         this.comment_max_height = 30;
+
+        // Gridline params
+        this.gridlines = true;
+        this.gridline_color = "#777777";
+        this.gridline_spacings = [200, 1000, 10000, 60000, 600000, 3600000]
+        this.gridline_max = 20;
     }
 
 
@@ -317,6 +322,10 @@ class Worm {
     render() {
         this.bg_context.clearRect(0, 0, this.bg_canvas.width, this.bg_canvas.height);
         this.draw_zero_line();
+
+        if (this.gridlines) {
+            this.draw_gridlines();
+        }
         this.draw_comment_blips();
         this.draw_time_slice_indicators();
         if (this.mouse_on_canvas) {
@@ -469,12 +478,13 @@ class Worm {
         this.bg_context.save();
 
         this.bg_context.beginPath();
-        this.bg_context.lineWidth = 1;
-        this.bg_context.strokeStyle = "#777777";
+        this.bg_context.lineWidth = 1.5;
+        this.bg_context.strokeStyle = "rgba(150, 150, 150, 0.25)";
         let zero_height = this.value_to_screen_space(0, this.display_range, this.y_offset_pixels);
         this.bg_context.moveTo(0, zero_height);
         this.bg_context.lineTo(this.bg_canvas.width, zero_height);
         this.bg_context.stroke();
+        this.fg_context.closePath();
 
         this.bg_context.restore();
     }
@@ -656,6 +666,37 @@ class Worm {
         this.fg_context.clearRect(clear_x, 0, this.fg_canvas.width + clear_x, this.fg_canvas.height)
 
         this.fg_context.restore();
+    }
+
+
+    /* Draw some dynamically-scaled gridlines to give the worm some scale. */
+    draw_gridlines() {
+        let num_lines = 0;
+        let spacing = 0;
+        for (let cand_spacing of this.gridline_spacings) {
+            spacing = cand_spacing;
+            num_lines = parseInt(this.rendered_time_slice.duration() / spacing);
+
+            if (num_lines <= this.gridline_max) {
+                break;
+            }
+        }
+
+        var initial_time = this.rendered_time_slice.get_start() - (this.rendered_time_slice.get_start() % spacing) + spacing;
+
+        this.bg_context.save();
+        this.bg_context.lineWidth = 0;
+        this.bg_context.strokeStyle = "rgba(1,1,1,0.05)";
+
+        for (let time = 0; time < this.rendered_time_slice.duration(); time += spacing) {
+            let pos = this.timestamp_to_screen_space(initial_time + time);
+            this.bg_context.beginPath();
+            this.bg_context.moveTo(pos, 0);
+            this.bg_context.lineTo(pos, this.bg_canvas.height);
+            this.bg_context.stroke();
+            this.bg_context.closePath();
+        }
+        this.bg_context.restore();
     }
 
 
