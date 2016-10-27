@@ -9,7 +9,6 @@
 //       E.G. stop autoscrolling if too far past worm end
 // TODO: If worm updates lag behind current time, move the clearing rectangle back
 //       to make it catch up to realtime faster, and not be jerky
-// TODO: Render gridlines
 // TODO: Limit redis to storing a couple of hours (or something) of historical data at most before dumping to DB
 // TODO: MAKE EVERYTHING MILLISECONDS OMG (comments stored in server with second-precision timestamps)
 
