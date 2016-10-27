@@ -278,7 +278,7 @@ class Worm {
 
         // Gridline params
         this.gridlines = true;
-        this.gridline_color = "rgba(1,1,1,0.1)";
+        this.gridline_color = "rgba(150,150,150,0.2)";
         this.gridline_spacings = [200, 1000, 10000, 60000, 600000, 3600000]
         this.gridline_max = 20;
     }
