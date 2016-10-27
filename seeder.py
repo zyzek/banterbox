@@ -59,7 +59,7 @@ def add_roles():
 def make_superuser():
     admin = models.User()
     admin.username = "admin"
-    admin.password = make_password("admin")
+    admin.password = make_password("burgertown")
     admin.email = 'admin@banterbox.edu.au'
     admin.is_superuser = True
     admin.is_staff = True
