@@ -278,7 +278,7 @@ class Worm {
 
         // Gridline params
         this.gridlines = true;
-        this.gridline_color = "#777777";
+        this.gridline_color = "rgba(1,1,1,0.1)";
         this.gridline_spacings = [200, 1000, 10000, 60000, 600000, 3600000]
         this.gridline_max = 20;
     }
@@ -685,7 +685,7 @@ class Worm {
 
         this.bg_context.save();
         this.bg_context.lineWidth = 0;
-        this.bg_context.strokeStyle = "rgba(1,1,1,0.05)";
+        this.bg_context.strokeStyle = this.gridline_color;
 
         for (let time = 0; time < this.rendered_time_slice.duration(); time += spacing) {
             let pos = this.timestamp_to_screen_space(initial_time + time);
