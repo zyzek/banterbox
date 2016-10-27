@@ -1,5 +1,3 @@
-// TODO: scrolling + zooming when not tracking
-
 // TODO: Make the comments look half-decent.
 //       Better blips
 //       colours per user (hash)
@@ -20,9 +18,6 @@
 // TODO: Add add background and comment style-setting functions
 // TODO: refactor to handle raw yes/no counts and render attendance as well as rating.
 // TODO: Fix worm gradient when y offset is applied.
-
-
-
 
 
 class WormSocketHandler {
@@ -139,7 +134,21 @@ class Worm {
         this.zoom_speed = 1.001;
         this.fg_canvas.addEventListener('wheel', (event) => {
             if (this.mouse_on_canvas) {
+                const prev_duration = this.render_duration;
                 this.render_duration = Math.min(1000 * 60 * 60 * 2 + 1000, Math.max(5000, this.render_duration * Math.pow(this.zoom_speed, event.deltaY)));
+
+                if (!this.auto_track) {
+                    const delta = (prev_duration - this.render_duration) / 2;
+                    const start_time = this.data[0].timestamp;
+
+                    if (this.rendered_time_slice.get_start() + delta >= start_time) {
+                        if (this.rendered_time_slice.get_start())
+                        this.rendered_time_slice.start += delta;
+                    }
+
+
+                }
+
                 event.preventDefault();
                 return false;
             }
@@ -152,7 +161,38 @@ class Worm {
 
         // Whenever the mouse IS on the canvas, capture its position.
         this.mouse_x = 0;
-        this.fg_canvas.addEventListener('mousemove', (event) => {this.mouse_x = event.offsetX;});
+        this.fg_canvas.addEventListener('mousemove', (event) => {
+            this.mouse_x = event.offsetX;
+
+            // Handle panning
+            if (this.mouse_down) {
+                const start_time = this.data[0].timestamp;
+                const end_time = this.data[this.data.length - 1].timestamp;
+                const time_offset = this.screen_space_to_timestamp(this.mouse_down_x) - this.screen_space_to_timestamp(this.mouse_x);
+                this.mouse_down_x = this.mouse_x;
+
+                if (this.rendered_time_slice.get_start() + time_offset >= start_time) {
+                    if (this.rendered_time_slice.get_start() + time_offset < end_time) {
+                        this.pan_offset_time += time_offset;
+                    }
+                }
+            }
+        });
+
+        // Whenever the user depresses the left mouse button, save the click position, so we can use it for scrolling.
+        this.mouse_down = false;
+        this.mouse_down_x = 0;
+        this.fg_canvas.addEventListener('mousedown', (event) => {
+            if (event.buttons == 1) {
+                this.mouse_down = true;
+                this.mouse_down_x = event.offsetX;
+            }
+        });
+
+        this.fg_canvas.addEventListener('mouseup', (event) => {
+            this.mouse_down = false;
+        });
+
     }
 
 
@@ -214,9 +254,13 @@ class Worm {
         this.auto_rescale = true;
         this.update_dimensions()
 
+        this.pan_offset_time = 0;
+        this.end_was_on_screen = true;
         // A structure that contains the actual slice of time being rendered.
         this.rendered_time_slice = {start: 0,
                                     end:10,
+                                    get_start: () => {return this.rendered_time_slice.start + this.pan_offset_time},
+                                    get_end: () => {return this.rendered_time_slice.end + this.pan_offset_time},
                                     duration: () => {return this.rendered_time_slice.end - this.rendered_time_slice.start},
                                     pixels_per_millisecond: () => { return this.fg_canvas.width / this.rendered_time_slice.duration()}
                                    }
@@ -284,8 +328,17 @@ class Worm {
             this.draw_end(this.render_duration);
         }
         else {
-            this.draw_slice(this.rendered_time_slice.start, this.rendered_time_slice.end, this.display_range, this.y_offset_pixels);
+            this.draw_duration(this.render_duration);
         }
+
+        if (this.end_was_on_screen && !this.end_is_on_screen()) {
+            this.auto_track = true;
+            this.pan_offset_time = 0;
+        }
+        else if (this.pan_offset_time != 0) {
+            this.auto_track = false;
+        }
+        this.end_was_on_screen = this.end_is_on_screen();
 
         Object.keys(this.render_functions).forEach((key) => {this.render_functions[key]()})
 
@@ -401,7 +454,7 @@ class Worm {
     /* If the maximum worm value in view is too big, rescale the displayed worm. */
     rescale_to_max_in_view() {
         if (this.auto_rescale && !this.rescaling) {
-            const slice = this.time_slice(this.rendered_time_slice.start, Math.min(this.rendered_time_slice.end, this.end_time()));
+            const slice = this.time_slice(this.rendered_time_slice.get_start(), Math.min(this.rendered_time_slice.get_end(), this.end_time()));
             if (slice.length > 0) {
                 const max_abs = slice.reduce((prev, curr) => Math.max(prev, Math.abs(curr.value)), 0);
                 const target = max_abs * this.rescale_threshold;
@@ -429,8 +482,8 @@ class Worm {
 
     /* Draw the indicators of the displayed time slice. */
     draw_time_slice_indicators() {
-        const start_indicator = this.hours_mins_secs_string(this.rendered_time_slice.start - this.data[0].timestamp);
-        const end_indicator = this.hours_mins_secs_string(this.rendered_time_slice.end - this.data[0].timestamp);
+        const start_indicator = this.hours_mins_secs_string(this.rendered_time_slice.get_start() - this.data[0].timestamp);
+        const end_indicator = this.hours_mins_secs_string(this.rendered_time_slice.get_end() - this.data[0].timestamp);
 
         this.bg_context.save();
 
@@ -490,7 +543,7 @@ class Worm {
         this.bg_context.fillStyle = "#5533CC";
         this.bg_context.strokeStyle = "#8855EE"
 
-        const slice_comments = _.takeWhile(_.dropWhile(this.comments, (c) => (c.timestamp < this.rendered_time_slice.start)), (c) => (c.timestamp <= this.rendered_time_slice.end));
+        const slice_comments = _.takeWhile(_.dropWhile(this.comments, (c) => (c.timestamp < this.rendered_time_slice.get_start())), (c) => (c.timestamp <= this.rendered_time_slice.get_end()));
         let num_displayed_comments = 0;
         for (let comment of slice_comments) {
             this.bg_context.beginPath();
@@ -545,6 +598,13 @@ class Worm {
         this.rendered_time_slice.end = end;
 
         this.draw_slice(start, end, this.display_range, this.y_offset_pixels);
+    }
+
+
+    /* Draw the worm region composed of a number of milliseconds following the current worm start time. */
+    draw_duration(milliseconds) {
+        this.rendered_time_slice.end = this.rendered_time_slice.start + milliseconds;
+        this.draw_slice(this.rendered_time_slice.get_start(), this.rendered_time_slice.get_end(), this.display_range, this.y_offset_pixels);
     }
 
 
@@ -851,9 +911,15 @@ class Worm {
     }
 
 
+    /* True iff the worm's end point is currently being rendered */
+    end_is_on_screen() {
+        return this.end_time() < this.rendered_time_slice.get_end();
+    }
+
+
     /* Takes a unix timestamp and returns the x position on screen it renders at. */
     timestamp_to_screen_space(t) {
-        const screen_x_fraction = (t - this.rendered_time_slice.start) / this.rendered_time_slice.duration();
+        const screen_x_fraction = (t - this.rendered_time_slice.get_start()) / this.rendered_time_slice.duration();
         return screen_x_fraction * this.fg_canvas.width;
     }
 
@@ -861,7 +927,7 @@ class Worm {
     /* Take a screen space coordinate and return the timestamp it represents. */
     screen_space_to_timestamp(x) {
         const screen_x_fraction = x / this.fg_canvas.width;
-        return (screen_x_fraction * this.rendered_time_slice.duration()) + this.rendered_time_slice.start;
+        return (screen_x_fraction * this.rendered_time_slice.duration()) + this.rendered_time_slice.get_start();
     }
 
 
