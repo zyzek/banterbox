@@ -1,6 +1,6 @@
 click==6.6
 configparser==3.5.0
-Django==1.11.21
+Django==1.11.22
 django-common-helpers==0.8.0
 django-extensions==1.7.4
 djangorestframework==3.9.1
